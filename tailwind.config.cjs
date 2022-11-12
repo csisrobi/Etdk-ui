@@ -2,7 +2,22 @@
 module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    fontFamily: {
+      bebas: ["Bebas Neue", "Calibri"],
+    },
+    extend: {
+      colors: {
+        gray: "#666766",
+        lightGray: "#E4E4E4",
+        turquoise: "#99d4c9",
+        yellow: "#FFCC45",
+        darkGreen: "#0B4441",
+        lightGreen: "#4D7C79",
+        darkBrown: "#231F20",
+        lightBrown: "#3C4247",
+        beige: "#EBCE8F",
+      },
+    },
   },
   plugins: [],
 };
