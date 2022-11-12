@@ -6,10 +6,13 @@ module.exports = {
       bebas: ["Bebas Neue", "Calibri"],
     },
     extend: {
+      screens: {
+        lg: "1100px",
+      },
       colors: {
         gray: "#666766",
         lightGray: "#E4E4E4",
-        turquoise: "#99d4c9",
+        turquoise: "#99D4C9",
         yellow: "#FFCC45",
         darkGreen: "#0B4441",
         lightGreen: "#4D7C79",

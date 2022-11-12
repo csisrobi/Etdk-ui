@@ -38,7 +38,7 @@ const Header = () => {
   ];
 
   return (
-    <>
+    <div className="absolute top-0 w-full">
       <div className="flex w-full items-center bg-gray p-6">
         <div className="flex-1">
           <Link href="/">
@@ -83,7 +83,7 @@ const Header = () => {
       <Transition.Root show={openMobileDialog} as={Fragment}>
         <Dialog
           as="div"
-          className="relative z-10"
+          className="relative z-10 "
           onClose={setOpenMobileDialog}
         >
           <Transition.Child
@@ -95,7 +95,7 @@ const Header = () => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-black bg-opacity-25 transition-opacity" />
+            <div className="fixed inset-0 bg-gray bg-opacity-50 transition-opacity" />
           </Transition.Child>
 
           <div className="fixed inset-0 overflow-hidden">
@@ -111,7 +111,7 @@ const Header = () => {
                   leaveTo="translate-x-full"
                 >
                   <Dialog.Panel className="pointer-events-auto relative w-screen max-w-md">
-                    <div className="flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl">
+                    <div className="no-scrollbar flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl">
                       <div className="px-4 sm:px-6">
                         <Dialog.Title className="text-gray-900 text-lg font-medium">
                           <div className="flex w-full items-center">
@@ -180,7 +180,7 @@ const Header = () => {
           </div>
         </Dialog>
       </Transition.Root>
-    </>
+    </div>
   );
 };
 
