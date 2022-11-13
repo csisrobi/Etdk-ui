@@ -37,9 +37,10 @@ const Header = () => {
     },
   ];
 
+  //TODO: CHANGE Z index if scroll started or put margin for image
   return (
-    <div className="absolute top-0 w-full">
-      <div className="flex w-full items-center bg-gray p-6">
+    <div className="fixed top-0 z-10 h-[100px] w-full bg-gray">
+      <div className="flex w-full items-center p-6">
         <div className="flex-1">
           <Link href="/">
             <Image
@@ -68,14 +69,14 @@ const Header = () => {
                 key={index}
                 href={link.href}
               >
-                {link.title.toUpperCase()}
+                <span>{link.title.toUpperCase()}</span>
               </Link>
             ))}
             <button
               type="button"
               className="w-48 rounded-3xl bg-white py-2 px-1 text-center text-3xl tracking-wide  text-turquoise xl:w-52"
             >
-              JELENTKEZÉS
+              <span>JELENTKEZÉS</span>
             </button>
           </div>
         </div>
@@ -158,7 +159,7 @@ const Header = () => {
                                 key={index}
                                 href={link.href}
                               >
-                                {link.title.toUpperCase()}
+                                <span>{link.title.toUpperCase()}</span>
                               </Link>
                             ))}
                             <div className="border-t border-gray pt-4 text-center">
@@ -166,7 +167,7 @@ const Header = () => {
                                 type="button"
                                 className="w-48 rounded-3xl bg-gray py-2 px-1 text-center text-3xl tracking-wide  text-turquoise hover:bg-opacity-75 xl:w-52"
                               >
-                                JELENTKEZÉS
+                                <span>JELENTKEZÉS</span>
                               </button>
                             </div>
                           </div>

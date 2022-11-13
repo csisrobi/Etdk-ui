@@ -3,7 +3,8 @@ module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     fontFamily: {
-      bebas: ["Bebas Neue", "Calibri"],
+      bebas: ["Bebas Neue"],
+      calibri: ["Calibri"],
     },
     extend: {
       screens: {

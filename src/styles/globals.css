@@ -5,8 +5,12 @@
 @tailwind utilities;
 
 @layer base {
-  html {
+  span {
     @apply font-bebas
+  }
+
+  p {
+    @apply font-calibri
   }
 }
 
