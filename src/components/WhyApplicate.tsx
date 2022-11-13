@@ -14,7 +14,7 @@ const reasons = [
 
 const WhyApplicate = () => {
   return (
-    <div className="relative h-[calc(100vh-100px)] bg-white">
+    <div className="relative h-[calc(100vh-100px)] bg-lightGray lg:bg-white">
       <div className="left-0 right-0 mx-auto flex min-h-[100%] w-[100vw] flex-col items-center lg:absolute lg:w-[1100px]">
         <div className="relative h-[25vh] w-[100vw] md:h-[50vh] lg:hidden">
           <Image src="/illusztracio1.png" alt="illusztracio" fill />
