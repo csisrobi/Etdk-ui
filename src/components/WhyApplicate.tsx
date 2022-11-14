@@ -83,11 +83,11 @@ const WhyApplicate = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col items-center gap-8 bg-lightGray lg:mt-24 lg:flex-row lg:justify-center lg:bg-white">
+      <div className="flex flex-col items-center bg-lightGray lg:mt-24 lg:flex-row lg:justify-center lg:gap-8 lg:bg-white">
         {reasons2.map((reason) => (
           <div
             key={reason.title}
-            className="px-auto relative flex h-[450px] w-full flex-col items-center gap-6 bg-lightGray p-8 lg:w-80"
+            className="px-auto relative flex w-full flex-col items-center gap-6 bg-lightGray p-8 lg:h-[450px] lg:w-80"
           >
             <div className="relative">
               <div>{reason.icon}</div>
