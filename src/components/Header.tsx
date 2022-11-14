@@ -37,9 +37,8 @@ const Header = () => {
     },
   ];
 
-  //TODO: CHANGE Z index if scroll started or put margin for image
   return (
-    <div className="fixed top-0 z-10 h-[100px] w-full bg-gray">
+    <div className="fixed top-0 z-20 h-[100px] w-full bg-gray">
       <div className="flex w-full items-center p-6">
         <div className="flex-1">
           <Link href="/">
