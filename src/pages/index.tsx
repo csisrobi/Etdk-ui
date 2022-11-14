@@ -1,6 +1,7 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import MainPage from "../components/MainPage";
+import WhyApplicate from "../components/WhyApplicate";
 
 const Home: NextPage = () => {
   return (
@@ -11,8 +12,8 @@ const Home: NextPage = () => {
         <meta name="description" content="Etdk" />
         <link rel="icon" href="/ETDK.png" />
       </Head>
-
       <MainPage />
+      <WhyApplicate />
     </>
   );
 };
