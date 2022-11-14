@@ -43,7 +43,7 @@ const Header = () => {
         <div>
           <Link href="/">
             <Image
-              src="/ETDK.png"
+              src="/ETDKfeher.png"
               alt={"logo"}
               width={50}
               height={50}
