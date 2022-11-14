@@ -53,7 +53,7 @@ const WhyApplicate = () => {
               </span>
             </div>
             <div>
-              <p className="text-lg font-medium leading-tight">
+              <p className="text-lg font-medium leading-tight text-darkBrown">
                 Az ETDK-n való részvételnek
                 <br /> több előnye is van, mint például:
               </p>
@@ -93,7 +93,9 @@ const WhyApplicate = () => {
               <div>{reason.icon}</div>
               <div className="absolute top-2 right-0 left-0 mx-auto h-[145px] w-[145px] rounded-full bg-lightGreen"></div>
             </div>
-            <span className="text-4xl font-semibold">{reason.title}</span>
+            <span className="text-4xl font-semibold text-darkGreen">
+              {reason.title}
+            </span>
             <p className="text-center text-lg">{reason.description}</p>
           </div>
         ))}
