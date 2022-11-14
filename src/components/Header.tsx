@@ -40,7 +40,7 @@ const Header = () => {
   return (
     <div className="fixed top-0 z-20 h-[100px] w-full bg-gray">
       <div className="flex w-full items-center p-6">
-        <div className="flex-1">
+        <div>
           <Link href="/">
             <Image
               src="/ETDK.png"
@@ -51,7 +51,7 @@ const Header = () => {
             />
           </Link>
         </div>
-        <div className="flex items-center lg:hidden">
+        <div className="flex flex-1 items-center justify-end lg:hidden">
           <button className="hover:bg-gray-700 inline-flex items-center justify-center rounded-md p-2 text-black hover:text-black">
             <Bars3Icon
               className="block h-8 w-8"
@@ -60,7 +60,7 @@ const Header = () => {
             />
           </button>
         </div>
-        <div className="hidden justify-end lg:flex">
+        <div className="hidden flex-1 justify-end lg:flex">
           <div className="space-x-3 xl:space-x-6">
             {links.map((link, index) => (
               <Link
@@ -83,7 +83,7 @@ const Header = () => {
       <Transition.Root show={openMobileDialog} as={Fragment}>
         <Dialog
           as="div"
-          className="relative z-10 "
+          className="relative z-50 "
           onClose={setOpenMobileDialog}
         >
           <Transition.Child
