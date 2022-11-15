@@ -1,8 +1,10 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import MainPage from "../components/MainPage";
+import NewsArchiv from "../components/NewsArchiv";
 import ParticipationCondition from "../components/ParticipationCondition";
 import WhyApplicate from "../components/WhyApplicate";
+import Year from "../components/Year";
 
 const Home: NextPage = () => {
   return (
@@ -19,6 +21,8 @@ const Home: NextPage = () => {
       <MainPage />
       <WhyApplicate />
       <ParticipationCondition />
+      <Year />
+      <NewsArchiv />
     </>
   );
 };

@@ -39,7 +39,7 @@ const ParticipationCondition = () => {
               <button
                 key={condition.text}
                 type="button"
-                className="min-w-max rounded-2xl bg-white py-2 px-2 text-center text-3xl tracking-wide  text-turquoise xl:w-52"
+                className="min-w-max rounded-2xl bg-white py-2 px-2 text-center text-3xl tracking-wide text-turquoise"
               >
                 <span>{condition.text}</span>
               </button>
