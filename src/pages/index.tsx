@@ -3,8 +3,10 @@ import Head from "next/head";
 import MainPage from "../components/MainPage";
 import NewsArchiv from "../components/NewsArchiv";
 import ParticipationCondition from "../components/ParticipationCondition";
+import SponsorsOrg from "../components/SponsorsOrg";
 import WhyApplicate from "../components/WhyApplicate";
 import Year from "../components/Year";
+import Communication from "./../components/Communication";
 
 const Home: NextPage = () => {
   return (
@@ -23,6 +25,8 @@ const Home: NextPage = () => {
       <ParticipationCondition />
       <Year />
       <NewsArchiv />
+      <SponsorsOrg />
+      <Communication />
     </>
   );
 };
