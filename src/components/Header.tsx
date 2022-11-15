@@ -9,31 +9,31 @@ const Header = () => {
   const links = [
     {
       title: "Általános tudnivalók",
-      href: "#",
+      href: "/",
     },
     {
       title: "2023",
-      href: "#",
+      href: "/",
     },
     {
       title: "Igazolás kérése",
-      href: "#",
+      href: "/",
     },
     {
       title: "Hírek",
-      href: "#",
+      href: "/",
     },
     {
       title: "Archívum",
-      href: "#",
+      href: "/",
     },
     {
       title: "Támogatók",
-      href: "#",
+      href: "/",
     },
     {
       title: "Kapcsolat",
-      href: "#",
+      href: "/",
     },
   ];
 

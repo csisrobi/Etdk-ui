@@ -40,6 +40,7 @@ const ParticipationCondition = () => {
                 key={condition.text}
                 type="button"
                 className="min-w-max rounded-2xl bg-white py-2 px-2 text-center text-3xl tracking-wide text-turquoise"
+                disabled
               >
                 <span>{condition.text}</span>
               </button>

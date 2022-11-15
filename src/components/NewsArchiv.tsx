@@ -48,6 +48,7 @@ const NewsArchiv = () => {
               key={archivEl.text}
               type="button"
               className="relative h-11 w-40 rounded-3xl bg-lightBrown py-2 px-2 text-center text-3xl tracking-wide text-yellow"
+              disabled
             >
               <span className="absolute -top-3 right-0 left-0 mx-auto text-7xl">
                 {archivEl.text}
