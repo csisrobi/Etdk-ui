@@ -48,12 +48,13 @@ const WhyApplicate = () => {
           </div>
           <div className="left-0 bottom-14 flex w-full flex-col space-y-14 bg-lightGray p-6 text-center lg:absolute lg:h-[600px] lg:w-[600px] lg:text-start">
             <div className="mt-2">
+              {/* //FIX IF ZOOMED SMALLER HEIGHT */}
               <span className="text-7xl text-turquoise">
                 Miért <br /> jelentkezz?
               </span>
             </div>
             <div>
-              <p className="text-lg font-medium leading-tight">
+              <p className="text-lg font-medium leading-tight text-darkBrown">
                 Az ETDK-n való részvételnek
                 <br /> több előnye is van, mint például:
               </p>
@@ -83,17 +84,19 @@ const WhyApplicate = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col items-center gap-8 bg-lightGray lg:mt-24 lg:flex-row lg:justify-center lg:bg-white">
+      <div className="flex flex-col items-center bg-lightGray lg:mt-24 lg:flex-row lg:justify-center lg:gap-8 lg:bg-white">
         {reasons2.map((reason) => (
           <div
             key={reason.title}
-            className="px-auto relative flex h-[450px] w-full flex-col items-center gap-6 bg-lightGray p-8 lg:w-80"
+            className="px-auto relative flex w-full flex-col items-center gap-6 bg-lightGray p-8 lg:h-[450px] lg:w-80"
           >
             <div className="relative">
               <div>{reason.icon}</div>
               <div className="absolute top-2 right-0 left-0 mx-auto h-[145px] w-[145px] rounded-full bg-lightGreen"></div>
             </div>
-            <span className="text-4xl font-semibold">{reason.title}</span>
+            <span className="text-4xl font-semibold text-darkGreen">
+              {reason.title}
+            </span>
             <p className="text-center text-lg">{reason.description}</p>
           </div>
         ))}
