@@ -9,33 +9,39 @@ const Header = () => {
   const links = [
     {
       title: "Általános tudnivalók",
-      href: "/",
+      id: "general",
     },
     {
       title: "2023",
-      href: "/",
+      id: "year",
     },
     {
       title: "Igazolás kérése",
-      href: "/",
     },
     {
       title: "Hírek",
-      href: "/",
+      id: "news",
     },
     {
       title: "Archívum",
-      href: "/",
+      id: "archiv",
     },
     {
       title: "Támogatók",
-      href: "/",
+      id: "sponsor",
     },
     {
       title: "Kapcsolat",
-      href: "/",
+      id: "contact",
     },
   ];
+
+  const scrollTo = (id: string) => {
+    const anchor = document.getElementById(id);
+    if (anchor) {
+      anchor.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   return (
     <div className="fixed top-0 z-20 h-[100px] w-full bg-gray">
@@ -63,13 +69,17 @@ const Header = () => {
         <div className="hidden flex-1 justify-end lg:flex">
           <div className="space-x-3 xl:space-x-6">
             {links.map((link, index) => (
-              <Link
-                className="text-center text-2xl tracking-wide text-white"
+              <span
+                className="text-center text-2xl tracking-wide text-white hover:cursor-pointer"
                 key={index}
-                href={link.href}
+                onClick={() => {
+                  if (link.id) {
+                    scrollTo(link.id);
+                  }
+                }}
               >
-                <span>{link.title.toUpperCase()}</span>
-              </Link>
+                {link.title.toUpperCase()}
+              </span>
             ))}
             <button
               type="button"
@@ -153,13 +163,18 @@ const Header = () => {
                         <div className="">
                           <div className=" flex h-full flex-col content-center space-y-3">
                             {links.map((link, index) => (
-                              <Link
-                                className="text-center text-2xl tracking-wide text-gray"
+                              <span
+                                className="text-center text-2xl tracking-wide text-gray "
                                 key={index}
-                                href={link.href}
+                                onClick={() => {
+                                  if (link.id) {
+                                    scrollTo(link.id);
+                                    setOpenMobileDialog(false);
+                                  }
+                                }}
                               >
-                                <span>{link.title.toUpperCase()}</span>
-                              </Link>
+                                {link.title.toUpperCase()}
+                              </span>
                             ))}
                             <div className="border-t border-gray pt-4 text-center">
                               <button

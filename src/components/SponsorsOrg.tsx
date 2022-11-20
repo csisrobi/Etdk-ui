@@ -63,7 +63,7 @@ const organisers = [
 const SponsorsOrg = () => {
   return (
     <div className="flex min-h-[calc(100vh-100px)] flex-col items-center justify-center gap-12 bg-lightGray py-8 lg:bg-white">
-      <div className="w-full">
+      <div id="sponsor" className="w-full">
         <div className="flex w-full flex-col items-center justify-center gap-8">
           <div>
             <span className="text-7xl text-darkGreen">Támogatók</span>
