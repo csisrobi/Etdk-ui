@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "build": "next build",
+    "prebuild": "echo 'Building Sanity to public/studio' && cd studio && yarn && npx @sanity/cli build ../public/studio -y && echo 'Done'",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "sanity": "cd studio && sanity start"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.4",
@@ -14,6 +16,8 @@
     "classnames": "^2.3.2",
     "next": "13.0.0",
     "next-auth": "^4.15.0",
+    "next-sanity": "^2.0.2",
+    "next-sanity-image": "^5.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "zod": "^3.18.0"
