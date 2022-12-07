@@ -6,7 +6,7 @@ import ParticipationCondition from "../components/ParticipationCondition";
 import SponsorsOrg from "../components/SponsorsOrg";
 import WhyApplicate from "../components/WhyApplicate";
 import Year from "../components/Year";
-import Communication from "./../components/Communication";
+import Contact from "../components/Contact";
 
 const Home: NextPage = () => {
   return (
@@ -26,7 +26,7 @@ const Home: NextPage = () => {
       <Year />
       <NewsArchiv />
       <SponsorsOrg />
-      <Communication />
+      <Contact />
     </>
   );
 };

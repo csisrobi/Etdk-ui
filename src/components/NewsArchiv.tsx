@@ -17,8 +17,8 @@ const news = [
 ];
 const NewsArchiv = () => {
   return (
-    <div className="relative flex min-h-[calc(100vh-100px)] flex-col justify-center gap-24 bg-gray py-8 lg:pb-24">
-      <div>
+    <div className="relative flex min-h-[100vh] flex-col justify-center gap-24 bg-gray py-8 lg:pb-24">
+      <div id="news">
         <div className="flex flex-col items-center justify-center gap-8">
           <div>
             <span className="text-7xl text-turquoise">Hírek</span>
@@ -38,7 +38,10 @@ const NewsArchiv = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col items-center justify-center gap-8">
+      <div
+        id="archiv"
+        className="flex flex-col items-center justify-center gap-8"
+      >
         <div>
           <span className="text-7xl text-turquoise">Archívum</span>
         </div>
