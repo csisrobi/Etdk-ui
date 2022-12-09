@@ -6,11 +6,11 @@ const archiv = [{ text: "2019" }, { text: "2021" }, { text: "2022" }];
 
 const NewsArchiv = ({ news }: { news: SanityNews[] }) => {
   return (
-    <div className="relative flex min-h-[100vh] flex-col justify-center gap-24 bg-gray py-8 lg:pb-24">
+    <div className="relative flex min-h-[100vh] flex-col justify-center gap-24 bg-lightcherry py-8 lg:pb-24">
       <div id="news">
         <div className="flex flex-col items-center justify-center gap-8">
           <div>
-            <span className="text-7xl text-turquoise">Hírek</span>
+            <span className="text-darkcherry text-7xl">Hírek</span>
           </div>
           <div className="flex flex-col flex-wrap items-center justify-evenly gap-10 sm:flex-row">
             {news.map((newElem) => (
@@ -33,7 +33,7 @@ const NewsArchiv = ({ news }: { news: SanityNews[] }) => {
         className="flex flex-col items-center justify-center gap-8"
       >
         <div>
-          <span className="text-7xl text-turquoise">Archívum</span>
+          <span className="text-darkcherry text-7xl">Archívum</span>
         </div>
         <div className="flex flex-col gap-12 md:flex-row">
           {archiv.map((archivEl) => (

@@ -16,7 +16,7 @@ const ParticipationCondition = ({
   return (
     <div
       id="participation_condition"
-      className="relative flex min-h-[calc(100vh-100px)] flex-col bg-gray px-8 pt-14"
+      className="relative flex min-h-[calc(100vh-100px)] flex-col bg-lightcherry px-8 pt-14"
     >
       <div className="flex w-full justify-center">
         <span className="text-center text-3xl text-white sm:text-6xl lg:text-8xl">
@@ -51,7 +51,7 @@ const ParticipationCondition = ({
               >
                 <button
                   type="button"
-                  className="min-w-max rounded-2xl bg-white py-2 px-2 text-center text-3xl tracking-wide text-turquoise hover:cursor-pointer"
+                  className="text-darkcherry min-w-max rounded-2xl bg-white py-2 px-2 text-center text-3xl tracking-wide hover:cursor-pointer"
                   disabled
                 >
                   <span>{condition.text}</span>

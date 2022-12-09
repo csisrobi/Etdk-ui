@@ -19,7 +19,7 @@ const WhyApplicate = ({
           <div className="left-0 bottom-14 flex w-full flex-col space-y-14 bg-lightGray p-6 text-center lg:absolute lg:h-[600px] lg:w-[600px] lg:text-start">
             <div className="mt-2">
               {/* //FIX IF ZOOMED SMALLER HEIGHT */}
-              <span className="text-7xl text-turquoise">{title}</span>
+              <span className="text-7xl text-darkcherry">{title}</span>
             </div>
             <div>
               <div className="text-lg font-medium leading-tight text-darkBrown">
@@ -65,7 +65,7 @@ const WhyApplicate = ({
                 alt={benefit.title}
               />
             </div>
-            <span className="text-4xl font-semibold text-darkGreen">
+            <span className="text-4xl font-semibold text-darkcherry">
               {benefit.title}
             </span>
             <p className="text-center text-lg">{benefit.description}</p>

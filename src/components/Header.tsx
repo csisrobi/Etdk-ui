@@ -45,7 +45,7 @@ const Header = () => {
   };
 
   return (
-    <div className="fixed top-0 z-20 h-[100px] w-full bg-gray">
+    <div className="fixed top-0 z-20 h-[100px] w-full bg-lightcherry">
       <div className="flex w-full items-center p-6">
         <div>
           <Link href="/">
@@ -59,7 +59,7 @@ const Header = () => {
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-end lg:hidden">
-          <button className="hover:bg-gray-700 inline-flex items-center justify-center rounded-md p-2 text-black hover:text-black">
+          <button className="hover:bg-lightcherry-700 inline-flex items-center justify-center rounded-md p-2 text-black hover:text-black">
             <Bars3Icon
               className="block h-8 w-8"
               aria-hidden="true"
@@ -84,7 +84,7 @@ const Header = () => {
             ))}
             <button
               type="button"
-              className="w-48 rounded-3xl bg-white py-2 px-1 text-center text-3xl tracking-wide  text-turquoise xl:w-52"
+              className="text-darkcherry w-48 rounded-3xl bg-white py-2 px-1 text-center text-3xl  tracking-wide xl:w-52"
             >
               <span>JELENTKEZÉS</span>
             </button>
@@ -106,7 +106,7 @@ const Header = () => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-gray bg-opacity-50 transition-opacity" />
+            <div className="fixed inset-0 bg-lightcherry bg-opacity-50 transition-opacity" />
           </Transition.Child>
 
           <div className="fixed inset-0 overflow-hidden">
@@ -124,7 +124,7 @@ const Header = () => {
                   <Dialog.Panel className="pointer-events-auto relative w-screen max-w-md">
                     <div className="no-scrollbar flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl">
                       <div className="px-4 sm:px-6">
-                        <Dialog.Title className="text-gray-900 text-lg font-medium">
+                        <Dialog.Title className="text-lightcherry-900 text-lg font-medium">
                           <div className="flex w-full items-center">
                             <span className="flex-1">
                               <Image
@@ -165,7 +165,7 @@ const Header = () => {
                           <div className=" flex h-full flex-col content-center space-y-3">
                             {links.map((link, index) => (
                               <span
-                                className="text-center text-2xl tracking-wide text-gray "
+                                className="text-center text-2xl tracking-wide text-lightcherry "
                                 key={index}
                                 onClick={() => {
                                   if (link.id) {
@@ -177,10 +177,10 @@ const Header = () => {
                                 {link.title.toUpperCase()}
                               </span>
                             ))}
-                            <div className="border-t border-gray pt-4 text-center">
+                            <div className="border-t border-lightcherry pt-4 text-center">
                               <button
                                 type="button"
-                                className="w-48 rounded-3xl bg-gray py-2 px-1 text-center text-3xl tracking-wide  text-turquoise hover:bg-opacity-75 xl:w-52"
+                                className="text-darkcherry w-48 rounded-3xl bg-lightcherry py-2 px-1 text-center text-3xl  tracking-wide hover:bg-opacity-75 xl:w-52"
                               >
                                 <span>JELENTKEZÉS</span>
                               </button>

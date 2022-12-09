@@ -12,11 +12,10 @@ module.exports = {
       },
       colors: {
         gray: "#666766",
+        lightcherry: "#542532",
+        darkcherry: "#2A150F",
         lightGray: "#E4E4E4",
-        turquoise: "#99D4C9",
         yellow: "#FFCC45",
-        darkGreen: "#0B4441",
-        lightGreen: "#4D7C79",
         darkBrown: "#231F20",
         lightBrown: "#3C4247",
         beige: "#EBCE8F",

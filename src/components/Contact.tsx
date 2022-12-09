@@ -36,7 +36,7 @@ const Contact = ({
       </div>
       <div className="flex w-full justify-center text-center md:w-1/2 md:text-start">
         <div>
-          <span className="text-6xl text-turquoise">KAPCSOLAT</span>
+          <span className="text-darkcherry text-6xl">KAPCSOLAT</span>
           <div className="flex flex-col gap-6">
             <p className="text-lg">
               KOLOZSVÁRI MAGYAR DIÁKSZÖVETSÉG – KMDSZ (Uniunea Studențească
