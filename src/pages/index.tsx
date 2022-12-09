@@ -1,8 +1,22 @@
+import {
+  newsBasic,
+  queryApplicate,
+  queryContact,
+  queryGeneral,
+  queryOrg,
+  querySponsor,
+} from "@lib/queries";
 import { getClient } from "@lib/sanity";
 import { type NextPage } from "next";
-import { groq } from "next-sanity";
 import Head from "next/head";
-import type { SanityOrganizer, SanitySponsor } from "types";
+import type {
+  SanityApplicate,
+  SanityContact,
+  SanityGeneral,
+  SanityNews,
+  SanityOrganizer,
+  SanitySponsor,
+} from "types";
 import Contact from "../components/Contact";
 import MainPage from "../components/MainPage";
 import NewsArchiv from "../components/NewsArchiv";
@@ -11,26 +25,23 @@ import SponsorsOrg from "../components/SponsorsOrg";
 import WhyApplicate from "../components/WhyApplicate";
 import Year from "../components/Year";
 
-const querySponsor = groq`
-*[_type == "sponsor"]{
-  name,
-  image
-}
-`;
-
-const queryOrg = groq`
-*[_type == "organizer"]{
-  name,
-  image
-}
-`;
-
 type Props = {
   sponsors: SanitySponsor[];
   organizers: SanityOrganizer[];
+  contact: SanityContact;
+  general: SanityGeneral;
+  applicate: SanityApplicate;
+  news: SanityNews[];
 };
 
-const Home: NextPage<Props> = ({ sponsors, organizers }: Props) => {
+const Home: NextPage<Props> = ({
+  sponsors,
+  organizers,
+  contact,
+  general,
+  applicate,
+  news,
+}: Props) => {
   return (
     <>
       {/* TODO: SEO FROM STRAPI*/}
@@ -42,13 +53,30 @@ const Home: NextPage<Props> = ({ sponsors, organizers }: Props) => {
         />
         <link rel="icon" href="/ETDK.png" />
       </Head>
-      <MainPage />
-      <WhyApplicate />
-      <ParticipationCondition />
+      <MainPage
+        date={general.date}
+        edition={general.edition}
+        romanEdition={general.editionRoman}
+      />
+      <WhyApplicate
+        title={applicate.title}
+        description={applicate.description}
+        small_benefit={applicate.small_benefit}
+        big_benefit={applicate.big_benefit}
+      />
+      <ParticipationCondition certificateURL={general.certificateURL} />
       <Year />
-      <NewsArchiv />
+      <NewsArchiv news={news} />
       <SponsorsOrg sponsors={sponsors} organizers={organizers} />
-      <Contact />
+      <Contact
+        address={contact.address}
+        email={contact.email}
+        phone={contact.phone}
+        facebook={contact.facebook}
+        instagram={contact.instagram}
+        date={general.date}
+        romanEdition={general.editionRoman}
+      />
     </>
   );
 };
@@ -56,8 +84,17 @@ const Home: NextPage<Props> = ({ sponsors, organizers }: Props) => {
 export async function getStaticProps({ preview = false }) {
   const sponsors = await getClient(preview).fetch(querySponsor);
   const organizers = await getClient(preview).fetch(queryOrg);
+  const contacts = await getClient(preview).fetch(queryContact);
+  const generals = await getClient(preview).fetch(queryGeneral);
+  const applicate = await getClient(preview).fetch(queryApplicate);
+  const news = await getClient(preview).fetch(newsBasic);
+  console.log(news);
   return {
     props: {
+      contact: contacts[0],
+      general: generals[0],
+      applicate: applicate[0],
+      news,
       sponsors,
       organizers,
       preview,

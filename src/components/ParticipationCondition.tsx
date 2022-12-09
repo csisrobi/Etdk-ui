@@ -1,13 +1,18 @@
 import Image from "next/image";
+import Link from "next/link";
 
-const conditions = [
-  { text: "Szabályzat" },
-  { text: "Követelmények" },
-  { text: "Pontozási kritériumok" },
-  { text: "Témavezetői igazolás" },
-];
+const ParticipationCondition = ({
+  certificateURL,
+}: {
+  certificateURL: string;
+}) => {
+  const conditions = [
+    { text: "Szabályzat", link: "/szabalyzat" },
+    { text: "Követelmények" },
+    { text: "Pontozási kritériumok" },
+    { text: "Témavezetői igazolás", link: certificateURL, target: "_blank" },
+  ];
 
-const ParticipationCondition = () => {
   return (
     <div
       id="participation_condition"
@@ -39,14 +44,19 @@ const ParticipationCondition = () => {
         <div className="mt-8 flex flex-col sm:mt-0 sm:w-2/5">
           <div className="flex w-full flex-col items-center gap-4">
             {conditions.map((condition) => (
-              <button
+              <Link
                 key={condition.text}
-                type="button"
-                className="min-w-max rounded-2xl bg-white py-2 px-2 text-center text-3xl tracking-wide text-turquoise"
-                disabled
+                href={condition.link || "#"}
+                target={condition.target}
               >
-                <span>{condition.text}</span>
-              </button>
+                <button
+                  type="button"
+                  className="min-w-max rounded-2xl bg-white py-2 px-2 text-center text-3xl tracking-wide text-turquoise hover:cursor-pointer"
+                  disabled
+                >
+                  <span>{condition.text}</span>
+                </button>
+              </Link>
             ))}
           </div>
           <div className="relative mt-10 h-[60vw] w-[82vw] sm:h-[25vw] sm:w-[40vw] lg:h-[35vh] lg:w-[50vh]">

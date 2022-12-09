@@ -17,6 +17,7 @@ const Header = () => {
     },
     {
       title: "Igazolás kérése",
+      id: "participation_condition",
     },
     {
       title: "Hírek",

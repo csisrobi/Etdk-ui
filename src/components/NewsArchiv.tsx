@@ -1,21 +1,10 @@
 import Image from "next/image";
+import Link from "next/link";
+import type { SanityNews } from "types";
 
 const archiv = [{ text: "2019" }, { text: "2021" }, { text: "2022" }];
-const news = [
-  {
-    date: "2023.02.01",
-    text: "hogyan írj és hogyan mutass be kutatást? // előadással készülnek a kmdsz szakosztályok az ETDK-ra",
-  },
-  {
-    date: "2023.02.01",
-    text: "Elkezdődött a regisztráció!",
-  },
-  {
-    date: "2023.02.01",
-    text: "Megnyitó és plenáris előadás // 25. Erdélyi Tudományos Diákköri Konferencia",
-  },
-];
-const NewsArchiv = () => {
+
+const NewsArchiv = ({ news }: { news: SanityNews[] }) => {
   return (
     <div className="relative flex min-h-[100vh] flex-col justify-center gap-24 bg-gray py-8 lg:pb-24">
       <div id="news">
@@ -25,15 +14,16 @@ const NewsArchiv = () => {
           </div>
           <div className="flex flex-col flex-wrap items-center justify-evenly gap-10 sm:flex-row">
             {news.map((newElem) => (
-              <div
-                key={newElem.text}
+              <Link
+                href={`/hirek/${newElem.name}`}
+                key={newElem.name}
                 className="flex h-72 w-72 flex-col items-center gap-8 bg-white p-8"
               >
                 <div className="w-36 rounded-2xl bg-lightBrown text-center text-3xl tracking-wide text-yellow">
                   <span>{newElem.date}</span>
                 </div>
-                <span className="text-2xl">{newElem.text}</span>
-              </div>
+                <span className="text-2xl">{newElem.summary}</span>
+              </Link>
             ))}
           </div>
         </div>

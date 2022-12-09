@@ -1,6 +1,20 @@
 import Image from "next/image";
+import type { SanityContact } from "types";
 
-const Contact = () => {
+type Props = SanityContact & {
+  date: string;
+  romanEdition: string;
+};
+
+const Contact = ({
+  date,
+  romanEdition,
+  address,
+  phone,
+  email,
+  facebook,
+  instagram,
+}: Props) => {
   return (
     <div
       id="contact"
@@ -13,9 +27,9 @@ const Contact = () => {
           </div>
           <div className="flex text-center md:text-start">
             <span className="w-full  text-2xl tracking-wide ">
-              XXV. REÁL ÉS HUMÁNTUDOMÁNYI ETDK
+              {romanEdition}. REÁL ÉS HUMÁNTUDOMÁNYI ETDK
               <br />
-              KOLOZSVÁR • 2022. MÁJUS 19–22
+              KOLOZSVÁR • {date}
             </span>
           </div>
         </div>
@@ -28,17 +42,11 @@ const Contact = () => {
               KOLOZSVÁRI MAGYAR DIÁKSZÖVETSÉG – KMDSZ (Uniunea Studențească
               Maghiară din Cluj)
             </p>
-            <p className="text-lg">
-              Cím : KMDSZ iroda ( str. Avram Iancu/Petőfi Sándor utca 4. szám)
-            </p>
-            <p className="text-lg">Telefonszám : +40 755 116 251</p>
-            <p className="text-lg"> Email : office@kmdsz.ro</p>
+            <p className="text-lg">{address}</p>
+            <p className="text-lg">Telefonszám : {phone}</p>
+            <p className="text-lg"> Email : {email}</p>
             <div className="flex justify-center gap-2 md:justify-start">
-              <a
-                href="https://www.facebook.com/KMDSZ"
-                target="_blank"
-                rel="noreferrer"
-              >
+              <a href={facebook} target="_blank" rel="noreferrer">
                 <Image
                   src="/facebook.png"
                   height={50}
@@ -46,11 +54,7 @@ const Contact = () => {
                   alt="facebook"
                 />
               </a>
-              <a
-                href="https://www.instagram.com/kmdszofficial/"
-                target="_blank"
-                rel="noreferrer"
-              >
+              <a href={instagram} target="_blank" rel="noreferrer">
                 <Image
                   src="/instagram.png"
                   height={50}
@@ -69,9 +73,9 @@ const Contact = () => {
           </div>
           <div className="flex text-center md:text-start">
             <span className="w-full  text-2xl tracking-wide ">
-              XXV. REÁL ÉS HUMÁNTUDOMÁNYI ETDK
+              {romanEdition}. REÁL ÉS HUMÁNTUDOMÁNYI ETDK
               <br />
-              KOLOZSVÁR • 2022. MÁJUS 19–22
+              KOLOZSVÁR • {date}
             </span>
           </div>
         </div>

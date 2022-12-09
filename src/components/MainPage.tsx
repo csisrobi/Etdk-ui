@@ -1,6 +1,12 @@
 import Image from "next/image";
 
-const MainPage = () => {
+type Props = {
+  date: string;
+  edition: string;
+  romanEdition: string;
+};
+
+const MainPage = ({ date, edition, romanEdition }: Props) => {
   return (
     <div
       id="general"
@@ -21,12 +27,13 @@ const MainPage = () => {
               kolozsvár // Cluj - napoca
             </span>
             <span className="text-xl text-turquoise sm:text-4xl lg:text-4xl 2xl:text-5xl">
-              2022. május 23-26.
+              {date || ""}
             </span>
           </div>
           <div className="flex flex-col">
             <span className="text-4xl text-white sm:text-7xl lg:text-7xl 2xl:text-8xl">
-              <span className="text-yellow">XXVI.</span> erdélyi Tudományos
+              <span className="text-yellow">{romanEdition}.</span> erdélyi
+              Tudományos
             </span>
             <span className="text-4xl text-white sm:text-7xl lg:text-7xl 2xl:text-8xl">
               diákköri konferencia
@@ -37,10 +44,12 @@ const MainPage = () => {
           </div>
           <div className="flex flex-col">
             <span className="text-xl text-white sm:text-4xl lg:text-4xl 2xl:text-5xl">
-              Conferința științifică din transilvania, ediția 26-a
+              {`Conferința științifică din transilvania, ediția ${
+                edition.slice(0, 2) || ""
+              }-a`}
             </span>
             <span className="text-xl text-white sm:text-4xl lg:text-4xl 2xl:text-5xl">
-              26th transilvanian students’ scientific conference
+              {`${edition || ""} transilvanian students’ scientific conference`}
             </span>
             <span className="text-lg sm:text-3xl lg:text-3xl 2xl:text-4xl">
               <span className="text-yellow"> ȘTIINȚE REALE ȘI UMANE /</span>
