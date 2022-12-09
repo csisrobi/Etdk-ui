@@ -88,7 +88,6 @@ export async function getStaticProps({ preview = false }) {
   const generals = await getClient(preview).fetch(queryGeneral);
   const applicate = await getClient(preview).fetch(queryApplicate);
   const news = await getClient(preview).fetch(newsBasic);
-  console.log(news);
   return {
     props: {
       contact: contacts[0],
