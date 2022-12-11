@@ -10,7 +10,7 @@ type Props = {
 
 const SponsorsOrg = ({ sponsors, organizers }: Props) => {
   return (
-    <div className="flex min-h-[calc(100vh-100px)] flex-col items-center justify-center gap-12 bg-lightGray py-8 lg:bg-white">
+    <div className="flex min-h-[calc(100vh-71px)] flex-col items-center justify-center gap-12 bg-lightGray py-8 lg:bg-white">
       <div id="sponsor" className="w-full">
         <div className="flex w-full flex-col items-center justify-center gap-8">
           <div>

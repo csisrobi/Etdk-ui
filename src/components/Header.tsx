@@ -45,8 +45,8 @@ const Header = () => {
   };
 
   return (
-    <div className="fixed top-0 z-20 h-[100px] w-full bg-lightcherry">
-      <div className="flex w-full items-center p-6">
+    <div className="fixed top-0 z-20 h-[71px] w-full bg-lightcherry">
+      <div className="flex w-full items-center p-2">
         <div>
           <Link href="/">
             <Image
@@ -84,7 +84,7 @@ const Header = () => {
             ))}
             <button
               type="button"
-              className="text-darkcherry w-48 rounded-3xl bg-white py-2 px-1 text-center text-3xl  tracking-wide xl:w-52"
+              className="w-48 rounded-3xl bg-white py-2 px-1 text-center text-3xl tracking-wide  text-darkcherry xl:w-52"
             >
               <span>JELENTKEZÉS</span>
             </button>
@@ -180,7 +180,7 @@ const Header = () => {
                             <div className="border-t border-lightcherry pt-4 text-center">
                               <button
                                 type="button"
-                                className="text-darkcherry w-48 rounded-3xl bg-lightcherry py-2 px-1 text-center text-3xl  tracking-wide hover:bg-opacity-75 xl:w-52"
+                                className="w-48 rounded-3xl bg-lightcherry py-2 px-1 text-center text-3xl tracking-wide  text-darkcherry hover:bg-opacity-75 xl:w-52"
                               >
                                 <span>JELENTKEZÉS</span>
                               </button>

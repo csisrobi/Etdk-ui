@@ -18,7 +18,7 @@ const Contact = ({
   return (
     <div
       id="contact"
-      className="flex min-h-[calc(70vh-100px)] flex-col items-center gap-12 bg-lightGray px-2 py-10 md:flex-row md:items-start md:p-8 lg:gap-48 lg:bg-white"
+      className="flex min-h-[calc(70vh-71px)] flex-col items-center gap-12 bg-lightGray px-2 py-10 md:flex-row md:items-start md:p-8 lg:gap-48 lg:bg-white"
     >
       <div className="hidden w-full flex-col items-end md:flex md:w-1/2">
         <div className="justify-center md:justify-start">
@@ -36,7 +36,7 @@ const Contact = ({
       </div>
       <div className="flex w-full justify-center text-center md:w-1/2 md:text-start">
         <div>
-          <span className="text-darkcherry text-6xl">KAPCSOLAT</span>
+          <span className="text-6xl text-darkcherry">KAPCSOLAT</span>
           <div className="flex flex-col gap-6">
             <p className="text-lg">
               KOLOZSVÁRI MAGYAR DIÁKSZÖVETSÉG – KMDSZ (Uniunea Studențească

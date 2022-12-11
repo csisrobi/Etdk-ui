@@ -11,7 +11,7 @@ const WhyApplicate = ({
 }: SanityApplicate) => {
   return (
     <div className=" bg-lightGray lg:bg-white lg:pb-32">
-      <div className="relative flex min-h-[calc(100vh-100px)] flex-col lg:flex-row lg:items-center lg:justify-center">
+      <div className="relative flex min-h-[calc(100vh-71px)] flex-col lg:flex-row lg:items-center lg:justify-center">
         <div className="flex h-[800px] w-[100vw] flex-col items-center lg:relative lg:w-[1100px]">
           <div className="relative h-[25vh] w-[100vw] md:h-[50vh] lg:hidden">
             <Image src="/illusztracio1.png" alt="illusztracio" fill />
