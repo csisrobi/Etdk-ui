@@ -45,7 +45,7 @@ const Header = () => {
   };
 
   return (
-    <div className="fixed top-0 z-20 h-[71px] w-full bg-lightcherry">
+    <div className="fixed top-0 z-20 h-fit w-full bg-lightcherry">
       <div className="flex w-full items-center p-2">
         <div>
           <Link href="/">

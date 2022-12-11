@@ -22,7 +22,9 @@ const NewsArchiv = ({ news }: { news: SanityNews[] }) => {
                 <div className="w-36 rounded-2xl bg-lightBrown text-center text-3xl tracking-wide text-yellow">
                   <span>{newElem.date}</span>
                 </div>
-                <span className="text-2xl">{newElem.summary}</span>
+                <span className="text-2xl text-lightcherry">
+                  {newElem.summary}
+                </span>
               </Link>
             ))}
           </div>

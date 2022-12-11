@@ -51,7 +51,7 @@ const ParticipationCondition = ({
               >
                 <button
                   type="button"
-                  className="min-w-max rounded-2xl bg-white py-2 px-2 text-center text-3xl tracking-wide text-darkcherry hover:cursor-pointer"
+                  className="min-w-max rounded-2xl bg-white py-2 px-2 text-center text-3xl tracking-wide text-lightcherry hover:cursor-pointer"
                   disabled
                 >
                   <span>{condition.text}</span>

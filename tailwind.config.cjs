@@ -16,7 +16,6 @@ module.exports = {
         darkcherry: "#2A150F",
         lightGray: "#E4E4E4",
         yellow: "#FFCC45",
-        darkBrown: "#231F20",
         lightBrown: "#3C4247",
         beige: "#EBCE8F",
       },

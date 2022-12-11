@@ -14,7 +14,7 @@ const SponsorsOrg = ({ sponsors, organizers }: Props) => {
       <div id="sponsor" className="w-full">
         <div className="flex w-full flex-col items-center justify-center gap-8">
           <div>
-            <span className="text-7xl text-darkcherry">Támogatók</span>
+            <span className="text-7xl text-lightcherry">Támogatók</span>
           </div>
           <div className="flex w-full flex-col items-center justify-evenly gap-24 sm:flex-row">
             {sponsors.map((sponsor) => {
@@ -39,7 +39,7 @@ const SponsorsOrg = ({ sponsors, organizers }: Props) => {
       </div>
       <div className="flex w-full flex-col items-center justify-center gap-8">
         <div>
-          <span className="text-7xl text-darkcherry">Szervezők</span>
+          <span className="text-7xl text-lightcherry">Szervezők</span>
         </div>
         <div className="flex w-full flex-col flex-wrap items-center justify-evenly gap-24 sm:flex-row">
           {organizers.map((organizer) => {

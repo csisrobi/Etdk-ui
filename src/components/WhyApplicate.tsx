@@ -21,7 +21,7 @@ const WhyApplicate = ({
               <span className="text-7xl text-darkcherry">{title}</span>
             </div>
             <div>
-              <div className="text-lg font-medium leading-tight text-darkBrown">
+              <div className="text-lg font-medium leading-tight text-darkcherry">
                 <RichText blocks={description} />
               </div>
             </div>
@@ -29,9 +29,9 @@ const WhyApplicate = ({
               {small_benefit.map((benefit) => (
                 <div
                   key={benefit}
-                  className="flex items-center justify-center rounded-3xl bg-white p-2 text-center"
+                  className="flex items-center justify-center rounded-3xl bg-white p-2 text-center "
                 >
-                  <span className="flex justify-center text-sm font-semibold tracking-wide">
+                  <span className="flex justify-center text-sm font-semibold tracking-wide text-darkcherry">
                     {benefit}
                   </span>
                 </div>
