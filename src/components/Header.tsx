@@ -180,7 +180,7 @@ const Header = () => {
                             <div className="border-t border-lightcherry pt-4 text-center">
                               <button
                                 type="button"
-                                className="w-48 rounded-3xl bg-lightcherry py-2 px-1 text-center text-3xl tracking-wide  text-darkcherry hover:bg-opacity-75 xl:w-52"
+                                className="w-48 rounded-3xl bg-lightcherry py-2 px-1 text-center text-3xl tracking-wide  text-white hover:bg-opacity-75 xl:w-52"
                               >
                                 <span>JELENTKEZÉS</span>
                               </button>

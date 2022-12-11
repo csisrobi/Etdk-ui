@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import LinkWrapper from "./UtilityComponents/LinkWrapper";
 
 const ParticipationCondition = ({
   certificateURL,
@@ -44,7 +44,7 @@ const ParticipationCondition = ({
         <div className="mt-8 flex flex-col sm:mt-0 sm:w-2/5">
           <div className="flex w-full flex-col items-center gap-4">
             {conditions.map((condition) => (
-              <Link
+              <LinkWrapper
                 key={condition.text}
                 href={condition.link || "#"}
                 target={condition.target}
@@ -56,7 +56,7 @@ const ParticipationCondition = ({
                 >
                   <span>{condition.text}</span>
                 </button>
-              </Link>
+              </LinkWrapper>
             ))}
           </div>
           <div className="relative mt-10 h-[60vw] w-[82vw] sm:h-[25vw] sm:w-[40vw] lg:h-[35vh] lg:w-[50vh]">

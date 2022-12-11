@@ -1,6 +1,7 @@
 import Image from "next/image";
-import Link from "next/link";
 import type { SanityNews } from "types";
+import dayjs from "dayjs";
+import LinkWrapper from "./UtilityComponents/LinkWrapper";
 
 const archiv = [{ text: "2019" }, { text: "2021" }, { text: "2022" }];
 
@@ -13,20 +14,26 @@ const NewsArchiv = ({ news }: { news: SanityNews[] }) => {
             <span className="text-7xl text-darkcherry">Hírek</span>
           </div>
           <div className="flex flex-col flex-wrap items-center justify-evenly gap-10 sm:flex-row">
-            {news.map((newElem) => (
-              <Link
-                href={`/hirek/${newElem.name}`}
-                key={newElem.name}
-                className="flex h-72 w-72 flex-col items-center gap-8 bg-white p-8"
-              >
-                <div className="w-36 rounded-2xl bg-lightBrown text-center text-3xl tracking-wide text-yellow">
-                  <span>{newElem.date}</span>
-                </div>
-                <span className="text-2xl text-lightcherry">
-                  {newElem.summary}
-                </span>
-              </Link>
-            ))}
+            {news.map(
+              (newElem) =>
+                !dayjs(newElem.date).isAfter(dayjs()) && (
+                  <LinkWrapper
+                    href={
+                      !!newElem.description ? `/hirek/${newElem.name}` : "#"
+                    }
+                    key={newElem.name}
+                  >
+                    <div className="flex h-72 w-72 cursor-pointer flex-col items-center gap-8 bg-white p-8">
+                      <div className="w-36 rounded-2xl bg-lightBrown text-center text-3xl tracking-wide text-yellow">
+                        <span>{newElem.date}</span>
+                      </div>
+                      <span className="text-2xl text-lightcherry">
+                        {newElem.summary}
+                      </span>
+                    </div>
+                  </LinkWrapper>
+                )
+            )}
           </div>
         </div>
       </div>
