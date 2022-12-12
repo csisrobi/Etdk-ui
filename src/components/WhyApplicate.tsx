@@ -1,72 +1,38 @@
-import {
-  AcademicCapIcon,
-  BanknotesIcon,
-  BookOpenIcon,
-} from "@heroicons/react/24/outline";
 import Image from "next/image";
+import type { SanityApplicate } from "types";
+import RichText from "@utils/RichText";
+import GetImage from "./../../utils/getImage";
 
-const reasons = [
-  {
-    text: "Részvétel az OTDK-n",
-  },
-  {
-    text: "Kapcsolati háló kiépítése",
-  },
-  {
-    text: "Magyar szaknyelv elsajátítása",
-  },
-];
-
-const reasons2 = [
-  {
-    title: "Tapasztalatszerzés",
-    description:
-      "Egy ETDK-dolgozat megírása közben szerzett tapasztalatok, élmények, bírálatok nagyon hasznosnak bizonyulnak az államvizsga-dolgozat megírásakor.",
-    icon: <AcademicCapIcon className="relative z-10 h-40 w-40 " />,
-  },
-  {
-    title: "Publikáció",
-    description:
-      "Az ETDK-n bemutatott dolgozatok szakmai publikációnak számítanak. (És nagyon jól mutatnak majd a szakmai önéletrajzodban!)",
-    icon: <BookOpenIcon className="relative z-10 h-40  w-40 " />,
-  },
-  {
-    title: "Pénzbeli jutalom",
-    description:
-      "Egy ETDK-díj elsősorban szakmai-erkölcsi siker, de részben anyagi siker is: a nyertes dolgozatok szerzői ugyanis pénzbeli díjakban részesülnek.",
-    icon: <BanknotesIcon className="relative z-10 h-40 w-40" />,
-  },
-];
-
-const WhyApplicate = () => {
+const WhyApplicate = ({
+  small_benefit,
+  big_benefit,
+  title,
+  description,
+}: SanityApplicate) => {
   return (
-    <div className="bg-lightGray lg:bg-white lg:pb-32">
-      <div className="relative flex min-h-[calc(100vh-100px)] flex-col ">
-        <div className="left-0 right-0 mx-auto flex min-h-[100%] w-[100vw] flex-col items-center lg:absolute lg:w-[1100px]">
+    <div className=" bg-lightGray lg:bg-white lg:pb-32">
+      <div className="relative flex min-h-[calc(100vh-71px)] flex-col lg:flex-row lg:items-center lg:justify-center">
+        <div className="flex h-[800px] w-[100vw] flex-col items-center lg:relative lg:w-[1100px]">
           <div className="relative h-[25vh] w-[100vw] md:h-[50vh] lg:hidden">
             <Image src="/illusztracio1.png" alt="illusztracio" fill />
           </div>
           <div className="left-0 bottom-14 flex w-full flex-col space-y-14 bg-lightGray p-6 text-center lg:absolute lg:h-[600px] lg:w-[600px] lg:text-start">
             <div className="mt-2">
-              {/* //FIX IF ZOOMED SMALLER HEIGHT */}
-              <span className="text-7xl text-turquoise">
-                Miért <br /> jelentkezz?
-              </span>
+              <span className="text-7xl text-darkcherry">{title}</span>
             </div>
             <div>
-              <p className="text-lg font-medium leading-tight text-darkBrown">
-                Az ETDK-n való részvételnek
-                <br /> több előnye is van, mint például:
-              </p>
+              <div className="text-lg font-medium leading-tight text-darkBrown">
+                <RichText blocks={description} />
+              </div>
             </div>
             <div className="grid grid-cols-1 gap-3 md:grid-cols-3 lg:pr-16">
-              {reasons.map((reason) => (
+              {small_benefit.map((benefit) => (
                 <div
-                  key={reason.text}
+                  key={benefit}
                   className="flex items-center justify-center rounded-3xl bg-white p-2 text-center"
                 >
                   <span className="flex justify-center text-sm font-semibold tracking-wide">
-                    {reason.text}
+                    {benefit}
                   </span>
                 </div>
               ))}
@@ -85,19 +51,23 @@ const WhyApplicate = () => {
         </div>
       </div>
       <div className="flex flex-col items-center bg-lightGray lg:mt-24 lg:flex-row lg:justify-center lg:gap-8 lg:bg-white">
-        {reasons2.map((reason) => (
+        {big_benefit.map((benefit) => (
           <div
-            key={reason.title}
+            key={benefit.title}
             className="px-auto relative flex w-full flex-col items-center gap-6 bg-lightGray p-8 lg:h-[450px] lg:w-80"
           >
             <div className="relative">
-              <div>{reason.icon}</div>
-              <div className="absolute top-2 right-0 left-0 mx-auto h-[145px] w-[145px] rounded-full bg-lightGreen"></div>
+              <Image
+                {...GetImage(benefit.icon)}
+                height={140}
+                width={140}
+                alt={benefit.title}
+              />
             </div>
-            <span className="text-4xl font-semibold text-darkGreen">
-              {reason.title}
+            <span className="text-4xl font-semibold text-darkcherry">
+              {benefit.title}
             </span>
-            <p className="text-center text-lg">{reason.description}</p>
+            <p className="text-center text-lg">{benefit.description}</p>
           </div>
         ))}
       </div>

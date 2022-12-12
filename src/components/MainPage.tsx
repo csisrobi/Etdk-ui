@@ -1,10 +1,16 @@
 import Image from "next/image";
 
-const MainPage = () => {
+type Props = {
+  date: string;
+  edition: string;
+  romanEdition: string;
+};
+
+const MainPage = ({ date, edition, romanEdition }: Props) => {
   return (
     <div
       id="general"
-      className="flex min-h-[100vh] min-w-[100vw] flex-col items-center justify-center bg-gray p-4 pt-[100px] lg:pt-0"
+      className="flex min-h-[100vh] min-w-[100vw] flex-col items-center justify-center bg-lightcherry p-4 pt-[100px] lg:pt-0"
     >
       <div className="flex h-full w-full flex-col items-center lg:flex-row">
         <div className=" lg:mr-1/2 relative h-[100vw] w-[100vw] md:h-[600px] md:w-[600px] lg:-ml-32 lg:mr-4 lg:w-1/2 xl:mr-auto xl:-ml-4 xl:h-[500px] xl:w-[500px]">
@@ -17,16 +23,17 @@ const MainPage = () => {
         </div>
         <div className="mt-4 flex flex-col justify-end space-y-2 tracking-wide sm:mt-10 lg:mr-auto lg:mt-24 xl:scale-110 2xl:scale-100 2xl:space-y-4">
           <div className="flex flex-col">
-            <span className="text-lg text-turquoise sm:text-3xl lg:text-3xl 2xl:text-4xl">
+            <span className="text-lg text-white sm:text-3xl lg:text-3xl 2xl:text-4xl">
               kolozsvár // Cluj - napoca
             </span>
-            <span className="text-xl text-turquoise sm:text-4xl lg:text-4xl 2xl:text-5xl">
-              2022. május 23-26.
+            <span className="text-xl text-white sm:text-4xl lg:text-4xl 2xl:text-5xl">
+              {date || ""}
             </span>
           </div>
           <div className="flex flex-col">
             <span className="text-4xl text-white sm:text-7xl lg:text-7xl 2xl:text-8xl">
-              <span className="text-yellow">XXVI.</span> erdélyi Tudományos
+              <span className="text-yellow">{romanEdition}.</span> erdélyi
+              Tudományos
             </span>
             <span className="text-4xl text-white sm:text-7xl lg:text-7xl 2xl:text-8xl">
               diákköri konferencia
@@ -37,14 +44,16 @@ const MainPage = () => {
           </div>
           <div className="flex flex-col">
             <span className="text-xl text-white sm:text-4xl lg:text-4xl 2xl:text-5xl">
-              Conferința științifică din transilvania, ediția 26-a
+              {`Conferința științifică din transilvania, ediția ${
+                edition.slice(0, 2) || ""
+              }-a`}
             </span>
             <span className="text-xl text-white sm:text-4xl lg:text-4xl 2xl:text-5xl">
-              26th transilvanian students’ scientific conference
+              {`${edition || ""} transilvanian students’ scientific conference`}
             </span>
             <span className="text-lg sm:text-3xl lg:text-3xl 2xl:text-4xl">
               <span className="text-yellow"> ȘTIINȚE REALE ȘI UMANE /</span>
-              <span className="text-turquoise">
+              <span className="text-darkcherry">
                 / FORMAL AND EMPIRICAL SCIENCES
               </span>
             </span>
