@@ -52,7 +52,8 @@ export const newsBasic = groq`
 *[_type == "news"]{
   name,
   summary,
-  date
+  date,
+  description
 }`;
 
 export const newsDescription = (name: string) => groq`

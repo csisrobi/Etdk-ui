@@ -9,7 +9,7 @@ type Props = {
 
 const Szabalyzat = ({ general }: Props) => {
   return (
-    <div className="bg-lightcherry flex min-h-[100vh] min-w-[100vw] flex-col p-4 pt-[100px] text-white lg:pt-0">
+    <div className="flex min-h-[100vh] min-w-[100vw] flex-col bg-lightcherry p-4 pt-[100px] text-white">
       <RichText blocks={general.rules} />
     </div>
   );
