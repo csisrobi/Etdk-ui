@@ -21,7 +21,7 @@ const Year = () => {
         {yearElements.map((element) => (
           <div
             key={element.text}
-            className="w-80 rounded-3xl bg-beige py-2 px-2 text-center text-3xl tracking-wide text-darkcherry"
+            className="w-80 rounded-3xl bg-beige p-2 text-center text-3xl tracking-wide text-darkcherry"
           >
             <span>{element.text}</span>
           </div>
