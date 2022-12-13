@@ -15,13 +15,13 @@ const Year = () => {
       className="relative -z-20 flex min-h-[70vh] flex-col items-center gap-10 bg-lightGray py-10 md:justify-center md:pt-0 lg:bg-white"
     >
       <div>
-        <span className="text-darkcherry text-7xl">2023</span>
+        <span className="text-7xl text-darkcherry">2023</span>
       </div>
       <div className="flex flex-col flex-wrap items-center justify-evenly gap-8 sm:flex-row md:w-3/4">
         {yearElements.map((element) => (
           <div
             key={element.text}
-            className="w-80 rounded-3xl bg-beige py-2 px-2 text-center text-3xl tracking-wide text-black"
+            className="w-80 rounded-3xl bg-beige p-2 text-center text-3xl tracking-wide text-darkcherry"
           >
             <span>{element.text}</span>
           </div>

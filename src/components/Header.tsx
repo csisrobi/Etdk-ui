@@ -45,7 +45,7 @@ const Header = () => {
   };
 
   return (
-    <div className="fixed top-0 z-20 h-[71px] w-full bg-lightcherry">
+    <div className="fixed top-0 z-20 h-fit w-full bg-lightcherry">
       <div className="flex w-full items-center p-2">
         <div>
           <Link href="/">
@@ -59,7 +59,7 @@ const Header = () => {
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-end lg:hidden">
-          <button className="hover:bg-lightcherry-700 inline-flex items-center justify-center rounded-md p-2 text-black hover:text-black">
+          <button className="hover:bg-lightcherry-700 inline-flex items-center justify-center p-2 text-black hover:text-black">
             <Bars3Icon
               className="block h-8 w-8"
               aria-hidden="true"
@@ -86,7 +86,9 @@ const Header = () => {
               type="button"
               className="w-48 rounded-3xl bg-white py-2 px-1 text-center text-3xl tracking-wide  text-darkcherry xl:w-52"
             >
-              <span>JELENTKEZÉS</span>
+              <Link href="/jelentkezes">
+                <span>JELENTKEZÉS</span>
+              </Link>
             </button>
           </div>
         </div>
@@ -146,7 +148,7 @@ const Header = () => {
                               <div className="flex items-center">
                                 <button
                                   type="button"
-                                  className="rounded-md text-black"
+                                  className="text-black"
                                   onClick={() => setOpenMobileDialog(false)}
                                 >
                                   <span className="sr-only">Close panel</span>
@@ -180,9 +182,15 @@ const Header = () => {
                             <div className="border-t border-lightcherry pt-4 text-center">
                               <button
                                 type="button"
-                                className="w-48 rounded-3xl bg-lightcherry py-2 px-1 text-center text-3xl tracking-wide  text-darkcherry hover:bg-opacity-75 xl:w-52"
+                                className="w-48 rounded-3xl bg-lightcherry py-2 px-1 text-center text-3xl tracking-wide  text-white hover:bg-opacity-75 xl:w-52"
                               >
-                                <span>JELENTKEZÉS</span>
+                                <Link href="/jelentkezes">
+                                  <span
+                                    onClick={() => setOpenMobileDialog(false)}
+                                  >
+                                    JELENTKEZÉS
+                                  </span>
+                                </Link>
                               </button>
                             </div>
                           </div>

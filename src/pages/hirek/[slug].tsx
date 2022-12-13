@@ -5,7 +5,11 @@ import type { GetServerSideProps } from "next";
 import type { SanityRichText } from "types";
 
 const Hirek = ({ description }: { description: SanityRichText[] }) => {
-  return <RichText blocks={description} />;
+  return (
+    <div className="flex min-h-[100vh] min-w-[100vw] flex-col bg-lightcherry p-4 pt-[100px] text-white">
+      <RichText blocks={description} />
+    </div>
+  );
 };
 
 export const getServerSideProps: GetServerSideProps = async ({

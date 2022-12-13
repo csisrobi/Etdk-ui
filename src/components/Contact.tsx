@@ -18,7 +18,7 @@ const Contact = ({
   return (
     <div
       id="contact"
-      className="flex min-h-[calc(70vh-71px)] flex-col items-center gap-12 bg-lightGray px-2 py-10 md:flex-row md:items-start md:p-8 lg:gap-48 lg:bg-white"
+      className="flex min-h-[50vh] flex-col items-center gap-12 bg-lightGray px-2 py-10 md:flex-row md:items-start md:p-8 lg:gap-48 lg:bg-white"
     >
       <div className="hidden w-full flex-col items-end md:flex md:w-1/2">
         <div className="justify-center md:justify-start">
@@ -26,17 +26,17 @@ const Contact = ({
             <Image src="/ETDK.png" width={150} height={150} alt="ETDK" />
           </div>
           <div className="flex text-center md:text-start">
-            <span className="w-full  text-2xl tracking-wide ">
+            <p className="w-full  text-2xl tracking-wide ">
               {romanEdition}. REÁL ÉS HUMÁNTUDOMÁNYI ETDK
               <br />
               KOLOZSVÁR • {date}
-            </span>
+            </p>
           </div>
         </div>
       </div>
       <div className="flex w-full justify-center text-center md:w-1/2 md:text-start">
         <div>
-          <span className="text-6xl text-darkcherry">KAPCSOLAT</span>
+          <span className="text-6xl text-lightcherry">KAPCSOLAT</span>
           <div className="flex flex-col gap-6">
             <p className="text-lg">
               KOLOZSVÁRI MAGYAR DIÁKSZÖVETSÉG – KMDSZ (Uniunea Studențească
