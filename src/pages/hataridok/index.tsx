@@ -17,13 +17,6 @@ const Hataridok = ({ deadline }: Props) => {
 
 export async function getStaticProps({ preview = false }) {
   const deadline = await getClient(preview).fetch(queryDeadline);
-  if (!deadline[0].deadline) {
-    return {
-      redirect: {
-        destination: "/",
-      },
-    };
-  }
   return {
     props: {
       deadline: deadline[0].deadline,
