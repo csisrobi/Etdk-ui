@@ -9,7 +9,7 @@ const Header = () => {
   const links = [
     {
       title: "Általános tudnivalók",
-      id: "general",
+      id: "participation_condition",
     },
     {
       title: "2023",
@@ -59,7 +59,7 @@ const Header = () => {
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-end lg:hidden">
-          <button className="hover:bg-lightcherry-700 inline-flex items-center justify-center p-2 text-black hover:text-black">
+          <button className="hover:bg-lightcherry-700 inline-flex items-center justify-center p-2 text-white hover:text-black">
             <Bars3Icon
               className="block h-8 w-8"
               aria-hidden="true"
@@ -71,7 +71,7 @@ const Header = () => {
           <div className="space-x-3 xl:space-x-6">
             {links.map((link, index) => (
               <span
-                className="text-center text-2xl tracking-wide text-white hover:cursor-pointer"
+                className="cursor-pointer text-center text-2xl tracking-wide text-white"
                 key={index}
                 onClick={() => {
                   if (link.id) {

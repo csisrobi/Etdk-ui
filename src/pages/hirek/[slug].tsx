@@ -1,4 +1,4 @@
-import { newsDescription } from "@lib/queries";
+import { queryNewsDescription } from "@lib/queries";
 import { getClient } from "@lib/sanity";
 import RichText from "@utils/RichText";
 import type { GetServerSideProps } from "next";
@@ -17,7 +17,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   params,
 }) => {
   const newsData = await getClient(preview).fetch(
-    newsDescription(params?.slug as string)
+    queryNewsDescription(params?.slug as string)
   );
   return {
     props: {

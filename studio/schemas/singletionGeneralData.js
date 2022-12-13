@@ -38,5 +38,11 @@ export default {
       type: "array",
       of: [{ type: "block" }],
     },
+    {
+      title: "Határidők",
+      name: "deadline",
+      type: "array",
+      of: [{ type: "block" }],
+    },
   ],
 };
