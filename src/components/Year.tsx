@@ -1,7 +1,8 @@
 import Image from "next/image";
+import LinkWrapper from "./UtilityComponents/LinkWrapper";
 
 const yearElements = [
-  { text: "Határidők" },
+  { text: "Határidők", link: "/hataridok" },
   { text: "Zsűrik" },
   { text: "Program" },
   { text: "Díjazottak" },
@@ -19,12 +20,11 @@ const Year = () => {
       </div>
       <div className="flex flex-col flex-wrap items-center justify-evenly gap-8 sm:flex-row md:w-3/4">
         {yearElements.map((element) => (
-          <div
-            key={element.text}
-            className="w-80 rounded-3xl bg-beige p-2 text-center text-3xl tracking-wide text-darkcherry"
-          >
-            <span>{element.text}</span>
-          </div>
+          <LinkWrapper key={element.text} href={element.link || "#"}>
+            <div className="w-80 rounded-3xl bg-beige p-2 text-center text-3xl tracking-wide text-darkcherry">
+              <span>{element.text}</span>
+            </div>
+          </LinkWrapper>
         ))}
       </div>
       <div className="absolute right-0 top-10 -z-10 hidden h-[300px] w-[400px] md:block">

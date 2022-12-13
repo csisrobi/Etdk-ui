@@ -57,5 +57,12 @@ export type SanityNews = {
   date: string;
 };
 
+export type SanityArchiv = {
+  book: string;
+  book_image: SanityImage;
+  year: string;
+  //SOON Winner
+};
+
 export type SanitySponsor = Name & { image: SanityImage };
 export type SanityOrganizer = Name & { image: SanityImage };

@@ -7,6 +7,7 @@ import singletonGeneralData from "./singletionGeneralData";
 import singletonContact from "./singletonContact";
 import whyApplicateData from "./whyApplicateData";
 import sections from "./sections";
+import archiv from "./archiv";
 
 export default createSchema({
   name: "default",
@@ -15,6 +16,7 @@ export default createSchema({
     organizer,
     news,
     sections,
+    archiv,
     singletonGeneralData,
     singletonContact,
     whyApplicateData,

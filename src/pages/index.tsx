@@ -1,16 +1,18 @@
 import {
-  newsBasic,
+  queryNewsBasic,
   queryApplicate,
   queryContact,
   queryGeneral,
   queryOrg,
   querySponsor,
+  queryArchivsBasic,
 } from "@lib/queries";
 import { getClient } from "@lib/sanity";
 import { type NextPage } from "next";
 import Head from "next/head";
 import type {
   SanityApplicate,
+  SanityArchiv,
   SanityContact,
   SanityGeneral,
   SanityNews,
@@ -32,6 +34,7 @@ type Props = {
   general: SanityGeneral;
   applicate: SanityApplicate;
   news: SanityNews[];
+  archivs: SanityArchiv[];
 };
 
 const Home: NextPage<Props> = ({
@@ -41,6 +44,7 @@ const Home: NextPage<Props> = ({
   general,
   applicate,
   news,
+  archivs,
 }: Props) => {
   return (
     <>
@@ -66,7 +70,7 @@ const Home: NextPage<Props> = ({
       />
       <ParticipationCondition certificateURL={general.certificateURL} />
       <Year />
-      <NewsArchiv news={news} />
+      <NewsArchiv news={news} archivs={archivs} />
       <SponsorsOrg sponsors={sponsors} organizers={organizers} />
       <Contact
         address={contact.address}
@@ -87,12 +91,14 @@ export async function getStaticProps({ preview = false }) {
   const contacts = await getClient(preview).fetch(queryContact);
   const generals = await getClient(preview).fetch(queryGeneral);
   const applicate = await getClient(preview).fetch(queryApplicate);
-  const news = await getClient(preview).fetch(newsBasic);
+  const news = await getClient(preview).fetch(queryNewsBasic);
+  const archivs = await getClient(preview).fetch(queryArchivsBasic);
   return {
     props: {
       contact: contacts[0],
       general: generals[0],
       applicate: applicate[0],
+      archivs,
       news,
       sponsors,
       organizers,

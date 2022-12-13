@@ -48,7 +48,7 @@ export const queryGeneralRules = groq`
   rules,
 }`;
 
-export const newsBasic = groq`
+export const queryNewsBasic = groq`
 *[_type == "news"]{
   name,
   summary,
@@ -56,7 +56,23 @@ export const newsBasic = groq`
   description
 }`;
 
-export const newsDescription = (name: string) => groq`
+export const queryNewsDescription = (name: string) => groq`
 *[_type == "news" && name == "${name}"]{
   description
+}`;
+
+export const queryDeadline = groq`
+*[_type == "general"]{
+  deadline
+}`;
+
+export const queryArchivsBasic = groq`
+*[_type == "archiv"]{
+  year,
+}`;
+
+export const queryArhivDetails = (year: string) => groq`
+*[_type == "archiv" && year == "${year}"]{
+  book,
+  book_image
 }`;

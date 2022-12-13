@@ -1,11 +1,16 @@
 import Image from "next/image";
-import type { SanityNews } from "types";
+import type { SanityArchiv, SanityNews } from "types";
 import dayjs from "dayjs";
 import LinkWrapper from "./UtilityComponents/LinkWrapper";
+import Link from "next/link";
 
-const archiv = [{ text: "2019" }, { text: "2021" }, { text: "2022" }];
-
-const NewsArchiv = ({ news }: { news: SanityNews[] }) => {
+const NewsArchiv = ({
+  news,
+  archivs,
+}: {
+  news: SanityNews[];
+  archivs: SanityArchiv[];
+}) => {
   return (
     <div className="relative flex min-h-[100vh] flex-col justify-center gap-24 bg-gray py-8 lg:pb-24">
       <div id="news">
@@ -45,17 +50,18 @@ const NewsArchiv = ({ news }: { news: SanityNews[] }) => {
           <span className="text-7xl text-darkcherry">Archívum</span>
         </div>
         <div className="flex flex-col gap-12 md:flex-row">
-          {archiv.map((archivEl) => (
-            <button
-              key={archivEl.text}
-              type="button"
-              className="relative h-11 w-40 rounded-3xl bg-lightBrown py-2 px-2 text-center text-3xl tracking-wide text-yellow"
-              disabled
-            >
-              <span className="absolute -top-3 right-0 left-0 mx-auto text-7xl">
-                {archivEl.text}
-              </span>
-            </button>
+          {archivs.map((archivEl) => (
+            <Link key={archivEl.year} href={`archivum/${archivEl.year}`}>
+              <button
+                type="button"
+                className="relative h-11 w-40 cursor-pointer rounded-3xl bg-lightBrown py-2 px-2 text-center text-3xl tracking-wide text-yellow"
+                disabled
+              >
+                <span className="absolute -top-3 right-0 left-0 mx-auto text-7xl">
+                  {archivEl.year}
+                </span>
+              </button>
+            </Link>
           ))}
         </div>
       </div>
