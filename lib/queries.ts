@@ -74,5 +74,9 @@ export const queryArchivsBasic = groq`
 export const queryArhivDetails = (year: string) => groq`
 *[_type == "archiv" && year == "${year}"]{
   book,
-  book_image
+  book_image,
+  winners[] {
+    section->{name},
+    winnerPersons
+  },
 }`;

@@ -10,13 +10,13 @@ const WhyApplicate = ({
   description,
 }: SanityApplicate) => {
   return (
-    <div className=" bg-lightGray lg:bg-white lg:pb-32">
+    <div className="bg-lightGray lg:bg-white lg:pb-32">
       <div className="relative flex min-h-[calc(100vh-71px)] flex-col lg:flex-row lg:items-center lg:justify-center">
         <div className="flex h-[800px] w-[100vw] flex-col items-center lg:relative lg:w-[1100px]">
-          <div className="relative h-[25vh] w-[100vw] md:h-[50vh] lg:hidden">
+          <div className="relative h-[50vw] w-[100vw] md:h-[50vh] lg:hidden">
             <Image src="/illusztracio1.png" alt="illusztracio" fill />
           </div>
-          <div className="left-0 bottom-14 flex w-full flex-col space-y-14 bg-lightGray p-6 text-center lg:absolute lg:h-[600px] lg:w-[600px] lg:text-start">
+          <div className="left-0 bottom-14 flex w-full flex-col space-y-14 bg-lightGray p-4 text-center lg:absolute lg:h-[600px] lg:w-[600px] lg:text-start">
             <div className="mt-2">
               <span className="text-7xl text-darkcherry">{title}</span>
             </div>

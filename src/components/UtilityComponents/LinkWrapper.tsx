@@ -13,7 +13,7 @@ const LinkWrapper = ({
     return <>{children}</>;
   }
   return (
-    <Link href={href} target={target}>
+    <Link href={href} target={target} scroll>
       {children}
     </Link>
   );

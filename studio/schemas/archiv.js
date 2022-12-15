@@ -51,6 +51,9 @@ export default {
                   ],
                 },
               ],
+              options: {
+                disableNew: true,
+              },
             },
           ],
           preview: {
