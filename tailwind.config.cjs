@@ -4,7 +4,7 @@ module.exports = {
   theme: {
     fontFamily: {
       bebas: ["Bebas Neue"],
-      calibri: ["Calibri"],
+      open: ["Open Sans"],
     },
     extend: {
       screens: {
