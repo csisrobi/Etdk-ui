@@ -1,11 +1,21 @@
-export default function Custom404() {
-  return null;
-}
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
-export const getStaticProps = () => {
-  return {
-    redirect: {
-      destination: "/",
-    },
-  };
-};
+export default function Custom404() {
+  const router = useRouter();
+  useEffect(() => {
+    router.push("/");
+  });
+  return (
+    <div className="flex min-h-[100vh] min-w-[100vw] items-center justify-center bg-lightcherry pt-[100px]">
+      <Image
+        width={800}
+        height={800}
+        src="/loader.png"
+        alt={"profilkep"}
+        loading="eager"
+      />
+    </div>
+  );
+}

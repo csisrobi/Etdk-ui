@@ -15,10 +15,20 @@ const MainPage = ({ date, edition, romanEdition }: Props) => {
       <div className="flex h-full w-full flex-col items-center lg:flex-row">
         <div className=" lg:mr-1/2 relative h-[100vw] w-[100vw] md:h-[600px] md:w-[600px] lg:-ml-32 lg:mr-4 lg:w-1/2 xl:mr-auto xl:-ml-4 xl:h-[500px] xl:w-[500px]">
           <div className="hidden lg:block">
-            <Image src="/mainpagelogocrop.png" alt="fo oldal logo" fill />
+            <Image
+              src="/mainpagelogocrop.png"
+              alt="fo oldal logo"
+              fill
+              loading="eager"
+            />
           </div>
           <div className="block lg:hidden">
-            <Image src="/mainpagelogo.png" alt="fo oldal logo" fill />
+            <Image
+              src="/mainpagelogo.png"
+              alt="fo oldal logo"
+              fill
+              loading="eager"
+            />
           </div>
         </div>
         <div className="mt-4 flex flex-col justify-end space-y-2 tracking-wide sm:mt-10 lg:mr-auto lg:mt-24 xl:scale-110 2xl:scale-100 2xl:space-y-4">
