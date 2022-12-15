@@ -10,7 +10,7 @@ const Hirek = ({ archivData }: { archivData: SanityArchiv }) => {
   return (
     <div className="flex min-h-[100vh] min-w-[100vw] flex-col space-y-10 bg-lightcherry p-4 pt-[100px] text-white">
       <div className="flex flex-col items-center justify-center space-y-5">
-        <span className="text-center text-6xl">Kivonatos füzet:</span>
+        <span className="text-center text-6xl">Kivonatos füzet</span>
         <Link href={archivData.book} target="_blank">
           <Image
             {...GetImage(archivData.book_image)}
@@ -23,7 +23,7 @@ const Hirek = ({ archivData }: { archivData: SanityArchiv }) => {
       </div>
       <div className="flex flex-col space-y-5">
         <span className="text-center text-6xl">Díjazottak</span>
-        <div className="flex flex-wrap justify-evenly gap-4 sm:flex-row md:gap-8">
+        <div className="flex flex-wrap justify-evenly gap-4 md:gap-8">
           {archivData.winners.map((winner) => (
             <div
               key={winner.section.name}
@@ -32,7 +32,7 @@ const Hirek = ({ archivData }: { archivData: SanityArchiv }) => {
               <table className="border-separate border-spacing-x-3 border-spacing-y-2 md:border-spacing-x-5 md:border-spacing-y-4">
                 <thead>
                   <tr>
-                    <th className="md:w-64">
+                    <th className="w-2/3">
                       <span className="flex text-left text-2xl text-darkcherry md:text-3xl">
                         {winner.section.name}
                       </span>
@@ -66,27 +66,6 @@ const Hirek = ({ archivData }: { archivData: SanityArchiv }) => {
                     </tr>
                   ))}
                 </tbody>
-                {/* <div className="flex flex-col space-y-4">
-              <span className="text-4xl text-darkcherry">
-                {winner.section.name}
-              </span>
-              {winner.winnerPersons.map((winnerPerson) => (
-                <span
-                  key={winnerPerson.name}
-                  className="whitespace-pre-wrap text-xl text-gray"
-                >
-                  {winnerPerson.name.split(",").join(",\n")}
-                </span>
-              ))}
-            </div>
-            <div className="flex flex-col space-y-4">
-              <span className="text-2xl text-darkcherry">ELÉRT PONTSZÁM:</span>
-              {winner.winnerPersons.map((winnerPerson) => (
-                <span key={winnerPerson.name} className="text-xl text-gray">
-                  {winnerPerson.result}
-                </span>
-              ))}
-            </div> */}
               </table>
             </div>
           ))}
