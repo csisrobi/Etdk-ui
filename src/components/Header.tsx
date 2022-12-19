@@ -3,40 +3,43 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useState } from "react";
+import { useRouter } from "next/router";
+import LinkWrapper from "./UtilityComponents/LinkWrapper";
 
 const Header = () => {
   const [openMobileDialog, setOpenMobileDialog] = useState(false);
   const links = [
     {
       title: "Általános tudnivalók",
-      id: "participation_condition",
+      id: "altalanos_tudnivalok",
     },
     {
+      //TODO: CHANGE TO THE UPCOMING YEAR
       title: "2023",
-      id: "year",
+      id: "aktualis_ev",
     },
     {
       title: "Igazolás kérése",
-      id: "participation_condition",
     },
     {
       title: "Hírek",
-      id: "news",
+      id: "hirek",
     },
     {
       title: "Archívum",
-      id: "archiv",
+      id: "archivum",
     },
     {
       title: "Támogatók",
-      id: "sponsor",
+      id: "tamogatok",
     },
     {
       title: "Kapcsolat",
-      id: "contact",
+      id: "kapcsolat",
     },
   ];
 
+  const router = useRouter();
   const scrollTo = (id: string) => {
     const anchor = document.getElementById(id);
     if (anchor) {
@@ -47,16 +50,22 @@ const Header = () => {
   return (
     <div className="fixed top-0 z-20 h-fit w-full bg-lightcherry">
       <div className="flex w-full items-center p-2">
-        <div>
-          <Link href="/">
+        <div
+          onClick={() => {
+            if (router.pathname === "/") {
+              scrollTo("general");
+            }
+          }}
+        >
+          <LinkWrapper href={router.pathname === "/" ? "#" : "/"}>
             <Image
               src="/ETDKfeher.png"
               alt={"logo"}
               width={50}
               height={50}
-              className="block lg:hidden xl:block"
+              className="block hover:cursor-pointer lg:hidden xl:block"
             />
-          </Link>
+          </LinkWrapper>
         </div>
         <div className="flex flex-1 items-center justify-end lg:hidden">
           <button className="hover:bg-lightcherry-700 inline-flex items-center justify-center p-2 text-white hover:text-black">
@@ -73,13 +82,10 @@ const Header = () => {
               <span
                 className="cursor-pointer text-center text-2xl tracking-wide text-white"
                 key={index}
-                onClick={() => {
-                  if (link.id) {
-                    scrollTo(link.id);
-                  }
-                }}
               >
-                {link.title.toUpperCase()}
+                <LinkWrapper href={`/#${link.id}`}>
+                  {link.title.toUpperCase()}
+                </LinkWrapper>
               </span>
             ))}
             <button

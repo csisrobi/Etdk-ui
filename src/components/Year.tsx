@@ -11,10 +11,8 @@ const yearElements = [
 
 const Year = () => {
   return (
-    <div
-      id="year"
-      className="relative flex min-h-[70vh] flex-col items-center gap-10 bg-lightGray py-10 md:justify-center md:pt-0 lg:bg-white"
-    >
+    <div className="relative flex min-h-[70vh] flex-col items-center gap-10 bg-lightGray py-10 md:justify-center md:pt-0 lg:bg-white">
+      <div id="aktualis_ev" className="absolute -top-[70px]" />
       <div>
         <span className="text-7xl text-darkcherry">2023</span>
       </div>

@@ -13,7 +13,8 @@ const NewsArchiv = ({
 }) => {
   return (
     <div className="relative flex min-h-[100vh] flex-col justify-center gap-24 bg-gray py-8 lg:pb-24">
-      <div id="news">
+      <div>
+        <div id="hirek" className="absolute -top-[70px]" />
         <div className="flex flex-col items-center justify-center gap-8">
           <div>
             <span className="text-7xl text-darkcherry">Hírek</span>
@@ -42,10 +43,8 @@ const NewsArchiv = ({
           </div>
         </div>
       </div>
-      <div
-        id="archiv"
-        className="flex flex-col items-center justify-center gap-8"
-      >
+      <div className="flex flex-col items-center justify-center gap-8">
+        <div id="archivum" className="absolute -top-[70px]" />
         <div>
           <span className="text-7xl text-darkcherry">Archívum</span>
         </div>
