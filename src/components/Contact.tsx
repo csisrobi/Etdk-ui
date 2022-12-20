@@ -17,13 +17,13 @@ const Contact = ({
 }: Props) => {
   return (
     <div
-      id="contact"
+      id="kapcsolat"
       className="flex min-h-[50vh] flex-col items-center gap-12 bg-lightGray px-2 py-10 md:flex-row md:items-start md:p-8 lg:gap-48 lg:bg-white"
     >
       <div className="hidden w-full flex-col items-end md:flex md:w-1/2">
         <div className="justify-center md:justify-start">
-          <div className="flex justify-center md:justify-start">
-            <Image src="/ETDK.png" width={150} height={150} alt="ETDK" />
+          <div className="relative flex h-[150px] w-[150px] justify-center md:justify-start">
+            <Image src="/ETDK.png" fill alt="ETDK" />
           </div>
           <div className="flex text-center md:text-start">
             <p className="w-full  text-2xl tracking-wide ">

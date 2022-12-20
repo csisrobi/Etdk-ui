@@ -6,11 +6,9 @@ const Layout = ({ children }: { children: ReactNode }) => {
     <div
       style={{
         position: "relative",
-        overflowX: "hidden",
-        width: "100vw",
+        width: "100%",
         height: "100vh",
       }}
-      className="no-scrollbar"
     >
       <Header />
       {children}
