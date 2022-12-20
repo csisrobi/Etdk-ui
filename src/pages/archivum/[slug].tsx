@@ -9,7 +9,7 @@ import Link from "next/link";
 const Hirek = ({ archivData }: { archivData: SanityArchiv }) => {
   const imageSettings = GetImage(archivData.book_image);
   return (
-    <div className="flex min-h-[100vh] min-w-[100vw] flex-col space-y-10 bg-lightcherry p-4 pt-[100px] text-white">
+    <div className="flex min-h-[100vh] min-w-full flex-col space-y-10 bg-lightcherry p-4 pt-[100px] text-white">
       <div className="flex flex-col items-center justify-center space-y-5">
         <span className="text-center text-6xl">Kivonatos füzet</span>
         <Link href={archivData.book} target="_blank">
