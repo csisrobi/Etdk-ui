@@ -7,17 +7,20 @@ import Image from "next/image";
 import Link from "next/link";
 
 const Hirek = ({ archivData }: { archivData: SanityArchiv }) => {
+  const imageSettings = GetImage(archivData.book_image);
   return (
-    <div className="flex min-h-[100vh] min-w-[100vw] flex-col space-y-10 bg-lightcherry p-4 pt-[100px] text-white">
+    <div className="flex min-h-[100vh] min-w-full flex-col space-y-10 bg-lightcherry p-4 pt-[100px] text-white">
       <div className="flex flex-col items-center justify-center space-y-5">
         <span className="text-center text-6xl">Kivonatos füzet</span>
         <Link href={archivData.book} target="_blank">
           <Image
-            {...GetImage(archivData.book_image)}
-            height={500}
-            width={500}
-            alt={archivData.book}
+            loader={imageSettings.loader}
+            src={imageSettings.src}
+            height={563}
+            width={801}
+            alt={`${archivData.year} kivonatos füzet`}
             className="object-cover"
+            priority
           />
         </Link>
       </div>
@@ -39,7 +42,7 @@ const Hirek = ({ archivData }: { archivData: SanityArchiv }) => {
                     </th>
                     <th>
                       <span className=" flex text-left text-lg text-darkcherry md:text-xl">
-                        ELÉRT PONTSZÁM:
+                        ELÉRT EREDMÉNY:
                       </span>
                     </th>
                   </tr>
