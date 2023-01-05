@@ -11,31 +11,32 @@ const Header = () => {
   const links = [
     {
       title: "Általános tudnivalók",
-      id: "altalanos_tudnivalok",
+      id: "#altalanos_tudnivalok",
     },
     {
       //TODO: CHANGE TO THE UPCOMING YEAR
       title: "2023",
-      id: "aktualis_ev",
+      id: "#aktualis_ev",
     },
     {
       title: "Igazolás kérése",
+      id: "igazolas-kerese",
     },
     {
       title: "Hírek",
-      id: "hirek",
+      id: "#hirek",
     },
     {
       title: "Archívum",
-      id: "archivum",
+      id: "#archivum",
     },
     {
       title: "Támogatók",
-      id: "tamogatok",
+      id: "#tamogatok",
     },
     {
       title: "Kapcsolat",
-      id: "kapcsolat",
+      id: "#kapcsolat",
     },
   ];
 
@@ -83,7 +84,7 @@ const Header = () => {
                 className="cursor-pointer text-center text-2xl tracking-wide text-white"
                 key={index}
               >
-                <LinkWrapper href={`/#${link.id}`}>
+                <LinkWrapper href={`/${link.id}`}>
                   {link.title.toUpperCase()}
                 </LinkWrapper>
               </span>
@@ -175,14 +176,11 @@ const Header = () => {
                               <span
                                 className="text-center text-2xl tracking-wide text-lightcherry "
                                 key={index}
-                                onClick={() => {
-                                  if (link.id) {
-                                    scrollTo(link.id);
-                                    setOpenMobileDialog(false);
-                                  }
-                                }}
+                                onClick={() => setOpenMobileDialog(false)}
                               >
-                                {link.title.toUpperCase()}
+                                <LinkWrapper href={`/${link.id}`}>
+                                  {link.title.toUpperCase()}
+                                </LinkWrapper>
                               </span>
                             ))}
                             <div className="border-t border-lightcherry pt-4 text-center">
