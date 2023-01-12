@@ -3,8 +3,8 @@ module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     fontFamily: {
-      bebas: ["Bebas Neue"],
-      open: ["Open Sans"],
+      bebas: ["var(--bebas-font)"],
+      open: ["var(--sans-font)"],
     },
     extend: {
       screens: {
