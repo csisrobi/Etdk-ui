@@ -3,6 +3,7 @@ import type { SanityArchiv, SanityNews } from "types";
 import dayjs from "dayjs";
 import LinkWrapper from "./UtilityComponents/LinkWrapper";
 import Link from "next/link";
+import GetImage from "@utils/getImage";
 
 const NewsArchiv = ({
   news,
@@ -20,8 +21,11 @@ const NewsArchiv = ({
             <span className="text-7xl text-darkcherry">Hírek</span>
           </div>
           <div className="flex flex-col flex-wrap items-center justify-evenly gap-10 sm:flex-row">
-            {news.map(
-              (newElem) =>
+            {news.map((newElem) => {
+              const imageSettings = newElem.featuredImage
+                ? GetImage(newElem.featuredImage)
+                : undefined;
+              return (
                 !dayjs(newElem.date).isAfter(dayjs()) && (
                   <LinkWrapper
                     href={
@@ -29,7 +33,23 @@ const NewsArchiv = ({
                     }
                     key={newElem.name}
                   >
-                    <div className="flex h-72 w-72 cursor-pointer flex-col items-center gap-8 bg-white p-8">
+                    {imageSettings && (
+                      <div className="absolute my-auto mx-auto h-72 w-72">
+                        <Image
+                          loader={imageSettings.loader}
+                          src={imageSettings.src}
+                          fill
+                          alt={`${newElem.name} kep`}
+                          className="object-cover"
+                          priority
+                        />
+                      </div>
+                    )}
+                    <div
+                      className={`relative flex h-72 w-72 cursor-pointer flex-col items-center gap-8 bg-white ${
+                        imageSettings ? "bg-opacity-60" : ""
+                      } p-8`}
+                    >
                       <div className="w-36 rounded-2xl bg-lightBrown text-center text-3xl tracking-wide text-yellow">
                         <span>{newElem.date}</span>
                       </div>
@@ -39,7 +59,8 @@ const NewsArchiv = ({
                     </div>
                   </LinkWrapper>
                 )
-            )}
+              );
+            })}
           </div>
         </div>
       </div>

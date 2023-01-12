@@ -30,7 +30,7 @@ const Hirek = ({ archivData }: { archivData: SanityArchiv }) => {
           {archivData.winners.map((winner) => (
             <div
               key={winner.section.name}
-              className="h-fit w-full bg-lightGray p-2 md:w-[500px] md:p-4"
+              className="h-auto w-full bg-lightGray p-2 md:w-[500px] md:p-4"
             >
               <table className="border-separate border-spacing-x-3 border-spacing-y-2 md:border-spacing-x-5 md:border-spacing-y-4">
                 <thead>

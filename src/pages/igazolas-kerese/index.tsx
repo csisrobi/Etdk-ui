@@ -18,7 +18,7 @@ const IgazolasKeres = () => {
         <div className="h-14 w-full">
           <input
             className="h-full w-full rounded-xl bg-lightGray p-4"
-            placeholder="Év"
+            placeholder="Év amikor résztvettél"
           />
         </div>
         <div className="h-48 w-full">

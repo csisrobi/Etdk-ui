@@ -26,6 +26,11 @@ export default {
       },
     },
     {
+      title: "Kiemelt kép",
+      name: "featuredImage",
+      type: "image",
+    },
+    {
       title: "Leirás",
       name: "description",
       type: "array",

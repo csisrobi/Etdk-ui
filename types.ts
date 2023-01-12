@@ -55,6 +55,7 @@ export type SanityNews = {
   name: string;
   summary: string;
   date: string;
+  featuredImage?: SanityImage;
 };
 
 export type SanityArchiv = {
