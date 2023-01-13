@@ -9,10 +9,10 @@ export default {
       type: "string",
     },
     {
-      title: "Szakok",
-      name: "subjects",
+      title: "Karok",
+      name: "faculties",
       type: "reference",
-      to: [{ type: "subjects" }],
+      to: [{ type: "faculties" }],
       options: {
         disableNew: true,
       },

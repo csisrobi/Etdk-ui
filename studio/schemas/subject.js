@@ -8,14 +8,5 @@ export default {
       name: "name",
       type: "string",
     },
-    {
-      title: "Karok",
-      name: "faculties",
-      type: "reference",
-      to: [{ type: "faculties" }],
-      options: {
-        disableNew: true,
-      },
-    },
   ],
 };

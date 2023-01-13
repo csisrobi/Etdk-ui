@@ -2,11 +2,11 @@
 module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    fontFamily: {
-      bebas: ["var(--bebas-font)"],
-      open: ["var(--sans-font)"],
-    },
     extend: {
+      fontFamily: {
+        bebas: ["Bebas Neue"],
+        open: ["Open Sans"],
+      },
       screens: {
         lg: "1100px",
       },
