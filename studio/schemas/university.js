@@ -11,11 +11,18 @@ export default {
     {
       title: "Karok",
       name: "faculties",
-      type: "reference",
-      to: [{ type: "faculties" }],
-      options: {
-        disableNew: true,
-      },
+      type: "array",
+      of: [
+        {
+          title: "Karok",
+          type: "reference",
+          to: [{ type: "faculties" }],
+          options: {
+            disableNew: true,
+          },
+        },
+      ],
+      validation: (Rule) => Rule.unique(),
     },
   ],
 };

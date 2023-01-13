@@ -11,11 +11,18 @@ export default {
     {
       title: "Szakok",
       name: "subjects",
-      type: "reference",
-      to: [{ type: "subjects" }],
-      options: {
-        disableNew: true,
-      },
+      type: "array",
+      of: [
+        {
+          title: "Szakok",
+          type: "reference",
+          to: [{ type: "subjects" }],
+          options: {
+            disableNew: true,
+          },
+        },
+      ],
+      validation: (Rule) => Rule.unique(),
     },
   ],
 };

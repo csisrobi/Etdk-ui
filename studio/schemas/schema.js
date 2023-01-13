@@ -23,8 +23,8 @@ export default createSchema({
     singletonGeneralData,
     singletonContact,
     whyApplicateData,
-    faculty,
     subject,
+    faculty,
     university,
   ]),
 });
