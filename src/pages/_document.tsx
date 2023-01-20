@@ -7,6 +7,11 @@ export default function Document() {
         <link
           href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Open+Sans&display=swap"
           rel="preload"
+          as="style"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Open+Sans&display=swap"
+          rel="stylesheet"
         />
       </Head>
       <body>
