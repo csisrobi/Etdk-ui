@@ -20,7 +20,7 @@ const Header = () => {
     },
     {
       title: "Igazolás kérése",
-      id: "igazolas-kerese",
+      // id: "igazolas-kerese",
     },
     {
       title: "Hírek",

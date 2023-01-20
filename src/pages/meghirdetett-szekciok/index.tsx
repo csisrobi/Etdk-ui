@@ -51,7 +51,7 @@ const MeghirdetettSzekciok = ({
 export const getServerSideProps: GetServerSideProps = async ({
   preview = false,
 }) => {
-  const sections = await getClient(preview).fetch(queryActiveSections());
+  const sections = await getClient(preview).fetch(queryActiveSections);
   return {
     props: {
       sections: sections,

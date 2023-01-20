@@ -49,18 +49,13 @@ export const queryGeneralRules = groq`
   rules,
 }`;
 
-export const queryNewsBasic = groq`
+export const queryNews = groq`
 *[_type == "news"]{
   name,
   summary,
   date,
   description,
   featuredImage
-}`;
-
-export const queryNewsDescription = (name: string) => groq`
-*[_type == "news" && name == "${name}"]{
-  description
 }`;
 
 export const queryDeadline = groq`
@@ -83,8 +78,17 @@ export const queryArhivDetails = (year: string) => groq`
   },
 }`;
 
-export const queryActiveSections = () => groq`
+export const queryActiveSections = groq`
   *[_type == "sections" && active == true]{
     name,
     image
+}`;
+
+export const queryUniversities = groq`
+*[_type == "universities"]{
+  name,
+  faculties[]->{
+    name,
+    subjects[]->{name}
+  }
 }`;

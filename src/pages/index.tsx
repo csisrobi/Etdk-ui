@@ -1,5 +1,5 @@
 import {
-  queryNewsBasic,
+  queryNews,
   queryApplicate,
   queryContact,
   queryGeneral,
@@ -91,7 +91,7 @@ export async function getStaticProps({ preview = false }) {
   const contacts = await getClient(preview).fetch(queryContact);
   const generals = await getClient(preview).fetch(queryGeneral);
   const applicate = await getClient(preview).fetch(queryApplicate);
-  const news = await getClient(preview).fetch(queryNewsBasic);
+  const news = await getClient(preview).fetch(queryNews);
   const archivs = await getClient(preview).fetch(queryArchivsBasic);
   return {
     props: {

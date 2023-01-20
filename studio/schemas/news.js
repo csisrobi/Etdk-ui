@@ -4,13 +4,6 @@ export default {
   type: "document",
   fields: [
     {
-      title: "Név",
-      name: "name",
-      type: "string",
-      description:
-        "Ez fog megjelenni az URLbe, ha valaki rámegy, pld news/elkezdodott-a-regisztracio",
-    },
-    {
       title: "Összefoglaló",
       name: "summary",
       type: "string",

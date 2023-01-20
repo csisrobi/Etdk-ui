@@ -75,3 +75,5 @@ export type SanityArchiv = {
 
 export type SanitySponsor = Name & { image: SanityImage };
 export type SanityOrganizer = Name & { image: SanityImage };
+
+export type SelectOption = { name: string; value: string };
