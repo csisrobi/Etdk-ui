@@ -16,6 +16,16 @@ export default {
         "Ez fog megjelenni az urlbe pld: https://etdk.kmdsz.ro/allam-es-jogtudomany, lehetoleg ekezet nelkul",
     },
     {
+      title: "Aktív",
+      name: "active",
+      type: "boolean",
+    },
+    {
+      title: "Kép",
+      name: "image",
+      type: "image",
+    },
+    {
       title: "Követelmények",
       name: "requirement",
       type: "array",

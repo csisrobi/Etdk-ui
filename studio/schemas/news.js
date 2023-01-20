@@ -4,13 +4,6 @@ export default {
   type: "document",
   fields: [
     {
-      title: "Név",
-      name: "name",
-      type: "string",
-      description:
-        "Ez fog megjelenni az URLbe, ha valaki rámegy, pld news/elkezdodott-a-regisztracio",
-    },
-    {
       title: "Összefoglaló",
       name: "summary",
       type: "string",
@@ -24,6 +17,11 @@ export default {
         dateFormat: "YYYY.MM.DD",
         calendarTodayLabel: "Today",
       },
+    },
+    {
+      title: "Kiemelt kép",
+      name: "featuredImage",
+      type: "image",
     },
     {
       title: "Leirás",

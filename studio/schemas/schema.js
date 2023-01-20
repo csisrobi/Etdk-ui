@@ -8,6 +8,9 @@ import singletonContact from "./singletonContact";
 import whyApplicateData from "./whyApplicateData";
 import sections from "./sections";
 import archiv from "./archiv";
+import faculty from "./faculty";
+import university from "./university";
+import subject from "./subject";
 
 export default createSchema({
   name: "default",
@@ -20,5 +23,8 @@ export default createSchema({
     singletonGeneralData,
     singletonContact,
     whyApplicateData,
+    subject,
+    faculty,
+    university,
   ]),
 });

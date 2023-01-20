@@ -1,5 +1,6 @@
 import { groq } from "next-sanity";
 
+//TODO: CREATE A GENERAL QUERY
 export const querySponsor = groq`
 *[_type == "sponsor"]{
   name,
@@ -48,17 +49,13 @@ export const queryGeneralRules = groq`
   rules,
 }`;
 
-export const queryNewsBasic = groq`
+export const queryNews = groq`
 *[_type == "news"]{
   name,
   summary,
   date,
-  description
-}`;
-
-export const queryNewsDescription = (name: string) => groq`
-*[_type == "news" && name == "${name}"]{
-  description
+  description,
+  featuredImage
 }`;
 
 export const queryDeadline = groq`
@@ -67,7 +64,7 @@ export const queryDeadline = groq`
 }`;
 
 export const queryArchivsBasic = groq`
-*[_type == "archiv"]{
+*[_type == "archiv"] | order(year){
   year,
 }`;
 
@@ -79,4 +76,19 @@ export const queryArhivDetails = (year: string) => groq`
     section->{name},
     winnerPersons
   },
+}`;
+
+export const queryActiveSections = groq`
+  *[_type == "sections" && active == true]{
+    name,
+    image
+}`;
+
+export const queryUniversities = groq`
+*[_type == "universities"]{
+  name,
+  faculties[]->{
+    name,
+    subjects[]->{name}
+  }
 }`;
