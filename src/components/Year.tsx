@@ -7,6 +7,7 @@ const yearElements = [
   { text: "Program" },
   { text: "Díjazottak" },
   { text: "Előadások és workshopok" },
+  { text: "Meghirdetett szekciók", link: "/meghirdetett-szekciok" },
 ];
 
 const Year = () => {

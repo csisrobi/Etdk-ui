@@ -2,11 +2,11 @@
 module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    fontFamily: {
-      bebas: ["Bebas Neue"],
-      open: ["Open Sans"],
-    },
     extend: {
+      fontFamily: {
+        bebas: ["Bebas Neue"],
+        open: ["Open Sans"],
+      },
       screens: {
         lg: "1100px",
       },
@@ -25,5 +25,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/typography"), require("@tailwindcss/forms")],
 };
