@@ -23,7 +23,7 @@ const MeghirdetettSzekciok = ({
           return (
             <div
               key={section.name}
-              className="relative flex h-fit w-full flex-col items-center justify-center bg-lightGray p-2 md:w-[400px] md:p-4"
+              className="relative flex w-full flex-col items-center justify-center bg-lightGray p-2 md:w-[400px] md:p-4"
             >
               <span className="flex text-center text-2xl text-darkcherry md:text-3xl">
                 {section.name}

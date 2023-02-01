@@ -1,3 +1,12 @@
+const customCollate = (a, b) => {
+  console.log(a, b);
+  const normalizedA = a.normalize("NFD").toLowerCase();
+  const normalizedB = b.normalize("NFD").toLowerCase();
+  return normalizedA.localeCompare(normalizedB, "hu", {
+    sensitivity: "accent",
+  });
+};
+
 export default {
   title: "Szekciók",
   name: "sections",
@@ -7,6 +16,7 @@ export default {
       title: "Név",
       name: "name",
       type: "string",
+      collate: customCollate,
     },
     {
       title: "Slug",

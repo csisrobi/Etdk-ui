@@ -11,6 +11,7 @@ import archiv from "./archiv";
 import faculty from "./faculty";
 import university from "./university";
 import subject from "./subject";
+import participant from "./participant";
 
 export default createSchema({
   name: "default",
@@ -26,5 +27,6 @@ export default createSchema({
     subject,
     faculty,
     university,
+    participant,
   ]),
 });

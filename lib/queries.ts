@@ -79,7 +79,7 @@ export const queryArhivDetails = (year: string) => groq`
 }`;
 
 export const queryActiveSections = groq`
-  *[_type == "sections" && active == true]{
+  *[_type == "sections" && active == true ] | order(name){
     name,
     image
 }`;
@@ -87,8 +87,45 @@ export const queryActiveSections = groq`
 export const queryUniversities = groq`
 *[_type == "universities"]{
   name,
+  _id,
   faculties[]->{
     name,
-    subjects[]->{name}
+    _id,
+    subjects[]->{name, _id}
   }
+}`;
+
+export const queryFaculties = groq`
+*[_type == "faculties"]{
+  name,
+  _id,
+  subjects[]->{
+    name,
+    _id,
+  }
+}`;
+
+export const querySubjects = groq`
+*[_type == "subjects"]{
+  name,
+  _id,
+}`;
+
+export const checkifUniqueEmail = (email: string) => groq`
+*[_type == "participants" && email == "${email}"]{
+  email
+}`;
+
+export const getDataForParticipant = (email: string) => groq`
+*[_type == "participants" && email == "${email}"] {
+  birthDate,
+  class,
+  degree,
+  email,
+  mobileNumber,
+  name,
+  socialNumber,
+  faculty,
+  subject,
+  university
 }`;

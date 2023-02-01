@@ -1,11 +1,11 @@
 import Image from "next/image";
 import type { SanityArchiv, SanityNews } from "types";
-import dayjs from "dayjs";
 import Link from "next/link";
 import GetImage from "@utils/getImage";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import RichText from "@utils/RichText";
+import { isAfter, parseISO } from "date-fns";
 
 const NewsArchiv = ({
   news,
@@ -30,7 +30,7 @@ const NewsArchiv = ({
                 ? GetImage(newElem.featuredImage)
                 : undefined;
               return (
-                !dayjs(newElem.date).isAfter(dayjs()) && (
+                !isAfter(parseISO(newElem.date), new Date()) && (
                   <div key={newElem.name}>
                     {imageSettings && (
                       <div className="absolute my-auto mx-auto h-72 w-72">
@@ -119,7 +119,7 @@ const NewsArchiv = ({
                 leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                 leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
               >
-                <Dialog.Panel className="scrollbar-hide relative max-h-[500px] transform overflow-x-hidden overflow-y-scroll break-words rounded-lg bg-white p-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                <Dialog.Panel className="relative max-h-[500px] transform overflow-x-hidden overflow-y-scroll break-words rounded-lg bg-white p-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                   {activeNews && (
                     <>
                       <Dialog.Title className="mb-4 text-darkcherry">

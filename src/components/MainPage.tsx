@@ -11,7 +11,7 @@ const MainPage = ({ date, edition, romanEdition }: Props) => {
     <div className="relative flex min-h-[100vh] min-w-full flex-col items-center justify-center bg-lightcherry p-4 pt-[100px] lg:pt-0">
       <div id="general" className="absolute -top-[70px]" />
       <div className="flex h-full w-full flex-col items-center lg:flex-row">
-        <div className=" lg:mr-1/2 relative h-[100vw] w-[100vw] md:h-[600px] md:w-[600px] lg:-ml-32 lg:mr-4 lg:w-1/2 xl:mr-auto xl:-ml-4 xl:h-[500px] xl:w-[500px]">
+        <div className=" lg:mr-1/2 relative aspect-square w-full md:h-[600px] md:w-[600px] lg:-ml-32 lg:mr-4 lg:w-1/2 xl:mr-auto xl:-ml-4 xl:h-[500px] xl:w-[500px]">
           <div className="hidden lg:block">
             <Image
               src="/mainpagelogocrop.png"
