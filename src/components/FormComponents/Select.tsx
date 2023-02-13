@@ -11,12 +11,16 @@ export default function Select({
   value,
   disabled,
   placeholder,
+  bg = "",
+  text = "",
 }: {
   options: SelectOption[] | undefined;
   onChange: (value: string) => void;
   value: SelectOption | null;
   disabled?: boolean;
   placeholder?: string;
+  bg?: string;
+  text?: string;
 }) {
   return (
     <Listbox
@@ -31,13 +35,17 @@ export default function Select({
       {({ open }) => (
         <>
           <div className="relative">
-            <Listbox.Button className="relative h-11 w-full cursor-default rounded-xl border border-[#6b7280] bg-white py-2 pl-3 pr-10 text-left text-lg shadow-sm focus:border-darkcherry focus:outline-none focus:ring-1 focus:ring-darkcherry sm:text-sm">
+            <Listbox.Button
+              className={`relative h-11 w-full cursor-default rounded-xl py-2 pl-3 pr-10 text-left text-lg shadow-sm focus:border-darkcherry focus:outline-none focus:ring-1 focus:ring-darkcherry sm:text-sm ${bg}`}
+            >
               <div className="flex items-center">
-                <div className="sm:text-md ml-1 block truncate text-lg tracking-tight">
+                <div
+                  className={`${text} sm:text-md block truncate text-lg font-semibold tracking-tight`}
+                >
                   {value ? (
                     value.name
                   ) : placeholder ? (
-                    <div className="text-[#6b7280]">{placeholder}</div>
+                    <div className="opacity-80">{placeholder}</div>
                   ) : (
                     ""
                   )}
@@ -66,7 +74,7 @@ export default function Select({
                       key={option.value}
                       className={({ active }) =>
                         classNames(
-                          active ? "bg-darkcherry text-white" : "text-gray-900",
+                          active ? `${bg} ${text}` : "text-gray-900",
                           "relative cursor-default select-none py-2 pl-3 pr-9"
                         )
                       }

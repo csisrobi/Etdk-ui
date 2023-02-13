@@ -94,3 +94,9 @@ export type UniversitiesSanity = {
   faculties?: FacultySanity[];
   _id: string;
 };
+
+export type SectionsSanity = {
+  name: string;
+  image?: SanityImage;
+  _id: string;
+};

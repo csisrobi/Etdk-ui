@@ -81,7 +81,8 @@ export const queryArhivDetails = (year: string) => groq`
 export const queryActiveSections = groq`
   *[_type == "sections" && active == true ] | order(name){
     name,
-    image
+    image,
+    id
 }`;
 
 export const queryUniversities = groq`
