@@ -84,9 +84,7 @@ const Header = () => {
                 className="cursor-pointer text-center text-2xl tracking-wide text-white"
                 key={index}
               >
-                <LinkWrapper href={`/${link.id}`}>
-                  {link.title.toUpperCase()}
-                </LinkWrapper>
+                <a href={`/${link.id}`}>{link.title.toUpperCase()}</a>
               </span>
             ))}
             <button
