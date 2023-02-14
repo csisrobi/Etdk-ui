@@ -9,9 +9,9 @@ const LinkWrapper = ({
   target?: string;
   children: React.ReactNode;
 }) => {
-  if (href == "#") {
-    return <>{children}</>;
-  }
+  // if (href == "#") {
+  //   return <>{children}</>;
+  // }
   return (
     <Link href={href} target={target}>
       {children}
