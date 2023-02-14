@@ -48,6 +48,7 @@ const Header = () => {
     }
   };
 
+  console.log(links);
   return (
     <div className="fixed top-0 z-20 h-fit w-full bg-lightcherry">
       <div className="flex w-full items-center p-2">
@@ -178,9 +179,15 @@ const Header = () => {
                                 key={index}
                                 onClick={() => setOpenMobileDialog(false)}
                               >
-                                <LinkWrapper href={`/${link.id}`}>
+                                <Link
+                                  onClick={() =>
+                                    link.id?.startsWith("#") &&
+                                    scrollTo(link.id)
+                                  }
+                                  href={`/${link.id}`}
+                                >
                                   {link.title.toUpperCase()}
-                                </LinkWrapper>
+                                </Link>
                               </span>
                             ))}
                             <div className="border-t border-lightcherry pt-4 text-center">
