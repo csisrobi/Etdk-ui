@@ -9,9 +9,15 @@ const LinkWrapper = ({
   target?: string;
   children: React.ReactNode;
 }) => {
-  // if (href == "#") {
-  //   return <>{children}</>;
-  // }
+  const scrollTo = (id: string) => {
+    const anchor = document.getElementById(id);
+    if (anchor) {
+      anchor.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+  if (href == "#" && target) {
+    return <div onClick={() => scrollTo(target)}>{children}</div>;
+  }
   return (
     <Link href={href} target={target}>
       {children}
