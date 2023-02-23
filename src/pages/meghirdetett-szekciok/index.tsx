@@ -2,10 +2,19 @@ import { queryActiveSections } from "@lib/queries";
 import { getClient } from "@lib/sanity";
 import GetImage from "@utils/getImage";
 import type { GetServerSideProps } from "next";
-import type { SectionsSanity } from "types";
 import Image from "next/image";
+import { SanityImage } from "types";
 
-const MeghirdetettSzekciok = ({ sections }: { sections: SectionsSanity[] }) => {
+type SanitySectionPart = {
+  image?: SanityImage;
+  name: string;
+};
+
+const MeghirdetettSzekciok = ({
+  sections,
+}: {
+  sections: SanitySectionPart[];
+}) => {
   return (
     <div className="flex min-h-[100vh] min-w-full flex-col space-y-10 bg-lightcherry p-4 pt-[100px] text-white">
       <div className="flex flex-wrap justify-evenly gap-4 md:gap-8">
@@ -44,10 +53,14 @@ const MeghirdetettSzekciok = ({ sections }: { sections: SectionsSanity[] }) => {
 export const getServerSideProps: GetServerSideProps = async ({
   preview = false,
 }) => {
-  const sections = await getClient(preview).fetch(queryActiveSections);
+  const sections: SanitySectionPart[] = await getClient(preview).fetch(
+    queryActiveSections
+  );
   return {
     props: {
-      sections,
+      sections: sections.sort((a, b) =>
+        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+      ),
       preview,
     },
   };
