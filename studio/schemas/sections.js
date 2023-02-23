@@ -31,5 +31,21 @@ export default {
       type: "array",
       of: [{ type: "block" }],
     },
+    {
+      title: "Pontozási kritériumok",
+      name: "criteria",
+      type: "array",
+      of: [
+        {
+          title: "Pontozási kritériumok",
+          type: "reference",
+          to: [{ type: "criteria" }],
+          options: {
+            disableNew: true,
+          },
+        },
+      ],
+      validation: (Rule) => Rule.unique(),
+    },
   ],
 };

@@ -1,11 +1,18 @@
 import { checkifUniqueEmail } from "@lib/queries";
 import { getClient } from "@lib/sanity";
-import { Controller, useForm, useWatch } from "react-hook-form";
+import {
+  Control,
+  Controller,
+  useFieldArray,
+  useForm,
+  useWatch,
+} from "react-hook-form";
 import Select from "src/components/FormComponents/Select";
 import Snackbar from "src/components/UtilityComponents/Snackbar";
 import { useState } from "react";
 import type { UniversitiesSanity, FacultySanity, SectionsSanity } from "types";
 import classNames from "classnames";
+import React from "react";
 
 const degreeOptions = [
   {
@@ -60,7 +67,7 @@ const titleOptions = [
   },
 ];
 
-export type Inputs = {
+export type DefaultInputs = {
   name: string;
   email: string;
   mobileNumber: string;
@@ -71,7 +78,9 @@ export type Inputs = {
   university: string;
   faculty: string;
   subject: string;
+};
 
+export type ArrayInputs = {
   advisorName: string;
   advisorEmail: string;
   advisorMobileNumber: string;
@@ -86,8 +95,12 @@ export type Inputs = {
   section: string;
 };
 
+export type Inputs = {
+  projects: ArrayInputs[];
+};
+
 const inputClasses =
-  "border-none block h-11 w-full rounded-xl text-lg font-semibold placeholder:opacity-80 focus:border-darkcherry focus:ring-darkcherry";
+  "pl-3 border-none block h-11 w-full rounded-xl text-lg font-semibold placeholder:opacity-80 focus:border-darkcherry focus:ring-darkcherry";
 
 const ApplicationForm = ({
   universities,
@@ -101,130 +114,156 @@ const ApplicationForm = ({
   defaultValues?: Inputs;
 }) => {
   const [notiMessage, setNotiMessage] = useState("");
-  const { control, handleSubmit } = useForm<Inputs>({
-    defaultValues: defaultValues || {
-      name: "",
-      email: "",
-      mobileNumber: "",
-      birthDate: "",
-      socialNumber: "",
-      degree: "",
-      class: "",
-      university: "",
-      faculty: "",
-      subject: "",
+  const { control: defaultFormControl, getValues: defaultGetValues } =
+    useForm<DefaultInputs>({
+      defaultValues: {
+        name: "",
+        email: "",
+        mobileNumber: "",
+        birthDate: "",
+        socialNumber: "",
+        degree: "",
+        class: "",
+        university: "",
+        faculty: "",
+        subject: "",
+      },
+    });
+  const { control: arrayControl, handleSubmit } = useForm<Inputs>({
+    defaultValues: {
+      projects: [
+        {
+          advisorName: "",
+          advisorEmail: "",
+          advisorMobileNumber: "",
+          advisorTitle: "",
+          advisorUniversity: "",
+          advisorFaculty: "",
+          advisorSubject: "",
+          advisorCertificate: null,
 
-      advisorName: "",
-      advisorEmail: "",
-      advisorMobileNumber: "",
-      advisorTitle: "",
-      advisorUniversity: "",
-      advisorFaculty: "",
-      advisorSubject: "",
-      advisorCertificate: null,
-
-      title: "",
-      extract: null,
-      section: "",
+          title: "",
+          extract: null,
+          section: "",
+        },
+      ],
     },
   });
 
-  const onSubmit = async (data: Inputs) => {
-    console.log(data);
-    if (data.extract && data.advisorCertificate) {
-      const extractData = await getClient().assets.upload(
-        "file",
-        data.extract,
-        { filename: data.extract.name }
-      );
-      const advisorCertificateData = await getClient().assets.upload(
-        "file",
-        data.advisorCertificate,
-        { filename: data.advisorCertificate.name }
-      );
+  const { append, remove, fields } = useFieldArray({
+    control: arrayControl,
+    name: "projects",
+  });
+
+  const onSubmit = React.useMemo(() => {
+    return handleSubmit(async (data) => {
+      const participantData = defaultGetValues();
       const checkEmail = await getClient().fetch(
-        checkifUniqueEmail(data.email)
+        checkifUniqueEmail(participantData.email)
       );
       if (!checkEmail.length) {
-        const mutations = [
-          {
-            create: {
-              _type: "participants",
+        Promise.all(
+          data.projects.map(async (project) => {
+            if (project.extract && project.advisorCertificate) {
+              const extractData = await getClient().assets.upload(
+                "file",
+                project.extract,
+                { filename: project.extract.name }
+              );
+              const advisorCertificateData = await getClient().assets.upload(
+                "file",
+                project.advisorCertificate,
+                { filename: project.advisorCertificate.name }
+              );
 
-              name: data.name,
-              email: data.email,
-              mobileNumber: data.mobileNumber,
-              birthDate: data.birthDate,
-              socialNumber: data.socialNumber,
-              degree: data.degree,
-              class: data.class,
-              university: {
-                _type: "reference",
-                _ref: data.university,
-              },
-              faculty: {
-                _type: "reference",
-                _ref: data.faculty,
-              },
-              subject: {
-                _type: "reference",
-                _ref: data.subject,
-              },
-
-              advisorName: data.advisorName,
-              advisorEmail: data.advisorEmail,
-              advisorMobileNumber: data.mobileNumber,
-              advisorTitle: data.advisorTitle,
-              advisorUniversity: {
-                _type: "reference",
-                _ref: data.advisorUniversity,
-              },
-              advisorFaculty: {
-                _type: "reference",
-                _ref: data.advisorFaculty,
-              },
-              advisorSubject: {
-                _type: "reference",
-                _ref: data.advisorSubject,
-              },
-              advisorCertificate: {
-                _type: "file",
-                asset: { _ref: advisorCertificateData._id, _type: "reference" },
-              },
-
-              title: data.title,
-              extract: {
-                _type: "file",
-                asset: { _ref: extractData._id, _type: "reference" },
-              },
-              section: {
-                _type: "reference",
-                _ref: data.section,
-              },
-            },
-          },
-        ];
-        //TODO:MOVE TO THE SERVER THE WHOLE UPLOAD SHIT
-        await getClient()
-          .mutate(mutations)
-          .then((response) => response)
-          .then((result) => console.log(result))
-          .catch((error) => console.error(error));
+              const mutations = [
+                {
+                  create: {
+                    _type: "participants",
+                    name: participantData.name,
+                    email: participantData.email,
+                    mobileNumber: participantData.mobileNumber,
+                    birthDate: participantData.birthDate,
+                    socialNumber: participantData.socialNumber,
+                    degree: participantData.degree,
+                    class: participantData.class,
+                    university: {
+                      _type: "reference",
+                      _ref: participantData.university,
+                    },
+                    faculty: {
+                      _type: "reference",
+                      _ref: participantData.faculty,
+                    },
+                    subject: {
+                      _type: "reference",
+                      _ref: participantData.subject,
+                    },
+                    advisorName: project.advisorName,
+                    advisorEmail: project.advisorEmail,
+                    advisorMobileNumber: project.advisorMobileNumber,
+                    advisorTitle: project.advisorTitle,
+                    advisorUniversity: {
+                      _type: "reference",
+                      _ref: project.advisorUniversity,
+                    },
+                    advisorFaculty: {
+                      _type: "reference",
+                      _ref: project.advisorFaculty,
+                    },
+                    advisorSubject: {
+                      _type: "reference",
+                      _ref: project.advisorSubject,
+                    },
+                    advisorCertificate: {
+                      _type: "file",
+                      asset: {
+                        _ref: advisorCertificateData._id,
+                        _type: "reference",
+                      },
+                    },
+                    title: project.title,
+                    extract: {
+                      _type: "file",
+                      asset: { _ref: extractData._id, _type: "reference" },
+                    },
+                    section: {
+                      _type: "reference",
+                      _ref: project.section,
+                    },
+                    accepted: false,
+                  },
+                },
+              ];
+              //TODO:MOVE TO THE SERVER THE WHOLE UPLOAD SHIT
+              return await getClient()
+                .mutate(mutations)
+                .then((response) => response)
+                .then((result) => console.log(result))
+                .catch((error) => console.error(error));
+            }
+          })
+        );
       } else {
         setNotiMessage("Ezen az emailen már regisztrálva van");
         setTimeout(() => setNotiMessage(""), 3000);
       }
-    }
-  };
+    });
+  }, [defaultGetValues, handleSubmit]);
 
   const UniversityField = ({
     advisor,
     text,
     bg,
+    control,
+    index,
   }: {
     advisor?: boolean;
     text: string;
     bg: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    control: Control<any, any>;
+    index?: number;
   }) => {
     const universitiesOption = universities.map((uni) => ({
       name: uni.name,
@@ -232,12 +271,14 @@ const ApplicationForm = ({
     }));
     return (
       <Controller
-        name={advisor ? "advisorUniversity" : "university"}
+        name={advisor ? `projects.${index}.advisorUniversity` : "university"}
         control={control}
         render={({ field: { onChange, value } }) => (
           <Select
             disabled={!!defaultValues}
-            onChange={(value: string) => onChange(value)}
+            onChange={(value: string | number) => {
+              onChange(value as string);
+            }}
             options={universitiesOption}
             value={
               universitiesOption
@@ -257,14 +298,19 @@ const ApplicationForm = ({
     advisor,
     text,
     bg,
+    control,
+    index,
   }: {
     advisor?: boolean;
+    index?: number;
     text: string;
     bg: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    control: Control<any, any>;
   }) => {
     const selectedUniversity = useWatch({
       control,
-      name: "university",
+      name: advisor ? `projects.${index}.advisorUniversity` : "university",
     });
     const uniData = universities.find((uni) => uni._id === selectedUniversity);
     const faculties =
@@ -274,13 +320,13 @@ const ApplicationForm = ({
 
     return (
       <Controller
-        name={advisor ? "advisorFaculty" : "faculty"}
+        name={advisor ? `projects.${index}.advisorFaculty` : "faculty"}
         control={control}
         render={({ field: { onChange, value } }) => (
           <Select
             disabled={!!defaultValues}
-            onChange={(value: string) => {
-              onChange(value);
+            onChange={(value: string | number) => {
+              onChange(value as string);
             }}
             options={faculties}
             value={
@@ -301,14 +347,19 @@ const ApplicationForm = ({
     advisor,
     text,
     bg,
+    control,
+    index,
   }: {
     advisor?: boolean;
+    index?: number;
     text: string;
     bg: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    control: Control<any, any>;
   }) => {
     const selectedFaculty = useWatch({
       control,
-      name: advisor ? "advisorFaculty" : "faculty",
+      name: advisor ? `projects.${index}.advisorFaculty` : "faculty",
     });
     const facultyData = faculties.find((f) => f._id === selectedFaculty);
     const subjects =
@@ -318,13 +369,13 @@ const ApplicationForm = ({
 
     return (
       <Controller
-        name={advisor ? "advisorSubject" : "subject"}
+        name={advisor ? `projects.${index}.advisorSubject` : "subject"}
         control={control}
         render={({ field: { onChange, value } }) => (
           <Select
             disabled={!!defaultValues}
-            onChange={(value: string) => {
-              onChange(value);
+            onChange={(value: string | number) => {
+              onChange(value as string);
             }}
             options={subjects}
             value={
@@ -341,13 +392,13 @@ const ApplicationForm = ({
 
   return (
     <div className="flex min-h-[100vh] min-w-full flex-col items-center justify-center space-y-4 bg-white pb-40 pt-[71px]">
-      <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+      <div className="space-y-4">
         <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:w-[700px] md:p-6 ">
           <p className="text-3xl text-darkcherry">Személyes adatok:</p>
           <div className="grid grid-cols-1 gap-2 pl-2 md:grid-cols-2">
             <Controller
               name="name"
-              control={control}
+              control={defaultFormControl}
               render={({ field }) => (
                 <input
                   {...field}
@@ -363,7 +414,7 @@ const ApplicationForm = ({
             />
             <Controller
               name="email"
-              control={control}
+              control={defaultFormControl}
               render={({ field }) => (
                 <input
                   {...field}
@@ -379,7 +430,7 @@ const ApplicationForm = ({
             />
             <Controller
               name="mobileNumber"
-              control={control}
+              control={defaultFormControl}
               render={({ field }) => (
                 <input
                   {...field}
@@ -395,7 +446,7 @@ const ApplicationForm = ({
             />
             <Controller
               name="birthDate"
-              control={control}
+              control={defaultFormControl}
               render={({ field }) => (
                 <input
                   {...field}
@@ -412,7 +463,7 @@ const ApplicationForm = ({
             />
             <Controller
               name="socialNumber"
-              control={control}
+              control={defaultFormControl}
               render={({ field }) => (
                 <input
                   {...field}
@@ -428,12 +479,12 @@ const ApplicationForm = ({
             />
             <Controller
               name="degree"
-              control={control}
+              control={defaultFormControl}
               render={({ field: { onChange, value } }) => (
                 <Select
                   disabled={!!defaultValues}
-                  onChange={(value: string) => {
-                    onChange(value);
+                  onChange={(value: string | number) => {
+                    onChange(value as string);
                   }}
                   options={degreeOptions}
                   value={degreeOptions.find((d) => d.value === value) || null}
@@ -445,12 +496,12 @@ const ApplicationForm = ({
             />
             <Controller
               name="class"
-              control={control}
+              control={defaultFormControl}
               render={({ field: { onChange, value } }) => (
                 <Select
                   disabled={!!defaultValues}
-                  onChange={(value: string) => {
-                    onChange(value);
+                  onChange={(value: string | number) => {
+                    onChange(value as string);
                   }}
                   options={classOptions}
                   value={classOptions.find((c) => c.value === value) || null}
@@ -460,193 +511,258 @@ const ApplicationForm = ({
                 />
               )}
             />
-            <UniversityField text="text-darkcherry" bg="bg-application1" />
-            <FacultyField text="text-darkcherry" bg="bg-application1" />
-            <SubjectField text="text-darkcherry" bg="bg-application1" />
+            <UniversityField
+              control={defaultFormControl}
+              text="text-darkcherry"
+              bg="bg-application1"
+            />
+            <FacultyField
+              control={defaultFormControl}
+              text="text-darkcherry"
+              bg="bg-application1"
+            />
+            <SubjectField
+              control={defaultFormControl}
+              text="text-darkcherry"
+              bg="bg-application1"
+            />
           </div>
         </div>
-        <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:w-[700px] md:p-6 ">
-          <p className="text-3xl text-darkcherry">Témavezető adatai:</p>
-          <div className="grid grid-cols-1 gap-2 pl-2 md:grid-cols-2">
-            <Controller
-              name="advisorName"
-              control={control}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  disabled={!!defaultValues}
-                  type="text"
-                  className={classNames(
-                    inputClasses,
-                    "bg-application2 text-white placeholder:text-white"
+        {fields.map((data, index) => (
+          <React.Fragment key={data.id}>
+            <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:w-[700px] md:p-6 ">
+              <p className="text-3xl text-darkcherry">Témavezető adatai:</p>
+              <div className="grid grid-cols-1 gap-2 pl-2 md:grid-cols-2">
+                <Controller
+                  name={`projects.${index}.advisorName`}
+                  control={arrayControl}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      disabled={!!defaultValues}
+                      type="text"
+                      className={classNames(
+                        inputClasses,
+                        "bg-application2 text-white placeholder:text-white"
+                      )}
+                      placeholder="Név"
+                    />
                   )}
-                  placeholder="Név"
                 />
-              )}
-            />
-            <Controller
-              name="advisorEmail"
-              control={control}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  disabled={!!defaultValues}
-                  type="text"
-                  className={classNames(
-                    inputClasses,
-                    "bg-application2 text-white placeholder:text-white"
+                <Controller
+                  name={`projects.${index}.advisorEmail`}
+                  control={arrayControl}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      disabled={!!defaultValues}
+                      type="text"
+                      className={classNames(
+                        inputClasses,
+                        "bg-application2 text-white placeholder:text-white"
+                      )}
+                      placeholder="E-mail cím"
+                    />
                   )}
-                  placeholder="E-mail cím"
                 />
-              )}
-            />
-            <Controller
-              name="advisorMobileNumber"
-              control={control}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  disabled={!!defaultValues}
-                  type="text"
-                  className={classNames(
-                    inputClasses,
-                    "bg-application2 text-white placeholder:text-white"
+                <Controller
+                  name={`projects.${index}.advisorMobileNumber`}
+                  control={arrayControl}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      disabled={!!defaultValues}
+                      type="text"
+                      className={classNames(
+                        inputClasses,
+                        "bg-application2 text-white placeholder:text-white"
+                      )}
+                      placeholder="Telefonszam"
+                    />
                   )}
-                  placeholder="Telefonszam"
                 />
-              )}
-            />
-            <Controller
-              name="advisorTitle"
-              control={control}
-              render={({ field: { onChange, value } }) => (
-                <Select
-                  disabled={!!defaultValues}
-                  onChange={(value: string) => {
-                    onChange(value);
-                  }}
-                  options={titleOptions}
-                  value={titleOptions.find((t) => t.value === value) || null}
-                  placeholder="Titulus"
+                <Controller
+                  name={`projects.${index}.advisorTitle`}
+                  control={arrayControl}
+                  render={({ field: { onChange, value } }) => (
+                    <Select
+                      disabled={!!defaultValues}
+                      onChange={(value: string | number) => {
+                        onChange(value as string);
+                      }}
+                      options={titleOptions}
+                      value={
+                        titleOptions.find((t) => t.value === value) || null
+                      }
+                      placeholder="Titulus"
+                      text="text-white"
+                      bg="bg-application2"
+                    />
+                  )}
+                />
+                <UniversityField
+                  index={index}
+                  advisor
+                  control={arrayControl}
                   text="text-white"
                   bg="bg-application2"
                 />
-              )}
-            />
-            <UniversityField advisor text="text-white" bg="bg-application2" />
-            <FacultyField advisor text="text-white" bg="bg-application2" />
-            <SubjectField advisor text="text-white" bg="bg-application2" />
-            <Controller
-              name="advisorCertificate"
-              control={control}
-              render={({ field: { onChange, value } }) => {
-                return (
-                  <label>
-                    <div
-                      className={classNames(
-                        inputClasses,
-                        "flex cursor-pointer items-center bg-application2 pl-4 text-white"
-                      )}
-                    >
-                      <div className="overflow-hidden truncate opacity-80">
-                        {value ? value.name : "Igazolás"}
-                      </div>
-                    </div>
-                    <input
-                      disabled={!!defaultValues}
-                      type="file"
-                      className="hidden"
-                      onChange={(e) =>
-                        onChange(e.target.files ? e.target.files[0] : null)
-                      }
-                    />
-                  </label>
-                );
-              }}
-            />
-          </div>
-        </div>
-        <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:w-[700px] md:p-6 ">
-          <p className="text-3xl text-darkcherry">Dolgozat:</p>
-          <div className="grid grid-cols-1 gap-2 pl-2 md:grid-cols-2">
-            <Controller
-              name="title"
-              control={control}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  disabled={!!defaultValues}
-                  type="text"
-                  className={classNames(
-                    inputClasses,
-                    "bg-application3 text-darkcherry placeholder:text-darkcherry"
-                  )}
-                  placeholder="Cím"
+                <FacultyField
+                  index={index}
+                  advisor
+                  control={arrayControl}
+                  text="text-white"
+                  bg="bg-application2"
                 />
-              )}
-            />
-            <Controller
-              name="extract"
-              control={control}
-              render={({ field: { onChange, value } }) => {
-                return (
-                  <label>
-                    <div
+                <SubjectField
+                  index={index}
+                  advisor
+                  control={arrayControl}
+                  text="text-white"
+                  bg="bg-application2"
+                />
+                <Controller
+                  name={`projects.${index}.advisorCertificate`}
+                  control={arrayControl}
+                  render={({ field: { onChange, value } }) => {
+                    return (
+                      <label>
+                        <div
+                          className={classNames(
+                            inputClasses,
+                            "flex cursor-pointer items-center bg-application2 pl-4 text-white"
+                          )}
+                        >
+                          <div className="overflow-hidden truncate opacity-80">
+                            {value ? value.name : "Igazolás"}
+                          </div>
+                        </div>
+                        <input
+                          disabled={!!defaultValues}
+                          type="file"
+                          className="hidden"
+                          onChange={(e) =>
+                            onChange(e.target.files ? e.target.files[0] : null)
+                          }
+                        />
+                      </label>
+                    );
+                  }}
+                />
+              </div>
+            </div>
+            <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:w-[700px] md:p-6 ">
+              <p className="text-3xl text-darkcherry">Dolgozat:</p>
+              <div className="grid grid-cols-1 gap-2 pl-2 md:grid-cols-2">
+                <Controller
+                  name={`projects.${index}.title`}
+                  control={arrayControl}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      disabled={!!defaultValues}
+                      type="text"
                       className={classNames(
                         inputClasses,
-                        "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
+                        "bg-application3 text-darkcherry placeholder:text-darkcherry"
                       )}
-                    >
-                      <div className="overflow-hidden truncate opacity-80">
-                        {value ? value.name : "Kivonat"}
-                      </div>
-                    </div>
-                    <input
-                      disabled={!!defaultValues}
-                      type="file"
-                      className="hidden"
-                      onChange={(e) =>
-                        onChange(e.target.files ? e.target.files[0] : null)
-                      }
+                      placeholder="Cím"
                     />
-                  </label>
-                );
-              }}
-            />
-            <Controller
-              name="section"
-              control={control}
-              render={({ field: { onChange, value } }) => {
-                const sectionsOptions = sections.map((s) => ({
-                  name: s.name,
-                  value: s._id,
-                }));
-                return (
-                  <Select
-                    disabled={!!defaultValues}
-                    onChange={(value: string) => {
-                      onChange(value);
-                    }}
-                    options={sectionsOptions}
-                    value={
-                      sectionsOptions.find((s) => s.value === value) || null
-                    }
-                    placeholder="Titulus"
-                    text="text-darkcherry"
-                    bg="bg-application3"
-                  />
-                );
-              }}
-            />
-          </div>
-        </div>
+                  )}
+                />
+                <Controller
+                  name={`projects.${index}.extract`}
+                  control={arrayControl}
+                  render={({ field: { onChange, value } }) => {
+                    return (
+                      <label>
+                        <div
+                          className={classNames(
+                            inputClasses,
+                            "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
+                          )}
+                        >
+                          <div className="overflow-hidden truncate opacity-80">
+                            {value ? value.name : "Kivonat"}
+                          </div>
+                        </div>
+                        <input
+                          disabled={!!defaultValues}
+                          type="file"
+                          className="hidden"
+                          onChange={(e) =>
+                            onChange(e.target.files ? e.target.files[0] : null)
+                          }
+                        />
+                      </label>
+                    );
+                  }}
+                />
+                <Controller
+                  name={`projects.${index}.section`}
+                  control={arrayControl}
+                  render={({ field: { onChange, value } }) => {
+                    const sectionsOptions = sections.map((s) => ({
+                      name: s.name,
+                      value: s._id,
+                    }));
+                    return (
+                      <Select
+                        disabled={!!defaultValues}
+                        onChange={(value: string | number) => {
+                          onChange(value as string);
+                        }}
+                        options={sectionsOptions}
+                        value={
+                          sectionsOptions.find((s) => s.value === value) || null
+                        }
+                        placeholder="Szekció"
+                        text="text-darkcherry"
+                        bg="bg-application3"
+                      />
+                    );
+                  }}
+                />
+              </div>
+            </div>
+            <button
+              className="rounded-lg bg-black p-2 text-white"
+              onClick={() =>
+                append({
+                  advisorName: "",
+                  advisorEmail: "",
+                  advisorMobileNumber: "",
+                  advisorTitle: "",
+                  advisorUniversity: "",
+                  advisorFaculty: "",
+                  advisorSubject: "",
+                  advisorCertificate: null,
+
+                  title: "",
+                  extract: null,
+                  section: "",
+                })
+              }
+            >
+              Uj dolgozat hozzadasa
+            </button>
+            {index !== 0}
+            <button
+              className=" rounded-lg bg-red p-2 text-white"
+              onClick={() => remove(index)}
+            >
+              Dolgozat torlese
+            </button>
+          </React.Fragment>
+        ))}
+
         <button
-          type="submit"
           className="h-10 w-20 rounded-lg bg-black text-white"
+          onClick={() => onSubmit()}
         >
           submit
         </button>
-      </form>
+      </div>
       <Snackbar message={notiMessage} open={notiMessage !== ""} />
     </div>
   );

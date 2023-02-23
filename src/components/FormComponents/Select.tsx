@@ -15,7 +15,7 @@ export default function Select({
   text = "",
 }: {
   options: SelectOption[] | undefined;
-  onChange: (value: string) => void;
+  onChange: (value: string | number) => void;
   value: SelectOption | null;
   disabled?: boolean;
   placeholder?: string;

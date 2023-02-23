@@ -138,10 +138,63 @@ export default {
         disableNew: true,
       },
     },
+
+    {
+      title: "Elért pontszámok",
+      name: "score",
+      type: "array",
+      of: [
+        {
+          title: "Elért pontszám",
+          type: "object",
+          fields: [
+            {
+              title: "Kritérium",
+              name: "criteria",
+              type: "reference",
+              to: [{ type: "criteria" }],
+              options: {
+                disableNew: true,
+              },
+            },
+            {
+              title: "Pontszám",
+              name: "score",
+              type: "number",
+            },
+          ],
+          preview: {
+            select: {
+              title: "criteria.name",
+              score: "score",
+            },
+            prepare(selection) {
+              const { title, score } = selection;
+              return {
+                title: `${title} ${score}`,
+              };
+            },
+          },
+        },
+      ],
+    },
+
+    {
+      title: "Elfogadva",
+      name: "accepted",
+      type: "boolean",
+    },
   ],
   preview: {
     select: {
       title: "name",
+      section: "section.name",
+    },
+    prepare(selection) {
+      const { title, section } = selection;
+      return {
+        title: `${title} ${section}`,
+      };
     },
   },
 };

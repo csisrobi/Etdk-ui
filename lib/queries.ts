@@ -82,7 +82,7 @@ export const queryActiveSections = groq`
   *[_type == "sections" && active == true ] | order(name){
     name,
     image,
-    id
+    _id
 }`;
 
 export const queryUniversities = groq`
@@ -129,4 +129,60 @@ export const getDataForParticipant = (email: string) => groq`
   faculty,
   subject,
   university
+}`;
+
+export const getAllParticipants = groq`
+*[_type == "participants"] {
+  _id, 
+
+  birthDate,
+  class,
+  degree,
+  email,
+  mobileNumber,
+  name,
+  socialNumber,
+  "university": university -> name,
+  "faculty":faculty -> name,
+  "subject":subject -> name,
+
+  advisorName,
+  advisorEmail,
+  advisorMobileNumber,
+  advisorTitle,
+  "advisorUniversity": advisorUniversity -> name,
+  "advisorFaculty":advisorFaculty -> name,
+  "advisorSubject":advisorSubject -> name,
+  "advisorCertificate": advisorCertificate.asset->{url, originalFilename},
+
+  title,
+  "extract": extract.asset->{url, originalFilename},
+  "section":section -> name,
+
+  accepted,
+}`;
+
+export const querySectionsForScoring = groq`
+*[_type == "sections" && active == true ]{
+  name,
+  _id,
+  criteria[]->{
+    name,
+    maxScore,
+    _id
+  }
+}`;
+
+export const sectionParticipants = (section: string) => groq`
+*[_type == "participants" && section._ref == "${section}" && accepted == true] {
+  _id, 
+  name,
+
+  title,
+  "extract": extract.asset->{url},
+  "section":section -> name,
+  score[] {
+    criteria->{name, _id},
+    score
+  }
 }`;
