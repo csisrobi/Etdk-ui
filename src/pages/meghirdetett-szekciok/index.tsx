@@ -5,13 +5,15 @@ import type { GetServerSideProps } from "next";
 import type { SanityImage } from "types";
 import Image from "next/image";
 
+type SanitySectionPart = {
+  image?: SanityImage;
+  name: string;
+};
+
 const MeghirdetettSzekciok = ({
   sections,
 }: {
-  sections: {
-    image?: SanityImage;
-    name: string;
-  }[];
+  sections: SanitySectionPart[];
 }) => {
   return (
     <div className="flex min-h-[100vh] min-w-full flex-col space-y-10 bg-lightcherry p-4 pt-[100px] text-white">
@@ -23,7 +25,7 @@ const MeghirdetettSzekciok = ({
           return (
             <div
               key={section.name}
-              className="relative flex h-fit w-full flex-col items-center justify-center bg-lightGray p-2 md:w-[400px] md:p-4"
+              className="relative flex w-full flex-col items-center justify-center bg-lightGray p-2 md:w-[400px] md:p-4"
             >
               <span className="flex text-center text-2xl text-darkcherry md:text-3xl">
                 {section.name}
@@ -51,10 +53,14 @@ const MeghirdetettSzekciok = ({
 export const getServerSideProps: GetServerSideProps = async ({
   preview = false,
 }) => {
-  const sections = await getClient(preview).fetch(queryActiveSections);
+  const sections: SanitySectionPart[] = await getClient(preview).fetch(
+    queryActiveSections
+  );
   return {
     props: {
-      sections: sections,
+      sections: sections.sort((a, b) =>
+        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+      ),
       preview,
     },
   };
