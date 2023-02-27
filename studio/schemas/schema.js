@@ -13,6 +13,7 @@ import university from "./university";
 import subject from "./subject";
 import participant from "./participant";
 import criteria from "./criteria";
+import admin from "./admin";
 
 export default createSchema({
   name: "default",
@@ -30,5 +31,6 @@ export default createSchema({
     university,
     participant,
     criteria,
+    admin,
   ]),
 });

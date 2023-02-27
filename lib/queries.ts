@@ -112,9 +112,15 @@ export const querySubjects = groq`
   _id,
 }`;
 
-export const checkifUniqueEmail = (email: string) => groq`
+export const checkIfUniqueEmail = (email: string) => groq`
 *[_type == "participants" && email == "${email}"]{
   email
+}`;
+
+export const checkIfAdmin = (email: string) => groq`
+*[_type == "admins" && email == "${email}"]{
+  email,
+  role
 }`;
 
 export const getDataForParticipant = (email: string) => groq`

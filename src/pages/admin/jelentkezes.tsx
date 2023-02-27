@@ -23,6 +23,13 @@ const AdminJelentkezes = ({
   sections: SectionsSanity[];
   participantData: Inputs;
 }) => {
+  if (!Object.keys(participantData).length) {
+    return (
+      <div className="flex min-h-[100vh] min-w-full flex-col items-center justify-center space-y-4 bg-white pb-40 pt-[71px]">
+        <p className="text-5xl">Nincs kitöltötött adatod</p>
+      </div>
+    );
+  }
   return (
     <ApplicationForm
       universities={universities}
@@ -55,19 +62,22 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     getDataForParticipant(session.user.email)
   );
 
-  const participantData = {
-    ...defaultParticipantData[0],
-    subject: defaultParticipantData[0].subject._ref,
-    university: defaultParticipantData[0].university._ref,
-    faculty: defaultParticipantData[0].faculty._ref,
-  };
+  const participantData = defaultParticipantData.length
+    ? {
+        ...defaultParticipantData[0],
+        subject: defaultParticipantData[0]?.subject?._ref,
+        university: defaultParticipantData[0]?.university?._ref,
+        faculty: defaultParticipantData[0]?.faculty?._ref,
+      }
+    : undefined;
+
   return {
     props: {
       universities,
       faculties,
       subjects,
       sections,
-      participantData,
+      participantData: participantData || {},
       preview: preview || false,
     },
   };

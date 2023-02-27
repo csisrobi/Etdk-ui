@@ -1,4 +1,4 @@
-import { checkifUniqueEmail } from "@lib/queries";
+import { checkIfUniqueEmail } from "@lib/queries";
 import { getClient } from "@lib/sanity";
 import {
   Control,
@@ -159,7 +159,7 @@ const ApplicationForm = ({
     return handleSubmit(async (data) => {
       const participantData = defaultGetValues();
       const checkEmail = await getClient().fetch(
-        checkifUniqueEmail(participantData.email)
+        checkIfUniqueEmail(participantData.email)
       );
       if (!checkEmail.length) {
         Promise.all(
