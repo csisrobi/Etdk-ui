@@ -9,33 +9,8 @@ export default {
       type: "string",
     },
     {
-      title: "Email",
-      name: "email",
-      type: "string",
-    },
-    {
-      title: "Telefonszám",
-      name: "mobileNumber",
-      type: "string",
-    },
-    {
-      title: "Születési dátum",
-      name: "birthDate",
-      type: "date",
-    },
-    {
-      title: "Személyi szám",
-      name: "socialNumber",
-      type: "string",
-    },
-    {
-      title: "Képzési szint",
-      name: "degree",
-      type: "string",
-    },
-    {
-      title: "Évfolyam",
-      name: "class",
+      title: "Ellenőrző száma",
+      name: "idNumber",
       type: "string",
     },
     {
@@ -65,25 +40,40 @@ export default {
         disableNew: true,
       },
     },
+    {
+      title: "Képzési szint",
+      name: "degree",
+      type: "string",
+    },
+    {
+      title: "Évfolyam",
+      name: "class",
+      type: "string",
+    },
+    {
+      title: "Elvégzett félévek száma",
+      name: "finishedSemester",
+      type: "string",
+    },
+    {
+      title: "Email",
+      name: "email",
+      type: "string",
+    },
+    {
+      title: "Telefonszám",
+      name: "mobileNumber",
+      type: "string",
+    },
+    {
+      title: "Ellenőrző kép",
+      name: "idPhoto",
+      type: "file",
+    },
 
     {
       title: "Témavezető név",
       name: "advisorName",
-      type: "string",
-    },
-    {
-      title: "Témavezető email",
-      name: "advisorEmail",
-      type: "string",
-    },
-    {
-      title: "Témavezető telefonszám",
-      name: "advisorMobileNumber",
-      type: "string",
-    },
-    {
-      title: "Témavezető titulus",
-      name: "advisorTitle",
       type: "string",
     },
     {
@@ -114,6 +104,21 @@ export default {
       },
     },
     {
+      title: "Témavezető titulus",
+      name: "advisorTitle",
+      type: "string",
+    },
+    {
+      title: "Témavezető email",
+      name: "advisorEmail",
+      type: "string",
+    },
+    {
+      title: "Témavezető telefonszám",
+      name: "advisorMobileNumber",
+      type: "string",
+    },
+    {
       title: "Témavezető igazolás",
       name: "advisorCertificate",
       type: "file",
@@ -137,6 +142,27 @@ export default {
       options: {
         disableNew: true,
       },
+    },
+
+    {
+      title: "Melléklet",
+      name: "annex",
+      type: "file",
+    },
+    {
+      title: "Adatbankos nyilatkozat",
+      name: "declaration",
+      type: "file",
+    },
+    {
+      title: "Kifizetési bizonylat",
+      name: "voucher",
+      type: "file",
+    },
+    {
+      title: "Hozzájárulási nyilatkozat",
+      name: "contribution",
+      type: "file",
     },
 
     {

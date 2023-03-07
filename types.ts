@@ -99,6 +99,7 @@ export type SectionsSanity = {
   name: string;
   image?: SanityImage;
   _id: string;
+  contributionNeeded: boolean;
 };
 
 export type SanityParticipant = {

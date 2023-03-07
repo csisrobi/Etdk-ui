@@ -82,6 +82,7 @@ export const queryActiveSections = groq`
   *[_type == "sections" && active == true ] | order(name){
     name,
     image,
+    contributionNeeded,
     _id
 }`;
 

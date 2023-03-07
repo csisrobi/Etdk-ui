@@ -1,21 +1,27 @@
 import { querySectionsForScoring, sectionParticipants } from "@lib/queries";
 import { getClient } from "@lib/sanity";
-import { Download, ExpandMore } from "@mui/icons-material";
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Autocomplete,
-  Button,
   TextField,
+  Accordion,
+  AccordionSummary,
   Typography,
+  Button,
+  AccordionDetails,
 } from "@mui/material";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+import Download from "@mui/icons-material/Download";
 import type { GetServerSidePropsContext } from "next";
 import { getSession } from "next-auth/react";
 import { useState, useMemo } from "react";
 import useSWR from "swr";
 import type { SanityParticipant } from "types";
 import { ParticipantScoring } from "src/components/AdminComponents/Scoring";
+
+//TODO LEKELL TUDNI TOLTENI A PROJEKTET, KIVONAT, MELLEKLET, BIOSZOS HOZZAJARULAS
+// TALAN ZIP
+
+//TODO: JELOLVE OTDKRA CHECKBOX -> SANITY
 
 export type Criteria = {
   _id: string;

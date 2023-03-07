@@ -27,6 +27,9 @@ import SponsorsOrg from "../components/SponsorsOrg";
 import WhyApplicate from "../components/WhyApplicate";
 import Year from "../components/Year";
 
+//TODO: pontozasi kriteriumok a main pagerol torolni, kovetelmenyek nem altalanos adat hanem szekciohoz tartozik
+// kovetelmenyek menupont alatt elojon megint minden szekcio es rajuk kattintva dialogusban megjleneik a kovetelemeny
+
 type Props = {
   sponsors: SanitySponsor[];
   organizers: SanityOrganizer[];

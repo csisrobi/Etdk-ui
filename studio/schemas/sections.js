@@ -32,6 +32,11 @@ export default {
       of: [{ type: "block" }],
     },
     {
+      title: "Hozzájárulási nyilatkozat szükséges",
+      name: "contributionNeeded",
+      type: "boolean",
+    },
+    {
       title: "Pontozási kritériumok",
       name: "criteria",
       type: "array",
