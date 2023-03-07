@@ -70,6 +70,11 @@ export default {
       name: "idPhoto",
       type: "file",
     },
+    {
+      title: "Kifizetési bizonylat",
+      name: "voucher",
+      type: "file",
+    },
 
     {
       title: "Témavezető név",
@@ -152,11 +157,6 @@ export default {
     {
       title: "Adatbankos nyilatkozat",
       name: "declaration",
-      type: "file",
-    },
-    {
-      title: "Kifizetési bizonylat",
-      name: "voucher",
       type: "file",
     },
     {
