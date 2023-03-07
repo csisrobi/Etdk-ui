@@ -1,10 +1,9 @@
-import { queryArhivDetails } from "@lib/queries";
-import { getClient } from "@lib/sanity";
 import GetImage from "@utils/getImage";
 import type { GetServerSideProps } from "next";
 import type { SanityArchiv } from "types";
 import Image from "next/image";
 import Link from "next/link";
+import mainService from "../api/services/mainService";
 
 const Hirek = ({ archivData }: { archivData: SanityArchiv }) => {
   const imageSettings = GetImage(archivData.book_image);
@@ -82,8 +81,9 @@ export const getServerSideProps: GetServerSideProps = async ({
   preview = false,
   params,
 }) => {
-  const archivData = await getClient(preview).fetch(
-    queryArhivDetails(params?.slug as string)
+  const archivData = await mainService.getArchiveDetails(
+    preview,
+    params?.slug as string
   );
   return {
     props: {

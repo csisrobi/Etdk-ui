@@ -1,7 +1,6 @@
-import { queryDeadline } from "@lib/queries";
-import { getClient } from "@lib/sanity";
 import RichText from "@utils/RichText";
 import type { SanityRichText } from "types";
+import mainService from "../api/services/mainService";
 
 type Props = {
   deadline: SanityRichText[];
@@ -20,7 +19,7 @@ const Hataridok = ({ deadline }: Props) => {
 };
 
 export async function getStaticProps({ preview = false }) {
-  const deadline = await getClient(preview).fetch(queryDeadline);
+  const deadline = await mainService.getDeadline(preview);
   return {
     props: {
       deadline: deadline[0].deadline,

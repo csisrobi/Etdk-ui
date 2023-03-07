@@ -1,13 +1,3 @@
-import {
-  queryNews,
-  queryApplicate,
-  queryContact,
-  queryGeneral,
-  queryOrg,
-  querySponsor,
-  queryArchivsBasic,
-} from "@lib/queries";
-import { getClient } from "@lib/sanity";
 import { type NextPage } from "next";
 import Head from "next/head";
 import type {
@@ -26,9 +16,7 @@ import ParticipationCondition from "../components/ParticipationCondition";
 import SponsorsOrg from "../components/SponsorsOrg";
 import WhyApplicate from "../components/WhyApplicate";
 import Year from "../components/Year";
-
-//TODO: pontozasi kriteriumok a main pagerol torolni, kovetelmenyek nem altalanos adat hanem szekciohoz tartozik
-// kovetelmenyek menupont alatt elojon megint minden szekcio es rajuk kattintva dialogusban megjleneik a kovetelemeny
+import mainService from "./api/services/mainService";
 
 type Props = {
   sponsors: SanitySponsor[];
@@ -89,13 +77,13 @@ const Home: NextPage<Props> = ({
 };
 
 export async function getStaticProps({ preview = false }) {
-  const sponsors = await getClient(preview).fetch(querySponsor);
-  const organizers = await getClient(preview).fetch(queryOrg);
-  const contacts = await getClient(preview).fetch(queryContact);
-  const generals = await getClient(preview).fetch(queryGeneral);
-  const applicate = await getClient(preview).fetch(queryApplicate);
-  const news = await getClient(preview).fetch(queryNews);
-  const archivs = await getClient(preview).fetch(queryArchivsBasic);
+  const sponsors = await mainService.getSponsors(preview);
+  const organizers = await mainService.getOrganizers(preview);
+  const contacts = await mainService.getContacts(preview);
+  const generals = await mainService.getGenerals(preview);
+  const applicate = await mainService.getApplicate(preview);
+  const news = await mainService.getNews(preview);
+  const archivs = await mainService.getArchives(preview);
   return {
     props: {
       contact: contacts[0],

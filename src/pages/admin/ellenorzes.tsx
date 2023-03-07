@@ -1,5 +1,3 @@
-import { getAllParticipants } from "@lib/queries";
-import { getClient } from "@lib/sanity";
 import type { MRT_ColumnDef } from "material-react-table";
 import MaterialReactTable from "material-react-table";
 import type { GetServerSidePropsContext } from "next";
@@ -7,7 +5,8 @@ import { getSession } from "next-auth/react";
 import { useMemo } from "react";
 import type { SanityParticipant } from "types";
 import { Switch } from "@headlessui/react";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
+import participantService from "../api/services/participantService";
 
 const headers = {
   name: "Név",
@@ -40,18 +39,8 @@ const headers = {
 const EllenorzoFelulet = () => {
   const { data: allParticipantData, isLoading } = useSWR<SanityParticipant[]>(
     "/participants_data",
-    async () => await getClient().fetch(getAllParticipants)
+    async () => await participantService.getParticipants()
   );
-
-  const acceptParticipant = async (id: string, currentValue: boolean) => {
-    await getClient()
-      .patch(id, { set: { accepted: !currentValue } })
-      .commit()
-      .then(() => {
-        mutate("/participants_data");
-      })
-      .catch((e) => console.error(e));
-  };
 
   const columns = useMemo<MRT_ColumnDef<SanityParticipant>[]>(
     () =>
@@ -64,18 +53,24 @@ const EllenorzoFelulet = () => {
             : (key as keyof SanityParticipant),
         header: headers[key as keyof typeof headers],
         ...((key === "advisorCertificate" || key === "extract") && {
-          Cell: ({ row }) => (
-            <a href={row.original[key].url} target="_blank" rel="noreferrer">
-              {row.original[key].originalFilename}
-            </a>
-          ),
+          Cell: ({ row }) => {
+            console.log(row);
+            return (
+              <a href={row.original[key].url} target="_blank" rel="noreferrer">
+                {row.original[key].originalFilename}
+              </a>
+            );
+          },
         }),
         ...(key === "accepted" && {
           Cell: ({ row }) => (
             <Switch
               checked={row.original.accepted}
               onChange={async () =>
-                await acceptParticipant(row.original._id, row.original.accepted)
+                await participantService.acceptParticipants(
+                  row.original._id,
+                  row.original.accepted
+                )
               }
               className={`${
                 row.original.accepted ? "bg-lightcherry" : "bg-lightBrown"

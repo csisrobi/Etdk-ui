@@ -1,5 +1,3 @@
-import { checkIfUniqueEmail } from "@lib/queries";
-import { getClient } from "@lib/sanity";
 import {
   Control,
   Controller,
@@ -13,27 +11,7 @@ import { useState } from "react";
 import type { UniversitiesSanity, FacultySanity, SectionsSanity } from "types";
 import classNames from "classnames";
 import React from "react";
-
-//TODO SORREND DOCX
-
-// Szemelyes adatok
-//TODO KELL ELLENORZO SZAM
-//TODO KELL ELVEGZETT FELEVEK SZAMA, 1-10
-//TODO ELLENORZO KEP
-
-//TODO: jelentkezes utan, masodik fazisba
-// Dolgozat - pdf, akár 100 oldalas dokumentum, képekkel, ábrákkal
-// 	Melléklet - pdf, max. 20 oldalas dokumentum
-
-// Egyéb dokumentumok:
-// Adatbankos nyilatkozat - pdf, 1 oldalas dokumentum
-// Kifizetési bizonylat - pdf vagy jpg.
-// Kivételes eset: Biológia szekció esetében, hozzájárulási nyilatkozat, pdf, 1 oldalas (ha nem megoldható e-mailen továbbítják, kb. 10-15 ember érint)
-
-//TODO: GDPR kocka enelkul nem lehet jelentkezni + lekell menteni hogy beleegyezett
-//TODO: JELENTKEZETT -> NOW sanitybe
-
-//TODO: EGYEB szaknak, karnak es egyetemnek!
+import participantService from "src/pages/api/services/participantService";
 
 const degreeOptions = [
   {
@@ -69,49 +47,6 @@ const classOptions = [
   },
 ];
 
-const semesterOptions = [
-  {
-    name: "1",
-    value: "1",
-  },
-  {
-    name: "2",
-    value: "2",
-  },
-  {
-    name: "3",
-    value: "3",
-  },
-  {
-    name: "4",
-    value: "4",
-  },
-  {
-    name: "5",
-    value: "5",
-  },
-  {
-    name: "6",
-    value: "6",
-  },
-  {
-    name: "7",
-    value: "7",
-  },
-  {
-    name: "8",
-    value: "8",
-  },
-  {
-    name: "9",
-    value: "9",
-  },
-  {
-    name: "10",
-    value: "10",
-  },
-];
-
 const titleOptions = [
   {
     name: "Adjunktus",
@@ -133,16 +68,15 @@ const titleOptions = [
 
 export type DefaultInputs = {
   name: string;
-  idNumber: string;
-  finishedSemester: string;
+  email: string;
+  mobileNumber: string;
+  birthDate: string;
+  socialNumber: string;
   degree: string;
   class: string;
   university: string;
   faculty: string;
   subject: string;
-  email: string;
-  mobileNumber: string;
-  idPhoto: File | null;
 };
 
 export type ArrayInputs = {
@@ -158,10 +92,6 @@ export type ArrayInputs = {
   title: string;
   extract: File | null;
   section: string;
-  annex: File | null;
-  declaration: File | null;
-  voucher: File | null;
-  contribution: File | null;
 };
 
 export type Inputs = {
@@ -187,16 +117,15 @@ const ApplicationForm = ({
     useForm<DefaultInputs>({
       defaultValues: {
         name: "",
-        idNumber: "",
+        email: "",
+        mobileNumber: "",
+        birthDate: "",
+        socialNumber: "",
         degree: "",
         class: "",
         university: "",
         faculty: "",
         subject: "",
-        finishedSemester: "",
-        email: "",
-        mobileNumber: "",
-        idPhoto: null,
       },
     });
   const { control: arrayControl, handleSubmit } = useForm<Inputs>({
@@ -215,10 +144,6 @@ const ApplicationForm = ({
           title: "",
           extract: null,
           section: "",
-          contribution: null,
-          annex: null,
-          declaration: null,
-          voucher: null,
         },
       ],
     },
@@ -231,98 +156,87 @@ const ApplicationForm = ({
 
   const onSubmit = React.useMemo(() => {
     return handleSubmit(async (data) => {
-      console.table(data);
-      // const participantData = defaultGetValues();
-      // const checkEmail = await getClient().fetch(
-      //   checkIfUniqueEmail(participantData.email)
-      // );
-      // if (!checkEmail.length) {
-      //   Promise.all(
-      //     data.projects.map(async (project) => {
-      //       if (project.extract && project.advisorCertificate) {
-      //         const extractData = await getClient().assets.upload(
-      //           "file",
-      //           project.extract,
-      //           { filename: project.extract.name }
-      //         );
-      //         const advisorCertificateData = await getClient().assets.upload(
-      //           "file",
-      //           project.advisorCertificate,
-      //           { filename: project.advisorCertificate.name }
-      //         );
+      const participantData = defaultGetValues();
+      const checkEmail = await participantService.checkUniqueEmail(
+        participantData.email
+      );
+      if (!checkEmail.length) {
+        Promise.all(
+          data.projects.map(async (project) => {
+            if (project.extract && project.advisorCertificate) {
+              const extractData = await participantService.uploadExtract(
+                project
+              );
+              const advisorCertificateData =
+                await participantService.uploadAdvisorCertificate(project);
 
-      //         const mutations = [
-      //           {
-      //             create: {
-      //               _type: "participants",
-      //               name: participantData.name,
-      //               email: participantData.email,
-      //               mobileNumber: participantData.mobileNumber,
-      //               birthDate: participantData.birthDate,
-      //               socialNumber: participantData.socialNumber,
-      //               degree: participantData.degree,
-      //               class: participantData.class,
-      //               university: {
-      //                 _type: "reference",
-      //                 _ref: participantData.university,
-      //               },
-      //               faculty: {
-      //                 _type: "reference",
-      //                 _ref: participantData.faculty,
-      //               },
-      //               subject: {
-      //                 _type: "reference",
-      //                 _ref: participantData.subject,
-      //               },
-      //               advisorName: project.advisorName,
-      //               advisorEmail: project.advisorEmail,
-      //               advisorMobileNumber: project.advisorMobileNumber,
-      //               advisorTitle: project.advisorTitle,
-      //               advisorUniversity: {
-      //                 _type: "reference",
-      //                 _ref: project.advisorUniversity,
-      //               },
-      //               advisorFaculty: {
-      //                 _type: "reference",
-      //                 _ref: project.advisorFaculty,
-      //               },
-      //               advisorSubject: {
-      //                 _type: "reference",
-      //                 _ref: project.advisorSubject,
-      //               },
-      //               advisorCertificate: {
-      //                 _type: "file",
-      //                 asset: {
-      //                   _ref: advisorCertificateData._id,
-      //                   _type: "reference",
-      //                 },
-      //               },
-      //               title: project.title,
-      //               extract: {
-      //                 _type: "file",
-      //                 asset: { _ref: extractData._id, _type: "reference" },
-      //               },
-      //               section: {
-      //                 _type: "reference",
-      //                 _ref: project.section,
-      //               },
-      //               accepted: false,
-      //             },
-      //           },
-      //         ];
-      //         //TODO:MOVE TO THE SERVER THE WHOLE UPLOAD SHIT
-      //         return await getClient()
-      //           .mutate(mutations)
-      //           .then((response) => response)
-      //           .then((result) => console.log(result))
-      //           .catch((error) => console.error(error));
-      //       }
-      //     })
-      //   );
-      // } else {
-      //   setNotiMessage("Ezen az emailen már regisztrálva van");
-      //   setTimeout(() => setNotiMessage(""), 3000);
-      // }
+              const mutations = [
+                {
+                  create: {
+                    _type: "participants",
+                    name: participantData.name,
+                    email: participantData.email,
+                    mobileNumber: participantData.mobileNumber,
+                    birthDate: participantData.birthDate,
+                    socialNumber: participantData.socialNumber,
+                    degree: participantData.degree,
+                    class: participantData.class,
+                    university: {
+                      _type: "reference",
+                      _ref: participantData.university,
+                    },
+                    faculty: {
+                      _type: "reference",
+                      _ref: participantData.faculty,
+                    },
+                    subject: {
+                      _type: "reference",
+                      _ref: participantData.subject,
+                    },
+                    advisorName: project.advisorName,
+                    advisorEmail: project.advisorEmail,
+                    advisorMobileNumber: project.advisorMobileNumber,
+                    advisorTitle: project.advisorTitle,
+                    advisorUniversity: {
+                      _type: "reference",
+                      _ref: project.advisorUniversity,
+                    },
+                    advisorFaculty: {
+                      _type: "reference",
+                      _ref: project.advisorFaculty,
+                    },
+                    advisorSubject: {
+                      _type: "reference",
+                      _ref: project.advisorSubject,
+                    },
+                    advisorCertificate: {
+                      _type: "file",
+                      asset: {
+                        _ref: advisorCertificateData?._id,
+                        _type: "reference",
+                      },
+                    },
+                    title: project.title,
+                    extract: {
+                      _type: "file",
+                      asset: { _ref: extractData?._id, _type: "reference" },
+                    },
+                    section: {
+                      _type: "reference",
+                      _ref: project.section,
+                    },
+                    accepted: false,
+                  },
+                },
+              ];
+              return await participantService.uploadMutations(mutations);
+            }
+          })
+        );
+      } else {
+        setNotiMessage("Ezen az emailen már regisztrálva van");
+        setTimeout(() => setNotiMessage(""), 3000);
+      }
     });
   }, [defaultGetValues, handleSubmit]);
 
@@ -465,47 +379,6 @@ const ApplicationForm = ({
     );
   };
 
-  const ContributionField = ({ index }: { index: number }) => {
-    const selectedSection = useWatch({
-      control: arrayControl,
-      name: `projects.${index}.section`,
-    });
-    const findSection = sections.find((s) => s._id === selectedSection);
-    if (findSection && findSection.contributionNeeded === true) {
-      return (
-        <Controller
-          name={`projects.${index}.contribution`}
-          control={arrayControl}
-          render={({ field: { onChange, value } }) => {
-            return (
-              <label>
-                <div
-                  className={classNames(
-                    inputClasses,
-                    "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
-                  )}
-                >
-                  <div className="overflow-hidden truncate opacity-80">
-                    {value ? value.name : "Hozzájárulási nyilatkozat"}
-                  </div>
-                </div>
-                <input
-                  disabled={!!defaultValues}
-                  type="file"
-                  className="hidden"
-                  onChange={(e) =>
-                    onChange(e.target.files ? e.target.files[0] : null)
-                  }
-                />
-              </label>
-            );
-          }}
-        />
-      );
-    }
-    return null;
-  };
-
   return (
     <div className="flex min-h-[100vh] min-w-full flex-col items-center justify-center space-y-4 bg-white pb-40 pt-[71px]">
       <div className="space-y-4">
@@ -529,7 +402,7 @@ const ApplicationForm = ({
               )}
             />
             <Controller
-              name="idNumber"
+              name="email"
               control={defaultFormControl}
               render={({ field }) => (
                 <input
@@ -540,24 +413,58 @@ const ApplicationForm = ({
                     inputClasses,
                     "bg-application1 text-darkcherry placeholder:text-darkcherry"
                   )}
-                  placeholder="Ellenőrző száma"
+                  placeholder="E-mail cím"
                 />
               )}
             />
-            <UniversityField
+            <Controller
+              name="mobileNumber"
               control={defaultFormControl}
-              text="text-darkcherry"
-              bg="bg-application1"
+              render={({ field }) => (
+                <input
+                  {...field}
+                  disabled={!!defaultValues}
+                  type="text"
+                  className={classNames(
+                    inputClasses,
+                    "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                  )}
+                  placeholder="Telefonszam"
+                />
+              )}
             />
-            <FacultyField
+            <Controller
+              name="birthDate"
               control={defaultFormControl}
-              text="text-darkcherry"
-              bg="bg-application1"
+              render={({ field }) => (
+                <input
+                  {...field}
+                  disabled={!!defaultValues}
+                  type="text"
+                  className={classNames(
+                    inputClasses,
+                    "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                  )}
+                  placeholder="Születési dátum"
+                  onFocus={(e) => (e.target.type = "date")}
+                />
+              )}
             />
-            <SubjectField
+            <Controller
+              name="socialNumber"
               control={defaultFormControl}
-              text="text-darkcherry"
-              bg="bg-application1"
+              render={({ field }) => (
+                <input
+                  {...field}
+                  disabled={!!defaultValues}
+                  type="text"
+                  className={classNames(
+                    inputClasses,
+                    "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                  )}
+                  placeholder="Személyi szám"
+                />
+              )}
             />
             <Controller
               name="degree"
@@ -593,82 +500,20 @@ const ApplicationForm = ({
                 />
               )}
             />
-            <Controller
-              name="finishedSemester"
+            <UniversityField
               control={defaultFormControl}
-              render={({ field: { onChange, value } }) => (
-                <Select
-                  disabled={!!defaultValues}
-                  onChange={(value: string | number) => {
-                    onChange(value as string);
-                  }}
-                  options={semesterOptions}
-                  value={semesterOptions.find((c) => c.value === value) || null}
-                  placeholder="Elvégzett félévek száma"
-                  text="text-darkcherry"
-                  bg="bg-application1"
-                />
-              )}
+              text="text-darkcherry"
+              bg="bg-application1"
             />
-            <Controller
-              name="email"
+            <FacultyField
               control={defaultFormControl}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  disabled={!!defaultValues}
-                  type="text"
-                  className={classNames(
-                    inputClasses,
-                    "bg-application1 text-darkcherry placeholder:text-darkcherry"
-                  )}
-                  placeholder="E-mail cím"
-                />
-              )}
+              text="text-darkcherry"
+              bg="bg-application1"
             />
-            <Controller
-              name="mobileNumber"
+            <SubjectField
               control={defaultFormControl}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  disabled={!!defaultValues}
-                  type="text"
-                  className={classNames(
-                    inputClasses,
-                    "bg-application1 text-darkcherry placeholder:text-darkcherry"
-                  )}
-                  placeholder="Telefonszám"
-                />
-              )}
-            />
-            <Controller
-              name="idPhoto"
-              control={defaultFormControl}
-              render={({ field: { onChange, value } }) => {
-                return (
-                  <label>
-                    <div
-                      className={classNames(
-                        inputClasses,
-                        "flex cursor-pointer items-center bg-application1 pl-4 text-darkcherry  placeholder:text-darkcherry "
-                      )}
-                    >
-                      <div className="overflow-hidden truncate opacity-80">
-                        {value ? value.name : "Ellenőrző kép"}
-                      </div>
-                    </div>
-                    <input
-                      disabled={!!defaultValues}
-                      type="file"
-                      className="hidden"
-                      onChange={(e) =>
-                        onChange(e.target.files ? e.target.files[0] : null)
-                      }
-                    />
-                  </label>
-                );
-              }}
+              text="text-darkcherry"
+              bg="bg-application1"
             />
           </div>
         </div>
@@ -690,46 +535,6 @@ const ApplicationForm = ({
                         "bg-application2 text-white placeholder:text-white"
                       )}
                       placeholder="Név"
-                    />
-                  )}
-                />
-                <UniversityField
-                  index={index}
-                  advisor
-                  control={arrayControl}
-                  text="text-white"
-                  bg="bg-application2"
-                />
-                <FacultyField
-                  index={index}
-                  advisor
-                  control={arrayControl}
-                  text="text-white"
-                  bg="bg-application2"
-                />
-                <SubjectField
-                  index={index}
-                  advisor
-                  control={arrayControl}
-                  text="text-white"
-                  bg="bg-application2"
-                />
-                <Controller
-                  name={`projects.${index}.advisorTitle`}
-                  control={arrayControl}
-                  render={({ field: { onChange, value } }) => (
-                    <Select
-                      disabled={!!defaultValues}
-                      onChange={(value: string | number) => {
-                        onChange(value as string);
-                      }}
-                      options={titleOptions}
-                      value={
-                        titleOptions.find((t) => t.value === value) || null
-                      }
-                      placeholder="Titulus"
-                      text="text-white"
-                      bg="bg-application2"
                     />
                   )}
                 />
@@ -761,9 +566,49 @@ const ApplicationForm = ({
                         inputClasses,
                         "bg-application2 text-white placeholder:text-white"
                       )}
-                      placeholder="Telefonszám"
+                      placeholder="Telefonszam"
                     />
                   )}
+                />
+                <Controller
+                  name={`projects.${index}.advisorTitle`}
+                  control={arrayControl}
+                  render={({ field: { onChange, value } }) => (
+                    <Select
+                      disabled={!!defaultValues}
+                      onChange={(value: string | number) => {
+                        onChange(value as string);
+                      }}
+                      options={titleOptions}
+                      value={
+                        titleOptions.find((t) => t.value === value) || null
+                      }
+                      placeholder="Titulus"
+                      text="text-white"
+                      bg="bg-application2"
+                    />
+                  )}
+                />
+                <UniversityField
+                  index={index}
+                  advisor
+                  control={arrayControl}
+                  text="text-white"
+                  bg="bg-application2"
+                />
+                <FacultyField
+                  index={index}
+                  advisor
+                  control={arrayControl}
+                  text="text-white"
+                  bg="bg-application2"
+                />
+                <SubjectField
+                  index={index}
+                  advisor
+                  control={arrayControl}
+                  text="text-white"
+                  bg="bg-application2"
                 />
                 <Controller
                   name={`projects.${index}.advisorCertificate`}
@@ -867,91 +712,6 @@ const ApplicationForm = ({
                     );
                   }}
                 />
-                <Controller
-                  name={`projects.${index}.annex`}
-                  control={arrayControl}
-                  render={({ field: { onChange, value } }) => {
-                    return (
-                      <label>
-                        <div
-                          className={classNames(
-                            inputClasses,
-                            "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
-                          )}
-                        >
-                          <div className="overflow-hidden truncate opacity-80">
-                            {value ? value.name : "Melléklet"}
-                          </div>
-                        </div>
-                        <input
-                          disabled={!!defaultValues}
-                          type="file"
-                          className="hidden"
-                          onChange={(e) =>
-                            onChange(e.target.files ? e.target.files[0] : null)
-                          }
-                        />
-                      </label>
-                    );
-                  }}
-                />
-                <Controller
-                  name={`projects.${index}.declaration`}
-                  control={arrayControl}
-                  render={({ field: { onChange, value } }) => {
-                    return (
-                      <label>
-                        <div
-                          className={classNames(
-                            inputClasses,
-                            "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
-                          )}
-                        >
-                          <div className="overflow-hidden truncate opacity-80">
-                            {value ? value.name : "Adatbankos nyilatkozat"}
-                          </div>
-                        </div>
-                        <input
-                          disabled={!!defaultValues}
-                          type="file"
-                          className="hidden"
-                          onChange={(e) =>
-                            onChange(e.target.files ? e.target.files[0] : null)
-                          }
-                        />
-                      </label>
-                    );
-                  }}
-                />
-                <Controller
-                  name={`projects.${index}.voucher`}
-                  control={arrayControl}
-                  render={({ field: { onChange, value } }) => {
-                    return (
-                      <label>
-                        <div
-                          className={classNames(
-                            inputClasses,
-                            "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
-                          )}
-                        >
-                          <div className="overflow-hidden truncate opacity-80">
-                            {value ? value.name : "Kifizetési bizonylat"}
-                          </div>
-                        </div>
-                        <input
-                          disabled={!!defaultValues}
-                          type="file"
-                          className="hidden"
-                          onChange={(e) =>
-                            onChange(e.target.files ? e.target.files[0] : null)
-                          }
-                        />
-                      </label>
-                    );
-                  }}
-                />
-                <ContributionField index={index} />
               </div>
             </div>
             <button
@@ -970,10 +730,6 @@ const ApplicationForm = ({
                   title: "",
                   extract: null,
                   section: "",
-                  contribution: null,
-                  annex: null,
-                  declaration: null,
-                  voucher: null,
                 })
               }
             >

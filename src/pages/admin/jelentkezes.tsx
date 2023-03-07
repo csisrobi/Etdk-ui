@@ -1,16 +1,10 @@
-import {
-  getDataForParticipant,
-  queryActiveSections,
-  queryFaculties,
-  querySubjects,
-  queryUniversities,
-} from "@lib/queries";
-import { getClient } from "@lib/sanity";
 import type { GetServerSidePropsContext } from "next";
 import { getSession } from "next-auth/react";
 import type { Inputs } from "src/components/ApplicationForm";
 import ApplicationForm from "src/components/ApplicationForm";
 import type { FacultySanity, SectionsSanity, UniversitiesSanity } from "types";
+import adminService from "../api/services/adminService";
+import participantService from "../api/services/participantService";
 
 const AdminJelentkezes = ({
   universities,
@@ -42,12 +36,10 @@ const AdminJelentkezes = ({
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const { preview } = ctx;
-  const universities = await getClient(preview || false).fetch(
-    queryUniversities
-  );
-  const faculties = await getClient(preview || false).fetch(queryFaculties);
-  const subjects = await getClient(preview || false).fetch(querySubjects);
-  const sections = await getClient(preview).fetch(queryActiveSections);
+  const universities = await adminService.getUniversities(preview || false);
+  const faculties = await adminService.getFaculties(preview || false);
+  const subjects = await adminService.getSubjects(preview || false);
+  const sections = await adminService.getSections(preview || false);
 
   const session = await getSession(ctx);
   if (!session?.user || !session.user.email) {
@@ -58,8 +50,9 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       },
     };
   }
-  const defaultParticipantData = await getClient(preview || false).fetch(
-    getDataForParticipant(session.user.email)
+  const defaultParticipantData = await participantService.getParticipantData(
+    preview || false,
+    session.user.email
   );
 
   const participantData = defaultParticipantData.length
