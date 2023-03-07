@@ -53,14 +53,11 @@ const EllenorzoFelulet = () => {
             : (key as keyof SanityParticipant),
         header: headers[key as keyof typeof headers],
         ...((key === "advisorCertificate" || key === "extract") && {
-          Cell: ({ row }) => {
-            console.log(row);
-            return (
-              <a href={row.original[key].url} target="_blank" rel="noreferrer">
-                {row.original[key].originalFilename}
-              </a>
-            );
-          },
+          Cell: ({ row }) => (
+            <a href={row.original[key].url} target="_blank" rel="noreferrer">
+              {row.original[key].originalFilename}
+            </a>
+          ),
         }),
         ...(key === "accepted" && {
           Cell: ({ row }) => (
