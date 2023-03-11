@@ -1,5 +1,5 @@
 import { groq } from "next-sanity";
-
+import axios from "axios";
 //TODO: CREATE A GENERAL QUERY
 export const querySponsor = groq`
 *[_type == "sponsor"]{
@@ -193,3 +193,14 @@ export const sectionParticipants = (section: string) => groq`
     score
   }
 }`;
+
+export const fetcher = async (url: string, data?: any, isFormData = false) => {
+  const res = await axios(process.env.NEXT_PUBLIC_API_URL + `${url}`, {
+    method: data ? "POST" : "GET",
+    headers: {
+      "Content-Type": isFormData ? "multipart/form-data" : "application/json",
+    },
+    data: data,
+  });
+  return res.data.body;
+};

@@ -14,7 +14,7 @@ import { useState, useMemo } from "react";
 import useSWR from "swr";
 import type { SanityParticipant } from "types";
 import { ParticipantScoring } from "src/components/AdminComponents/Scoring";
-import adminService from "../api/services/adminService";
+import { fetcher } from "@lib/queries";
 
 export type Criteria = {
   _id: string;
@@ -35,7 +35,9 @@ const AdminPontozoFelulet = ({ sections }: { sections: Section[] }) => {
   >(
     ["/section_participants", tabValue],
     async () =>
-      await adminService.getSectionParticipants(sections[tabValue]?._id || "")
+      await fetcher("/sections/participants", {
+        id: sections[tabValue]?._id || "",
+      })
   );
 
   const sectionsOptions = useMemo(
@@ -134,9 +136,8 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   }
 
   //TODO: FILTER AFTER LOGGED IN USER RESPONSABILITY
-  const sections = (await adminService.getSectionsForScoring(
-    preview || false
-  )) as Section[];
+
+  const sections = (await fetcher("/sections/score")) as Section[];
 
   return {
     props: {

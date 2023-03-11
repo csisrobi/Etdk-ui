@@ -1,10 +1,9 @@
+import { fetcher } from "@lib/queries";
 import type { GetServerSidePropsContext } from "next";
 import { getSession } from "next-auth/react";
 import type { Inputs } from "src/components/ApplicationForm";
 import ApplicationForm from "src/components/ApplicationForm";
 import type { FacultySanity, SectionsSanity, UniversitiesSanity } from "types";
-import adminService from "../api/services/adminService";
-import participantService from "../api/services/participantService";
 
 const AdminJelentkezes = ({
   universities,
@@ -24,6 +23,7 @@ const AdminJelentkezes = ({
       </div>
     );
   }
+
   return (
     <ApplicationForm
       universities={universities}
@@ -36,10 +36,10 @@ const AdminJelentkezes = ({
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const { preview } = ctx;
-  const universities = await adminService.getUniversities(preview || false);
-  const faculties = await adminService.getFaculties(preview || false);
-  const subjects = await adminService.getSubjects(preview || false);
-  const sections = await adminService.getSections(preview || false);
+  const universities = await fetcher("/universities");
+  const faculties = await fetcher("/universities");
+  const subjects = await fetcher("/subjects");
+  const sections = await fetcher("/sections");
 
   const session = await getSession(ctx);
   if (!session?.user || !session.user.email) {
@@ -50,10 +50,9 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       },
     };
   }
-  const defaultParticipantData = await participantService.getParticipantData(
-    preview || false,
-    session.user.email
-  );
+  const defaultParticipantData = await fetcher("/participants/data", {
+    email: session.user.email,
+  });
 
   const participantData = defaultParticipantData.length
     ? {

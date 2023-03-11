@@ -1,6 +1,6 @@
+import { fetcher } from "@lib/queries";
 import ApplicationForm from "src/components/ApplicationForm";
 import type { UniversitiesSanity, FacultySanity, SectionsSanity } from "types";
-import adminService from "../api/services/adminService";
 
 const JelentkezesTest = ({
   universities,
@@ -21,9 +21,9 @@ const JelentkezesTest = ({
 };
 
 export async function getStaticProps({ preview = false }) {
-  const universities = await adminService.getUniversities(preview);
-  const faculties = await adminService.getFaculties(preview);
-  const sections = await adminService.getSections(preview);
+  const universities = await fetcher("/universities");
+  const faculties = await fetcher("/faculties");
+  const sections = await fetcher("/sections");
 
   return {
     props: {

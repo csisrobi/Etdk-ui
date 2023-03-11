@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { fetcher } from "@lib/queries";
 import NextAuth from "next-auth";
 import { SessionStrategy } from "next-auth/core/types";
 import GoogleProvider from "next-auth/providers/google";
-import adminService from "../services/adminService";
-import participantService from "../services/participantService";
 
 export const authOptions = {
   session: {
@@ -23,8 +22,10 @@ export const authOptions = {
   },
   callbacks: {
     signIn: async ({ user }: { user: any }) => {
-      const participant = await participantService.checkUniqueEmail(user.email);
-      const admin = await adminService.checkIfAdmin(user.email);
+      const participant = await fetcher("/participants/check", {
+        email: user.email,
+      });
+      const admin = await fetcher("/admin/check", { body: user.email });
       if (!participant.length && !admin.length) {
         return false;
       }

@@ -1,3 +1,4 @@
+import { fetcher } from "@lib/queries";
 import { type NextPage } from "next";
 import Head from "next/head";
 import type {
@@ -16,7 +17,6 @@ import ParticipationCondition from "../components/ParticipationCondition";
 import SponsorsOrg from "../components/SponsorsOrg";
 import WhyApplicate from "../components/WhyApplicate";
 import Year from "../components/Year";
-import mainService from "./api/services/mainService";
 
 type Props = {
   sponsors: SanitySponsor[];
@@ -77,13 +77,14 @@ const Home: NextPage<Props> = ({
 };
 
 export async function getStaticProps({ preview = false }) {
-  const sponsors = await mainService.getSponsors(preview);
-  const organizers = await mainService.getOrganizers(preview);
-  const contacts = await mainService.getContacts(preview);
-  const generals = await mainService.getGenerals(preview);
-  const applicate = await mainService.getApplicate(preview);
-  const news = await mainService.getNews(preview);
-  const archivs = await mainService.getArchives(preview);
+  const sponsors = await fetcher("/main/sponsors");
+  const organizers = await fetcher("/main/organizers");
+  const contacts = await fetcher("/main/contacts");
+  const generals = await fetcher("/main/general");
+  const applicate = await fetcher("/main/applicate");
+  const news = await fetcher("/main/news");
+  const archivs = await fetcher("/archives");
+
   return {
     props: {
       contact: contacts[0],

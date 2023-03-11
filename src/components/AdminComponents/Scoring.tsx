@@ -1,7 +1,7 @@
+import { fetcher } from "@lib/queries";
 import { Button, InputAdornment, TextField } from "@mui/material";
 import { useState } from "react";
 import { Criteria } from "src/pages/admin/pontozas";
-import participantService from "src/pages/api/services/participantService";
 import { SanityParticipant } from "types";
 
 export type ScoreType = {
@@ -35,7 +35,10 @@ export const ParticipantScoring = ({
   );
   const [errors, setErrors] = useState<ErrorType>({});
   const scoreParticipant = async () =>
-    await participantService.scoreParticipant(participant._id, scores);
+    await fetcher("/participants/score", {
+      id: participant._id,
+      scores: scores,
+    });
 
   return (
     <div>

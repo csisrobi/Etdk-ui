@@ -6,7 +6,7 @@ import { useMemo } from "react";
 import type { SanityParticipant } from "types";
 import { Switch } from "@headlessui/react";
 import useSWR from "swr";
-import participantService from "../api/services/participantService";
+import { fetcher } from "@lib/queries";
 
 const headers = {
   name: "Név",
@@ -39,7 +39,7 @@ const headers = {
 const EllenorzoFelulet = () => {
   const { data: allParticipantData, isLoading } = useSWR<SanityParticipant[]>(
     "/participants_data",
-    async () => await participantService.getParticipants()
+    async () => await fetcher("/participants")
   );
 
   const columns = useMemo<MRT_ColumnDef<SanityParticipant>[]>(
@@ -64,10 +64,10 @@ const EllenorzoFelulet = () => {
             <Switch
               checked={row.original.accepted}
               onChange={async () =>
-                await participantService.acceptParticipants(
-                  row.original._id,
-                  row.original.accepted
-                )
+                await fetcher("/participants/accept", {
+                  id: row.original._id,
+                  currentValue: row.original.accepted,
+                })
               }
               className={`${
                 row.original.accepted ? "bg-lightcherry" : "bg-lightBrown"

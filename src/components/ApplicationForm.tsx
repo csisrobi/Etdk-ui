@@ -11,7 +11,7 @@ import { useState } from "react";
 import type { UniversitiesSanity, FacultySanity, SectionsSanity } from "types";
 import classNames from "classnames";
 import React from "react";
-import participantService from "src/pages/api/services/participantService";
+import { fetcher } from "@lib/queries";
 
 const degreeOptions = [
   {
@@ -157,18 +157,47 @@ const ApplicationForm = ({
   const onSubmit = React.useMemo(() => {
     return handleSubmit(async (data) => {
       const participantData = defaultGetValues();
-      const checkEmail = await participantService.checkUniqueEmail(
-        participantData.email
-      );
+      const checkEmail = await fetcher("/participants/check", {
+        email: participantData.email,
+      });
       if (!checkEmail.length) {
         Promise.all(
           data.projects.map(async (project) => {
             if (project.extract && project.advisorCertificate) {
-              const extractData = await participantService.uploadExtract(
-                project
+              const formData = new FormData();
+              formData.append("advisorName", project.advisorName);
+              formData.append("advisorEmail", project.advisorEmail);
+              formData.append(
+                "advisorMobileNumber",
+                project.advisorMobileNumber
               );
-              const advisorCertificateData =
-                await participantService.uploadAdvisorCertificate(project);
+              formData.append("advisorTitle", project.advisorTitle);
+              formData.append("advisorUniversity", project.advisorUniversity);
+              formData.append("advisorFaculty", project.advisorFaculty);
+              formData.append("advisorFaculty", project.advisorFaculty);
+              formData.append("advisorSubject", project.advisorSubject);
+              formData.append(
+                "advisorCertificate",
+                project.advisorCertificate,
+                project.advisorCertificate.name
+              );
+              formData.append("title", project.title);
+              formData.append("extract", project.extract, project.extract.name);
+              formData.append("section", project.section);
+              const extractData = await fetcher(
+                "/participants/upload/extract",
+                {
+                  formData,
+                },
+                true
+              );
+              const advisorCertificateData = await fetcher(
+                "/participants/upload/certificate",
+                {
+                  formData,
+                },
+                true
+              );
 
               const mutations = [
                 {
@@ -229,7 +258,9 @@ const ApplicationForm = ({
                   },
                 },
               ];
-              return await participantService.uploadMutations(mutations);
+              return await fetcher("/participants/upload/mutations", {
+                mutations,
+              });
             }
           })
         );
