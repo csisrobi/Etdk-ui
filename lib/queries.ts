@@ -195,12 +195,14 @@ export const sectionParticipants = (section: string) => groq`
 }`;
 
 export const fetcher = async (url: string, data?: any, isFormData = false) => {
-  const res = await axios(process.env.NEXT_PUBLIC_API_URL + `${url}`, {
+  return await fetch(process.env.NEXT_PUBLIC_API_URL + `${url}`, {
     method: data ? "POST" : "GET",
     headers: {
       "Content-Type": isFormData ? "multipart/form-data" : "application/json",
     },
-    data: data,
-  });
-  return res.data.body;
+    body: data,
+  })
+    .then((res) => res.json())
+    .then((r) => r.body)
+    .catch((e) => console.error(e));
 };
