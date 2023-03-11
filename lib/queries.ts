@@ -1,5 +1,4 @@
 import { groq } from "next-sanity";
-import axios from "axios";
 //TODO: CREATE A GENERAL QUERY
 export const querySponsor = groq`
 *[_type == "sponsor"]{
