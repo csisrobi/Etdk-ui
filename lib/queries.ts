@@ -63,6 +63,11 @@ export const queryDeadline = groq`
   deadline
 }`;
 
+export const queryRequirement = groq`
+*[_type == "general"]{
+  requirement
+}`;
+
 export const queryArchivsBasic = groq`
 *[_type == "archiv"] | order(year){
   year,
