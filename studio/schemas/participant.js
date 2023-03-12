@@ -23,6 +23,11 @@ export default {
       },
     },
     {
+      title: "Egyéb egyetem",
+      name: "universityOther",
+      type: "string",
+    },
+    {
       title: "Kar",
       name: "faculty",
       type: "reference",
@@ -32,6 +37,11 @@ export default {
       },
     },
     {
+      title: "Egyéb Kar",
+      name: "facultyOther",
+      type: "string",
+    },
+    {
       title: "Szak",
       name: "subject",
       type: "reference",
@@ -39,6 +49,11 @@ export default {
       options: {
         disableNew: true,
       },
+    },
+    {
+      title: "Egyéb Szak",
+      name: "subjectOther",
+      type: "string",
     },
     {
       title: "Képzési szint",
@@ -91,6 +106,11 @@ export default {
       },
     },
     {
+      title: "Témavezető egyéb egyetem",
+      name: "advisorUniversityOther",
+      type: "string",
+    },
+    {
       title: "Témavezető kar",
       name: "advisorFaculty",
       type: "reference",
@@ -100,6 +120,11 @@ export default {
       },
     },
     {
+      title: "Témavezető egyéb kar",
+      name: "advisorFacultyOther",
+      type: "string",
+    },
+    {
       title: "Témavezető szak",
       name: "advisorSubject",
       type: "reference",
@@ -107,6 +132,11 @@ export default {
       options: {
         disableNew: true,
       },
+    },
+    {
+      title: "Témavezető egyéb szak",
+      name: "advisorSubjectOther",
+      type: "string",
     },
     {
       title: "Témavezető titulus",

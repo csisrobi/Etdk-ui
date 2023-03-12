@@ -53,7 +53,7 @@ const Hirek = ({ archivData }: { archivData: SanityArchiv }) => {
                       <td>
                         <span
                           key={winnerPerson.name}
-                          className="whitespace-pre-wrap text-lg text-gray md:text-xl"
+                          className="text-grayCustom whitespace-pre-wrap text-lg md:text-xl"
                         >
                           {winnerPerson.name.split(",").join(",\n")}
                         </span>
@@ -61,7 +61,7 @@ const Hirek = ({ archivData }: { archivData: SanityArchiv }) => {
                       <td>
                         <span
                           key={winnerPerson.name}
-                          className="text-lg text-gray md:text-xl"
+                          className="text-grayCustom text-lg md:text-xl"
                         >
                           {winnerPerson.result}
                         </span>

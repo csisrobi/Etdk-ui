@@ -124,18 +124,40 @@ export const checkIfAdmin = (email: string) => groq`
   role
 }`;
 
-export const getDataForParticipant = (email: string) => groq`
-*[_type == "participants" && email == "${email}"] {
-  birthDate,
-  class,
+export const getProjectsDataForParticipant = (email: string) => groq`
+*[_type == "participants" && email == "${email}"]{
+  _id,
+  "advisorUniversity": advisorUniversity -> _id,
+  "advisorFaculty":advisorFaculty -> _id,
+  "advisorSubject":advisorSubject -> _id,
+  advisorName,
+  advisorTitle,
+  advisorEmail,
+  advisorMobileNumber,
+  "advisorCertificate": advisorCertificate.asset->originalFilename,
+
+  title,
+  "extract": extract.asset->originalFilename,
+  "section":section -> _id,
+  "annex": annex.asset->originalFilename,
+  "declaration": declaration.asset->originalFilename,
+  "contribution": contribution.asset->originalFilename,
+}`;
+
+export const getPersonDataForParticipant = (email: string) => groq`
+*[_type == "participants" && email == "${email}"]{
+  name,
+  idNumber,
+  "university": university -> _id,
+  "faculty":faculty -> _id,
+  "subject":subject -> _id,
   degree,
+  class,
+  finishedSemester,
   email,
   mobileNumber,
-  name,
-  socialNumber,
-  faculty,
-  subject,
-  university
+  "idPhoto": idPhoto.asset->originalFilename,
+  "voucher": voucher.asset->originalFilename,
 }`;
 
 export const getAllParticipants = groq`

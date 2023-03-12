@@ -13,6 +13,9 @@ import { useState } from "react";
 import type { UniversitiesSanity, FacultySanity, SectionsSanity } from "types";
 import classNames from "classnames";
 import React from "react";
+import { Disclosure, Transition } from "@headlessui/react";
+import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
+import { TrashIcon } from "@heroicons/react/24/outline";
 
 //TODO SORREND DOCX
 
@@ -131,7 +134,7 @@ const titleOptions = [
   },
 ];
 
-export type DefaultInputs = {
+export type PersonInputs = {
   name: string;
   idNumber: string;
   finishedSemester: string;
@@ -140,13 +143,17 @@ export type DefaultInputs = {
   university: string;
   faculty: string;
   subject: string;
+  universityOther?: string;
+  facultyOther?: string;
+  subjectOther?: string;
   email: string;
   mobileNumber: string;
-  idPhoto: File | null;
-  voucher: File | null;
+  idPhoto: File | null | string;
+  voucher?: File | null | string;
 };
 
-export type ArrayInputs = {
+export type ProjectInputs = {
+  _id?: string;
   advisorName: string;
   advisorEmail: string;
   advisorMobileNumber: string;
@@ -154,18 +161,25 @@ export type ArrayInputs = {
   advisorUniversity: string;
   advisorFaculty: string;
   advisorSubject: string;
-  advisorCertificate: File | null;
+  advisorUniversityOther?: string;
+  advisorFacultyOther?: string;
+  advisorSubjectOther?: string;
+  advisorCertificate: File | null | string;
 
   title: string;
-  extract: File | null;
+  extract: File | null | string;
   section: string;
-  annex: File | null;
-  declaration: File | null;
-  contribution: File | null;
+  annex: File | null | string;
+  declaration: File | null | string;
+  contribution: File | null | string;
+};
+
+export type CompanionInputs = {
+  companions: PersonInputs[];
 };
 
 export type Inputs = {
-  projects: ArrayInputs[];
+  projects: ProjectInputs[];
 };
 
 const inputClasses =
@@ -180,48 +194,102 @@ const ApplicationForm = ({
   universities: UniversitiesSanity[];
   faculties: FacultySanity[];
   sections: SectionsSanity[];
-  defaultValues?: Inputs;
+  defaultValues?: {
+    personData: PersonInputs;
+    projectsData: ProjectInputs[];
+  };
 }) => {
   const [notiMessage, setNotiMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const { control: defaultFormControl, getValues: defaultGetValues } =
-    useForm<DefaultInputs>({
-      defaultValues: {
-        name: "",
-        idNumber: "",
-        degree: "",
-        class: "",
-        university: "",
-        faculty: "",
-        subject: "",
-        finishedSemester: "",
-        email: "",
-        mobileNumber: "",
-        idPhoto: null,
-        voucher: null,
-      },
-    });
-  const { control: arrayControl, handleSubmit } = useForm<Inputs>({
+  const {
+    control: personFormControl,
+    getValues: personGetValues,
+    setValue: personSetValue,
+  } = useForm<PersonInputs>({
+    defaultValues: !defaultValues
+      ? {
+          name: "",
+          idNumber: "",
+          degree: "",
+          class: "",
+          university: "",
+          faculty: "",
+          subject: "",
+          universityOther: undefined,
+          facultyOther: undefined,
+          subjectOther: undefined,
+          finishedSemester: "",
+          email: "",
+          mobileNumber: "",
+          idPhoto: null,
+          voucher: null,
+        }
+      : defaultValues.personData,
+  });
+  const {
+    control: companionFormControl,
+    getValues: companionGetValues,
+    setValue: companionSetValue,
+  } = useForm<CompanionInputs>({
     defaultValues: {
-      projects: [
+      companions: [
         {
-          advisorName: "",
-          advisorEmail: "",
-          advisorMobileNumber: "",
-          advisorTitle: "",
-          advisorUniversity: "",
-          advisorFaculty: "",
-          advisorSubject: "",
-          advisorCertificate: null,
-
-          title: "",
-          extract: null,
-          section: "",
-          contribution: null,
-          annex: null,
-          declaration: null,
+          name: "",
+          idNumber: "",
+          degree: "",
+          class: "",
+          university: "",
+          faculty: "",
+          subject: "",
+          universityOther: undefined,
+          facultyOther: undefined,
+          subjectOther: undefined,
+          finishedSemester: "",
+          email: "",
+          mobileNumber: "",
+          idPhoto: null,
         },
       ],
+    },
+  });
+  const {
+    append: companionAppend,
+    remove: companionRemove,
+    fields: companionFields,
+  } = useFieldArray({
+    control: companionFormControl,
+    name: "companions",
+  });
+  const {
+    control: arrayControl,
+    handleSubmit,
+    setValue: projectSetValue,
+  } = useForm<Inputs>({
+    defaultValues: {
+      projects: !defaultValues
+        ? [
+            {
+              advisorName: "",
+              advisorEmail: "",
+              advisorMobileNumber: "",
+              advisorTitle: "",
+              advisorUniversity: "",
+              advisorFaculty: "",
+              advisorSubject: "",
+              advisorUniversityOther: undefined,
+              advisorFacultyOther: undefined,
+              advisorSubjectOther: undefined,
+              advisorCertificate: null,
+
+              title: "",
+              extract: null,
+              section: "",
+              contribution: null,
+              annex: null,
+              declaration: null,
+            },
+          ]
+        : defaultValues.projectsData,
     },
   });
 
@@ -232,33 +300,30 @@ const ApplicationForm = ({
 
   const onSubmit = React.useMemo(() => {
     return handleSubmit(async (data) => {
+      console.log(data, personGetValues());
       setLoading(true);
-      const participantData = defaultGetValues();
+      const participantData = personGetValues();
       const checkEmail = await getClient().fetch(
         checkIfUniqueEmail(participantData.email)
       );
+      console.log(checkEmail.length);
       if (
         !checkEmail.length &&
         participantData.idPhoto &&
-        participantData.voucher
+        typeof participantData.idPhoto === "object"
       ) {
         const idPhotoData = await getClient().assets.upload(
           "file",
           participantData.idPhoto,
           { filename: participantData.idPhoto.name }
         );
-        const voucherData = await getClient().assets.upload(
-          "file",
-          participantData.voucher,
-          { filename: participantData.voucher.name }
-        );
         Promise.all(
           data.projects.map(async (project) => {
             if (
               project.extract &&
               project.advisorCertificate &&
-              project.declaration &&
-              project.annex
+              typeof project.extract === "object" &&
+              typeof project.advisorCertificate === "object"
             ) {
               const extractData = await getClient().assets.upload(
                 "file",
@@ -270,41 +335,37 @@ const ApplicationForm = ({
                 project.advisorCertificate,
                 { filename: project.advisorCertificate.name }
               );
-              const contributionData = project.contribution
-                ? await getClient().assets.upload(
-                    "file",
-                    project.contribution,
-                    { filename: project.contribution.name }
-                  )
-                : undefined;
-              const declarationData = await getClient().assets.upload(
-                "file",
-                project.declaration,
-                { filename: project.declaration.name }
-              );
-              const annexData = await getClient().assets.upload(
-                "file",
-                project.annex,
-                { filename: project.annex.name }
-              );
               const mutations = [
                 {
                   create: {
                     _type: "participants",
                     name: participantData.name,
                     idNumber: participantData.idNumber,
-                    university: {
-                      _type: "reference",
-                      _ref: participantData.university,
-                    },
-                    faculty: {
-                      _type: "reference",
-                      _ref: participantData.faculty,
-                    },
-                    subject: {
-                      _type: "reference",
-                      _ref: participantData.subject,
-                    },
+                    ...(participantData.universityOther
+                      ? { universityOther: participantData.universityOther }
+                      : {
+                          university: {
+                            _type: "reference",
+                            _ref: participantData.university,
+                          },
+                        }),
+
+                    ...(participantData.facultyOther
+                      ? { facultyOther: participantData.facultyOther }
+                      : {
+                          faculty: {
+                            _type: "reference",
+                            _ref: participantData.faculty,
+                          },
+                        }),
+                    ...(participantData.subjectOther
+                      ? { subjectOther: participantData.subjectOther }
+                      : {
+                          subject: {
+                            _type: "reference",
+                            _ref: participantData.subject,
+                          },
+                        }),
                     degree: participantData.degree,
                     class: participantData.class,
                     finishedSemester: participantData.finishedSemester,
@@ -317,27 +378,34 @@ const ApplicationForm = ({
                         _type: "reference",
                       },
                     },
-                    voucher: {
-                      _type: "file",
-                      asset: {
-                        _ref: voucherData._id,
-                        _type: "reference",
-                      },
-                    },
-
                     advisorName: project.advisorName,
-                    advisorUniversity: {
-                      _type: "reference",
-                      _ref: project.advisorUniversity,
-                    },
-                    advisorFaculty: {
-                      _type: "reference",
-                      _ref: project.advisorFaculty,
-                    },
-                    advisorSubject: {
-                      _type: "reference",
-                      _ref: project.advisorSubject,
-                    },
+                    ...(project.advisorUniversityOther
+                      ? {
+                          advisorUniversityOther:
+                            project.advisorUniversityOther,
+                        }
+                      : {
+                          advisorUniversity: {
+                            _type: "reference",
+                            _ref: project.advisorUniversity,
+                          },
+                        }),
+                    ...(project.advisorFacultyOther
+                      ? { advisorFacultyOther: project.advisorFacultyOther }
+                      : {
+                          advisorFaculty: {
+                            _type: "reference",
+                            _ref: project.advisorFaculty,
+                          },
+                        }),
+                    ...(project.advisorSubjectOther
+                      ? { advisorSubjectOther: project.advisorSubjectOther }
+                      : {
+                          advisorSubject: {
+                            _type: "reference",
+                            _ref: project.advisorSubject,
+                          },
+                        }),
                     advisorTitle: project.advisorTitle,
                     advisorEmail: project.advisorEmail,
                     advisorMobileNumber: project.advisorMobileNumber,
@@ -358,32 +426,19 @@ const ApplicationForm = ({
                       _type: "reference",
                       _ref: project.section,
                     },
-                    annex: {
-                      _type: "file",
-                      asset: { _ref: annexData._id, _type: "reference" },
-                    },
-                    declaration: {
-                      _type: "file",
-                      asset: { _ref: declarationData._id, _type: "reference" },
-                    },
-                    ...(contributionData && {
-                      contribution: {
-                        _type: "file",
-                        asset: {
-                          _ref: contributionData._id,
-                          _type: "reference",
-                        },
-                      },
-                    }),
                     accepted: false,
                   },
                 },
-              ];
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              ] as any;
               //TODO:MOVE TO THE SERVER THE WHOLE UPLOAD SHIT
               return await getClient()
                 .mutate(mutations)
                 .then(() => setLoading(false))
-                .catch((error) => console.error(error));
+                .catch((error) => {
+                  setLoading(false);
+                  console.error(error);
+                });
             }
           })
         );
@@ -393,33 +448,36 @@ const ApplicationForm = ({
         setTimeout(() => setNotiMessage(""), 3000);
       }
     });
-  }, [defaultGetValues, handleSubmit]);
+  }, [personGetValues, handleSubmit]);
 
   const UniversityField = ({
-    advisor,
     text,
     bg,
     control,
-    index,
+    setAdditional,
+    fieldName,
   }: {
     advisor?: boolean;
+    setAdditional?: (value: string | undefined) => void;
     text: string;
     bg: string;
+    fieldName: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     control: Control<any, any>;
     index?: number;
   }) => {
-    const universitiesOption = universities.map((uni) => ({
-      name: uni.name,
-      value: uni._id,
-    }));
+    const universitiesOption = universities
+      .map((uni) => ({
+        name: uni.name,
+        value: uni._id,
+      }))
+      .concat([{ name: "Egyéb", value: "additional" }]);
     return (
       <Controller
-        name={advisor ? `projects.${index}.advisorUniversity` : "university"}
+        name={fieldName}
         control={control}
         render={({ field: { onChange, value } }) => (
           <Select
-            disabled={!!defaultValues}
             onChange={(value: string | number) => {
               onChange(value as string);
             }}
@@ -432,6 +490,7 @@ const ApplicationForm = ({
             placeholder="Egyetem"
             text={text}
             bg={bg}
+            setAdditional={setAdditional}
           />
         )}
       />
@@ -439,14 +498,16 @@ const ApplicationForm = ({
   };
 
   const FacultyField = ({
-    advisor,
     text,
     bg,
     control,
-    index,
+    setAdditional,
+    dependencyName,
+    fieldName,
   }: {
-    advisor?: boolean;
-    index?: number;
+    setAdditional?: (value: string | undefined) => void;
+    fieldName: string;
+    dependencyName: string;
     text: string;
     bg: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -454,21 +515,23 @@ const ApplicationForm = ({
   }) => {
     const selectedUniversity = useWatch({
       control,
-      name: advisor ? `projects.${index}.advisorUniversity` : "university",
+      name: dependencyName,
     });
     const uniData = universities.find((uni) => uni._id === selectedUniversity);
     const faculties =
       uniData && uniData.faculties
-        ? uniData.faculties.map((fac) => ({ name: fac.name, value: fac._id }))
+        ? uniData.faculties
+            .map((fac) => ({ name: fac.name, value: fac._id }))
+            .concat([{ name: "Egyéb", value: "additional" }])
+        : selectedUniversity === "additional"
+        ? [{ name: "Egyéb", value: "additional" }]
         : undefined;
-
     return (
       <Controller
-        name={advisor ? `projects.${index}.advisorFaculty` : "faculty"}
+        name={fieldName}
         control={control}
         render={({ field: { onChange, value } }) => (
           <Select
-            disabled={!!defaultValues}
             onChange={(value: string | number) => {
               onChange(value as string);
             }}
@@ -481,6 +544,7 @@ const ApplicationForm = ({
             placeholder="Kar"
             text={text}
             bg={bg}
+            setAdditional={setAdditional}
           />
         )}
       />
@@ -488,36 +552,42 @@ const ApplicationForm = ({
   };
 
   const SubjectField = ({
-    advisor,
     text,
     bg,
     control,
-    index,
+    setAdditional,
+    dependencyName,
+    fieldName,
   }: {
     advisor?: boolean;
     index?: number;
+    setAdditional?: (value: string | undefined) => void;
     text: string;
     bg: string;
+    dependencyName: string;
+    fieldName: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     control: Control<any, any>;
   }) => {
     const selectedFaculty = useWatch({
       control,
-      name: advisor ? `projects.${index}.advisorFaculty` : "faculty",
+      name: dependencyName,
     });
     const facultyData = faculties.find((f) => f._id === selectedFaculty);
     const subjects =
       facultyData && facultyData.subjects
-        ? facultyData.subjects.map((sb) => ({ name: sb.name, value: sb._id }))
+        ? facultyData.subjects
+            .map((sb) => ({ name: sb.name, value: sb._id }))
+            .concat([{ name: "Egyéb", value: "additional" }])
+        : selectedFaculty === "additional"
+        ? [{ name: "Egyéb", value: "additional" }]
         : undefined;
-
     return (
       <Controller
-        name={advisor ? `projects.${index}.advisorSubject` : "subject"}
+        name={fieldName}
         control={control}
         render={({ field: { onChange, value } }) => (
           <Select
-            disabled={!!defaultValues}
             onChange={(value: string | number) => {
               onChange(value as string);
             }}
@@ -526,12 +596,58 @@ const ApplicationForm = ({
               subjects ? subjects.find((s) => s.value === value) || null : null
             }
             placeholder="Szak"
+            setAdditional={setAdditional}
             text={text}
             bg={bg}
           />
         )}
       />
     );
+  };
+
+  const OtherField = ({
+    fieldName,
+    dependencyName,
+    placeholder,
+    text,
+    bg,
+    control,
+  }: {
+    dependencyName: string;
+    fieldName: string;
+    placeholder: string;
+    index?: number;
+    text: string;
+    bg: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    control: Control<any, any>;
+  }) => {
+    const dependencyValue = useWatch({
+      control,
+      name: dependencyName,
+    });
+    if (dependencyValue === "additional") {
+      return (
+        <Controller
+          name={fieldName}
+          control={control}
+          render={({ field: { value, onChange } }) => (
+            <input
+              onChange={onChange}
+              value={value || ""}
+              autoComplete="off"
+              type="text"
+              className={classNames(
+                inputClasses,
+                `${text} ${bg} placeholder:${text}`
+              )}
+              placeholder={placeholder}
+            />
+          )}
+        />
+      );
+    }
+    return null;
   };
 
   const ContributionField = ({ index }: { index: number }) => {
@@ -555,12 +671,16 @@ const ApplicationForm = ({
                   )}
                 >
                   <div className="overflow-hidden truncate opacity-80">
-                    {value ? value.name : "Hozzájárulási nyilatkozat"}
+                    {value && typeof value === "object"
+                      ? value.name
+                      : typeof value === "string"
+                      ? value
+                      : "Hozzájárulási nyilatkozat"}
                   </div>
                 </div>
                 <input
-                  disabled={!!defaultValues}
                   type="file"
+                  autoComplete="off"
                   className="hidden"
                   onChange={(e) =>
                     onChange(e.target.files ? e.target.files[0] : null)
@@ -576,18 +696,18 @@ const ApplicationForm = ({
   };
 
   return (
-    <div className="flex min-h-[100vh] min-w-full flex-col items-center justify-center space-y-4 bg-white pb-40 pt-[71px]">
-      <div className="space-y-4">
+    <div className="flex min-h-[100vh] min-w-full flex-col items-center space-y-4 bg-white pb-40 pt-[66px]">
+      <div className="w-full space-y-4 md:w-fit">
         <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:w-[700px] md:p-6 ">
           <p className="text-3xl text-darkcherry">Személyes adatok:</p>
-          <div className="grid grid-cols-1 gap-2 pl-2 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:pl-2">
             <Controller
               name="name"
-              control={defaultFormControl}
+              control={personFormControl}
               render={({ field }) => (
                 <input
                   {...field}
-                  disabled={!!defaultValues}
+                  autoComplete="off"
                   type="text"
                   className={classNames(
                     inputClasses,
@@ -599,11 +719,11 @@ const ApplicationForm = ({
             />
             <Controller
               name="idNumber"
-              control={defaultFormControl}
+              control={personFormControl}
               render={({ field }) => (
                 <input
                   {...field}
-                  disabled={!!defaultValues}
+                  autoComplete="off"
                   type="text"
                   className={classNames(
                     inputClasses,
@@ -614,26 +734,63 @@ const ApplicationForm = ({
               )}
             />
             <UniversityField
-              control={defaultFormControl}
+              control={personFormControl}
+              fieldName="university"
               text="text-darkcherry"
               bg="bg-application1"
+              setAdditional={(value: string | undefined) => {
+                personSetValue("universityOther", value);
+              }}
+            />
+            <OtherField
+              control={personFormControl}
+              text="text-darkcherry"
+              bg="bg-application1"
+              dependencyName="university"
+              fieldName="universityOther"
+              placeholder="Egyéb egyetem"
             />
             <FacultyField
-              control={defaultFormControl}
+              control={personFormControl}
+              fieldName="faculty"
+              dependencyName="university"
               text="text-darkcherry"
               bg="bg-application1"
+              setAdditional={(value: string | undefined) =>
+                personSetValue("facultyOther", value)
+              }
+            />
+            <OtherField
+              control={personFormControl}
+              text="text-darkcherry"
+              bg="bg-application1"
+              dependencyName="faculty"
+              fieldName="facultyOther"
+              placeholder="Egyéb kar"
             />
             <SubjectField
-              control={defaultFormControl}
+              fieldName="subject"
+              dependencyName="faculty"
+              control={personFormControl}
               text="text-darkcherry"
               bg="bg-application1"
+              setAdditional={(value: string | undefined) =>
+                personSetValue("subjectOther", value)
+              }
+            />
+            <OtherField
+              control={personFormControl}
+              text="text-darkcherry"
+              bg="bg-application1"
+              dependencyName="subject"
+              fieldName="subjectOther"
+              placeholder="Egyéb szak"
             />
             <Controller
               name="degree"
-              control={defaultFormControl}
+              control={personFormControl}
               render={({ field: { onChange, value } }) => (
                 <Select
-                  disabled={!!defaultValues}
                   onChange={(value: string | number) => {
                     onChange(value as string);
                   }}
@@ -647,10 +804,9 @@ const ApplicationForm = ({
             />
             <Controller
               name="class"
-              control={defaultFormControl}
+              control={personFormControl}
               render={({ field: { onChange, value } }) => (
                 <Select
-                  disabled={!!defaultValues}
                   onChange={(value: string | number) => {
                     onChange(value as string);
                   }}
@@ -664,10 +820,9 @@ const ApplicationForm = ({
             />
             <Controller
               name="finishedSemester"
-              control={defaultFormControl}
+              control={personFormControl}
               render={({ field: { onChange, value } }) => (
                 <Select
-                  disabled={!!defaultValues}
                   onChange={(value: string | number) => {
                     onChange(value as string);
                   }}
@@ -681,10 +836,11 @@ const ApplicationForm = ({
             />
             <Controller
               name="email"
-              control={defaultFormControl}
+              control={personFormControl}
               render={({ field }) => (
                 <input
                   {...field}
+                  autoComplete="off"
                   disabled={!!defaultValues}
                   type="text"
                   className={classNames(
@@ -697,11 +853,11 @@ const ApplicationForm = ({
             />
             <Controller
               name="mobileNumber"
-              control={defaultFormControl}
+              control={personFormControl}
               render={({ field }) => (
                 <input
                   {...field}
-                  disabled={!!defaultValues}
+                  autoComplete="off"
                   type="text"
                   className={classNames(
                     inputClasses,
@@ -713,7 +869,7 @@ const ApplicationForm = ({
             />
             <Controller
               name="idPhoto"
-              control={defaultFormControl}
+              control={personFormControl}
               render={({ field: { onChange, value } }) => {
                 return (
                   <label>
@@ -724,12 +880,16 @@ const ApplicationForm = ({
                       )}
                     >
                       <div className="overflow-hidden truncate opacity-80">
-                        {value ? value.name : "Ellenőrző kép"}
+                        {value && typeof value === "object"
+                          ? value.name
+                          : typeof value === "string"
+                          ? value
+                          : "Ellenőrző kép"}
                       </div>
                     </div>
                     <input
-                      disabled={!!defaultValues}
                       type="file"
+                      autoComplete="off"
                       className="hidden"
                       onChange={(e) =>
                         onChange(e.target.files ? e.target.files[0] : null)
@@ -739,329 +899,742 @@ const ApplicationForm = ({
                 );
               }}
             />
-            <Controller
-              name="voucher"
-              control={defaultFormControl}
-              render={({ field: { onChange, value } }) => {
-                return (
-                  <label>
-                    <div
-                      className={classNames(
-                        inputClasses,
-                        "flex cursor-pointer items-center bg-application1 pl-4 text-darkcherry  placeholder:text-darkcherry "
-                      )}
-                    >
-                      <div className="overflow-hidden truncate opacity-80">
-                        {value ? value.name : "Kifizetési bizonylat"}
+            {defaultValues && (
+              <Controller
+                name="voucher"
+                control={personFormControl}
+                render={({ field: { onChange, value } }) => {
+                  return (
+                    <label>
+                      <div
+                        className={classNames(
+                          inputClasses,
+                          "flex cursor-pointer items-center bg-application1 pl-4 text-darkcherry  placeholder:text-darkcherry "
+                        )}
+                      >
+                        <div className="overflow-hidden truncate opacity-80">
+                          {value && typeof value === "object"
+                            ? value.name
+                            : typeof value === "string"
+                            ? value
+                            : "Kifizetési bizonylat"}
+                        </div>
                       </div>
-                    </div>
-                    <input
-                      disabled={!!defaultValues}
-                      type="file"
-                      className="hidden"
-                      onChange={(e) =>
-                        onChange(e.target.files ? e.target.files[0] : null)
-                      }
-                    />
-                  </label>
-                );
-              }}
-            />
+                      <input
+                        type="file"
+                        autoComplete="off"
+                        className="hidden"
+                        onChange={(e) =>
+                          onChange(e.target.files ? e.target.files[0] : null)
+                        }
+                      />
+                    </label>
+                  );
+                }}
+              />
+            )}
           </div>
         </div>
-        {fields.map((data, index) => (
+        {companionFields.map((data, index) => (
           <React.Fragment key={data.id}>
-            <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:w-[700px] md:p-6 ">
-              <p className="text-3xl text-darkcherry">
-                {index + 1}. Témavezető adatai:
-              </p>
-              <div className="grid grid-cols-1 gap-2 pl-2 md:grid-cols-2">
-                <Controller
-                  name={`projects.${index}.advisorName`}
-                  control={arrayControl}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      disabled={!!defaultValues}
-                      type="text"
-                      className={classNames(
-                        inputClasses,
-                        "bg-application2 text-white placeholder:text-white"
-                      )}
-                      placeholder="Név"
-                    />
-                  )}
-                />
-                <UniversityField
-                  index={index}
-                  advisor
-                  control={arrayControl}
-                  text="text-white"
-                  bg="bg-application2"
-                />
-                <FacultyField
-                  index={index}
-                  advisor
-                  control={arrayControl}
-                  text="text-white"
-                  bg="bg-application2"
-                />
-                <SubjectField
-                  index={index}
-                  advisor
-                  control={arrayControl}
-                  text="text-white"
-                  bg="bg-application2"
-                />
-                <Controller
-                  name={`projects.${index}.advisorTitle`}
-                  control={arrayControl}
-                  render={({ field: { onChange, value } }) => (
-                    <Select
-                      disabled={!!defaultValues}
-                      onChange={(value: string | number) => {
-                        onChange(value as string);
-                      }}
-                      options={titleOptions}
-                      value={
-                        titleOptions.find((t) => t.value === value) || null
-                      }
-                      placeholder="Titulus"
-                      text="text-white"
-                      bg="bg-application2"
-                    />
-                  )}
-                />
-                <Controller
-                  name={`projects.${index}.advisorEmail`}
-                  control={arrayControl}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      disabled={!!defaultValues}
-                      type="text"
-                      className={classNames(
-                        inputClasses,
-                        "bg-application2 text-white placeholder:text-white"
-                      )}
-                      placeholder="E-mail cím"
-                    />
-                  )}
-                />
-                <Controller
-                  name={`projects.${index}.advisorMobileNumber`}
-                  control={arrayControl}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      disabled={!!defaultValues}
-                      type="text"
-                      className={classNames(
-                        inputClasses,
-                        "bg-application2 text-white placeholder:text-white"
-                      )}
-                      placeholder="Telefonszám"
-                    />
-                  )}
-                />
-                <Controller
-                  name={`projects.${index}.advisorCertificate`}
-                  control={arrayControl}
-                  render={({ field: { onChange, value } }) => {
-                    return (
-                      <label>
-                        <div
-                          className={classNames(
-                            inputClasses,
-                            "flex cursor-pointer items-center bg-application2 pl-4 text-white"
-                          )}
-                        >
-                          <div className="overflow-hidden truncate opacity-80">
-                            {value ? value.name : "Igazolás"}
-                          </div>
-                        </div>
-                        <input
-                          disabled={!!defaultValues}
-                          type="file"
-                          className="hidden"
-                          onChange={(e) =>
-                            onChange(e.target.files ? e.target.files[0] : null)
-                          }
-                        />
-                      </label>
-                    );
-                  }}
-                />
-              </div>
-            </div>
-            <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:w-[700px] md:p-6 ">
-              <p className="text-3xl text-darkcherry">{index + 1}. Dolgozat:</p>
-              <div className="grid grid-cols-1 gap-2 pl-2 md:grid-cols-2">
-                <Controller
-                  name={`projects.${index}.title`}
-                  control={arrayControl}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      disabled={!!defaultValues}
-                      type="text"
-                      className={classNames(
-                        inputClasses,
-                        "bg-application3 text-darkcherry placeholder:text-darkcherry"
-                      )}
-                      placeholder="Cím"
-                    />
-                  )}
-                />
-                <Controller
-                  name={`projects.${index}.extract`}
-                  control={arrayControl}
-                  render={({ field: { onChange, value } }) => {
-                    return (
-                      <label>
-                        <div
-                          className={classNames(
-                            inputClasses,
-                            "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
-                          )}
-                        >
-                          <div className="overflow-hidden truncate opacity-80">
-                            {value ? value.name : "Kivonat"}
-                          </div>
-                        </div>
-                        <input
-                          disabled={!!defaultValues}
-                          type="file"
-                          className="hidden"
-                          onChange={(e) =>
-                            onChange(e.target.files ? e.target.files[0] : null)
-                          }
-                        />
-                      </label>
-                    );
-                  }}
-                />
-                <Controller
-                  name={`projects.${index}.section`}
-                  control={arrayControl}
-                  render={({ field: { onChange, value } }) => {
-                    const sectionsOptions = sections.map((s) => ({
-                      name: s.name,
-                      value: s._id,
-                    }));
-                    return (
-                      <Select
-                        disabled={!!defaultValues}
-                        onChange={(value: string | number) => {
-                          onChange(value as string);
+            <Disclosure defaultOpen={index === 0}>
+              {({ open }) => (
+                <>
+                  <Disclosure.Button className="flex w-full items-center rounded-xl bg-application1 py-2 px-4">
+                    <p className="flex-1 text-start text-lg text-darkcherry">
+                      {index + 1}. Társszerző adatok:
+                    </p>
+                    {fields.length > 1 && (
+                      <TrashIcon
+                        className="mr-6 h-7 w-7 text-darkcherry"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          companionRemove(index);
                         }}
-                        options={sectionsOptions}
-                        value={
-                          sectionsOptions.find((s) => s.value === value) || null
-                        }
-                        placeholder="Szekció"
-                        text="text-darkcherry"
-                        bg="bg-application3"
                       />
-                    );
-                  }}
-                />
-                <Controller
-                  name={`projects.${index}.annex`}
-                  control={arrayControl}
-                  render={({ field: { onChange, value } }) => {
-                    return (
-                      <label>
-                        <div
-                          className={classNames(
-                            inputClasses,
-                            "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
-                          )}
-                        >
-                          <div className="overflow-hidden truncate opacity-80">
-                            {value ? value.name : "Melléklet"}
-                          </div>
-                        </div>
-                        <input
-                          disabled={!!defaultValues}
-                          type="file"
-                          className="hidden"
-                          onChange={(e) =>
-                            onChange(e.target.files ? e.target.files[0] : null)
-                          }
-                        />
-                      </label>
-                    );
-                  }}
-                />
-                <Controller
-                  name={`projects.${index}.declaration`}
-                  control={arrayControl}
-                  render={({ field: { onChange, value } }) => {
-                    return (
-                      <label>
-                        <div
-                          className={classNames(
-                            inputClasses,
-                            "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
-                          )}
-                        >
-                          <div className="overflow-hidden truncate opacity-80">
-                            {value ? value.name : "Adatbankos nyilatkozat"}
-                          </div>
-                        </div>
-                        <input
-                          disabled={!!defaultValues}
-                          type="file"
-                          className="hidden"
-                          onChange={(e) =>
-                            onChange(e.target.files ? e.target.files[0] : null)
-                          }
-                        />
-                      </label>
-                    );
-                  }}
-                />
-                <ContributionField index={index} />
-              </div>
-            </div>
-            <button
-              className="mr-6 rounded-xl bg-darkcherry py-2 px-4 text-white"
-              onClick={() =>
-                append({
-                  advisorName: "",
-                  advisorEmail: "",
-                  advisorMobileNumber: "",
-                  advisorTitle: "",
-                  advisorUniversity: "",
-                  advisorFaculty: "",
-                  advisorSubject: "",
-                  advisorCertificate: null,
+                    )}
 
-                  title: "",
-                  extract: null,
-                  section: "",
-                  contribution: null,
-                  annex: null,
-                  declaration: null,
-                })
-              }
-            >
-              <p>Új dolgozat hozzáadása</p>
-            </button>
-            {fields.length > 1 && (
-              <button
-                className=" rounded-xl bg-red py-2 px-4 text-white"
-                onClick={() => remove(index)}
-              >
-                <p>Dolgozat törlése</p>
-              </button>
-            )}
+                    {!open ? (
+                      <ChevronDownIcon
+                        className="h-7 w-7 text-darkcherry"
+                        aria-hidden="true"
+                      />
+                    ) : (
+                      <ChevronUpIcon
+                        className="h-7 w-7 text-darkcherry"
+                        aria-hidden="true"
+                      />
+                    )}
+                  </Disclosure.Button>
+                  <Transition
+                    enter="transition duration-150 ease-out"
+                    enterFrom="transform scale-95 opacity-0"
+                    enterTo="transform scale-100 opacity-100"
+                    leave="transition duration-150 ease-out"
+                    leaveFrom="transform scale-100 opacity-100"
+                    leaveTo="transform scale-95 opacity-0"
+                  >
+                    <Disclosure.Panel>
+                      <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:w-[700px] md:p-6 ">
+                        <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:pl-2">
+                          <Controller
+                            name={`companions.${index}.name`}
+                            control={companionFormControl}
+                            render={({ field }) => (
+                              <input
+                                {...field}
+                                autoComplete="off"
+                                type="text"
+                                className={classNames(
+                                  inputClasses,
+                                  "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                                )}
+                                placeholder="Név"
+                              />
+                            )}
+                          />
+                          <Controller
+                            name={`companions.${index}.idNumber`}
+                            control={companionFormControl}
+                            render={({ field }) => (
+                              <input
+                                {...field}
+                                autoComplete="off"
+                                type="text"
+                                className={classNames(
+                                  inputClasses,
+                                  "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                                )}
+                                placeholder="Ellenőrző száma"
+                              />
+                            )}
+                          />
+                          <UniversityField
+                            control={companionFormControl}
+                            fieldName={`companions.${index}.university`}
+                            text="text-darkcherry"
+                            bg="bg-application1"
+                            setAdditional={(value: string | undefined) => {
+                              companionSetValue(
+                                `companions.${index}.universityOther`,
+                                value
+                              );
+                            }}
+                          />
+                          <OtherField
+                            control={companionFormControl}
+                            text="text-darkcherry"
+                            bg="bg-application1"
+                            dependencyName={`companions.${index}.university`}
+                            fieldName={`companions.${index}.universityOther`}
+                            placeholder="Egyéb egyetem"
+                          />
+                          <FacultyField
+                            control={companionFormControl}
+                            fieldName={`companions.${index}.faculty`}
+                            dependencyName={`companions.${index}.university`}
+                            text="text-darkcherry"
+                            bg="bg-application1"
+                            setAdditional={(value: string | undefined) =>
+                              companionSetValue(
+                                `companions.${index}.facultyOther`,
+                                value
+                              )
+                            }
+                          />
+                          <OtherField
+                            control={companionFormControl}
+                            text="text-darkcherry"
+                            bg="bg-application1"
+                            dependencyName={`companions.${index}.faculty`}
+                            fieldName={`companions.${index}.facultyOther`}
+                            placeholder="Egyéb kar"
+                          />
+                          <SubjectField
+                            fieldName={`companions.${index}.subject`}
+                            dependencyName={`companions.${index}.faculty`}
+                            control={companionFormControl}
+                            text="text-darkcherry"
+                            bg="bg-application1"
+                            setAdditional={(value: string | undefined) =>
+                              companionSetValue(
+                                `companions.${index}.subjectOther`,
+                                value
+                              )
+                            }
+                          />
+                          <OtherField
+                            control={companionFormControl}
+                            text="text-darkcherry"
+                            bg="bg-application1"
+                            dependencyName="subject"
+                            fieldName="subjectOther"
+                            placeholder="Egyéb szak"
+                          />
+                          <Controller
+                            name={`companions.${index}.degree`}
+                            control={companionFormControl}
+                            render={({ field: { onChange, value } }) => (
+                              <Select
+                                onChange={(value: string | number) => {
+                                  onChange(value as string);
+                                }}
+                                options={degreeOptions}
+                                value={
+                                  degreeOptions.find(
+                                    (d) => d.value === value
+                                  ) || null
+                                }
+                                placeholder="Képzési szint"
+                                text="text-darkcherry"
+                                bg="bg-application1"
+                              />
+                            )}
+                          />
+                          <Controller
+                            name={`companions.${index}.class`}
+                            control={companionFormControl}
+                            render={({ field: { onChange, value } }) => (
+                              <Select
+                                onChange={(value: string | number) => {
+                                  onChange(value as string);
+                                }}
+                                options={classOptions}
+                                value={
+                                  classOptions.find((c) => c.value === value) ||
+                                  null
+                                }
+                                placeholder="Évfolyam"
+                                text="text-darkcherry"
+                                bg="bg-application1"
+                              />
+                            )}
+                          />
+                          <Controller
+                            name={`companions.${index}.finishedSemester`}
+                            control={companionFormControl}
+                            render={({ field: { onChange, value } }) => (
+                              <Select
+                                onChange={(value: string | number) => {
+                                  onChange(value as string);
+                                }}
+                                options={semesterOptions}
+                                value={
+                                  semesterOptions.find(
+                                    (c) => c.value === value
+                                  ) || null
+                                }
+                                placeholder="Elvégzett félévek száma"
+                                text="text-darkcherry"
+                                bg="bg-application1"
+                              />
+                            )}
+                          />
+                          <Controller
+                            name={`companions.${index}.email`}
+                            control={companionFormControl}
+                            render={({ field }) => (
+                              <input
+                                {...field}
+                                autoComplete="off"
+                                disabled={!!defaultValues}
+                                type="text"
+                                className={classNames(
+                                  inputClasses,
+                                  "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                                )}
+                                placeholder="E-mail cím"
+                              />
+                            )}
+                          />
+                          <Controller
+                            name={`companions.${index}.mobileNumber`}
+                            control={companionFormControl}
+                            render={({ field }) => (
+                              <input
+                                {...field}
+                                autoComplete="off"
+                                type="text"
+                                className={classNames(
+                                  inputClasses,
+                                  "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                                )}
+                                placeholder="Telefonszám"
+                              />
+                            )}
+                          />
+                          <Controller
+                            name={`companions.${index}.idPhoto`}
+                            control={companionFormControl}
+                            render={({ field: { onChange, value } }) => {
+                              return (
+                                <label>
+                                  <div
+                                    className={classNames(
+                                      inputClasses,
+                                      "flex cursor-pointer items-center bg-application1 pl-4 text-darkcherry  placeholder:text-darkcherry "
+                                    )}
+                                  >
+                                    <div className="overflow-hidden truncate opacity-80">
+                                      {value && typeof value === "object"
+                                        ? value.name
+                                        : typeof value === "string"
+                                        ? value
+                                        : "Ellenőrző kép"}
+                                    </div>
+                                  </div>
+                                  <input
+                                    type="file"
+                                    autoComplete="off"
+                                    className="hidden"
+                                    onChange={(e) =>
+                                      onChange(
+                                        e.target.files
+                                          ? e.target.files[0]
+                                          : null
+                                      )
+                                    }
+                                  />
+                                </label>
+                              );
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </Disclosure.Panel>
+                  </Transition>
+                </>
+              )}
+            </Disclosure>
           </React.Fragment>
+        ))}
+        <div className="flex flex-col items-center md:flex-row ">
+          <button
+            className="rounded-xl bg-gray-900 py-2 px-4 text-white md:mr-6"
+            onClick={() =>
+              companionAppend({
+                name: "",
+                idNumber: "",
+                degree: "",
+                class: "",
+                university: "",
+                faculty: "",
+                subject: "",
+                universityOther: undefined,
+                facultyOther: undefined,
+                subjectOther: undefined,
+                finishedSemester: "",
+                email: "",
+                mobileNumber: "",
+                idPhoto: null,
+              })
+            }
+          >
+            <p>Társszerző hozzáadása</p>
+          </button>
+        </div>
+        {fields.map((data, index) => (
+          <Disclosure defaultOpen={index === 0} key={data.id}>
+            {({ open }) => (
+              <>
+                <Disclosure.Button className="flex w-full items-center rounded-xl bg-application3 py-2 px-4">
+                  <p className="flex-1 text-start text-lg text-darkcherry">
+                    {index + 1}. Dolgozat adatai
+                  </p>
+                  {fields.length > 1 && (
+                    <TrashIcon
+                      className="mr-6 h-7 w-7 text-darkcherry"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        remove(index);
+                      }}
+                    />
+                  )}
+
+                  {!open ? (
+                    <ChevronDownIcon
+                      className="h-7 w-7 text-darkcherry"
+                      aria-hidden="true"
+                    />
+                  ) : (
+                    <ChevronUpIcon
+                      className="h-7 w-7 text-darkcherry"
+                      aria-hidden="true"
+                    />
+                  )}
+                </Disclosure.Button>
+                <Transition
+                  enter="transition duration-150 ease-out"
+                  enterFrom="transform scale-95 opacity-0"
+                  enterTo="transform scale-100 opacity-100"
+                  leave="transition duration-150 ease-out"
+                  leaveFrom="transform scale-100 opacity-100"
+                  leaveTo="transform scale-95 opacity-0"
+                >
+                  <Disclosure.Panel>
+                    <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:w-[700px] md:p-6 ">
+                      <p className="text-3xl text-darkcherry">
+                        {index + 1}. Témavezető adatai:
+                      </p>
+                      <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:pl-2">
+                        <Controller
+                          name={`projects.${index}.advisorName`}
+                          control={arrayControl}
+                          render={({ field }) => (
+                            <input
+                              {...field}
+                              autoComplete="off"
+                              type="text"
+                              className={classNames(
+                                inputClasses,
+                                "bg-application2 text-white placeholder:text-white"
+                              )}
+                              placeholder="Név"
+                            />
+                          )}
+                        />
+                        <UniversityField
+                          fieldName={`projects.${index}.advisorUniversity`}
+                          control={arrayControl}
+                          text="text-white"
+                          bg="bg-application2"
+                          setAdditional={(value: string | undefined) =>
+                            projectSetValue(
+                              `projects.${index}.advisorUniversityOther`,
+                              value
+                            )
+                          }
+                        />
+                        <OtherField
+                          control={arrayControl}
+                          text="text-white"
+                          bg="bg-application2"
+                          dependencyName={`projects.${index}.advisorUniversity`}
+                          fieldName={`projects.${index}.advisorUniversityOther`}
+                          placeholder="Egyéb egyetem"
+                        />
+                        <FacultyField
+                          fieldName={`projects.${index}.advisorFaculty`}
+                          dependencyName={`projects.${index}.advisorUniversity`}
+                          control={arrayControl}
+                          text="text-white"
+                          bg="bg-application2"
+                          setAdditional={(value: string | undefined) =>
+                            projectSetValue(
+                              `projects.${index}.advisorFacultyOther`,
+                              value
+                            )
+                          }
+                        />
+                        <OtherField
+                          control={arrayControl}
+                          text="text-white"
+                          bg="bg-application2"
+                          dependencyName={`projects.${index}.advisorFaculty`}
+                          fieldName={`projects.${index}.advisorFacultyOther`}
+                          placeholder="Egyéb kar"
+                        />
+                        <SubjectField
+                          fieldName={`projects.${index}.advisorSubject`}
+                          dependencyName={`projects.${index}.advisorFaculty`}
+                          control={arrayControl}
+                          text="text-white"
+                          bg="bg-application2"
+                          setAdditional={(value: string | undefined) =>
+                            projectSetValue(
+                              `projects.${index}.advisorSubjectOther`,
+                              value
+                            )
+                          }
+                        />
+                        <OtherField
+                          control={arrayControl}
+                          text="text-white"
+                          bg="bg-application2"
+                          dependencyName={`projects.${index}.advisorSubject`}
+                          fieldName={`projects.${index}.advisorSubjectOther`}
+                          placeholder="Egyéb szak"
+                        />
+                        <Controller
+                          name={`projects.${index}.advisorTitle`}
+                          control={arrayControl}
+                          render={({ field: { onChange, value } }) => (
+                            <Select
+                              onChange={(value: string | number) => {
+                                onChange(value as string);
+                              }}
+                              options={titleOptions}
+                              value={
+                                titleOptions.find((t) => t.value === value) ||
+                                null
+                              }
+                              placeholder="Titulus"
+                              text="text-white"
+                              bg="bg-application2"
+                            />
+                          )}
+                        />
+                        <Controller
+                          name={`projects.${index}.advisorEmail`}
+                          control={arrayControl}
+                          render={({ field }) => (
+                            <input
+                              {...field}
+                              autoComplete="off"
+                              type="text"
+                              className={classNames(
+                                inputClasses,
+                                "bg-application2 text-white placeholder:text-white"
+                              )}
+                              placeholder="E-mail cím"
+                            />
+                          )}
+                        />
+                        <Controller
+                          name={`projects.${index}.advisorMobileNumber`}
+                          control={arrayControl}
+                          render={({ field }) => (
+                            <input
+                              {...field}
+                              autoComplete="off"
+                              type="text"
+                              className={classNames(
+                                inputClasses,
+                                "bg-application2 text-white placeholder:text-white"
+                              )}
+                              placeholder="Telefonszám"
+                            />
+                          )}
+                        />
+                        <Controller
+                          name={`projects.${index}.advisorCertificate`}
+                          control={arrayControl}
+                          render={({ field: { onChange, value } }) => {
+                            return (
+                              <label>
+                                <div
+                                  className={classNames(
+                                    inputClasses,
+                                    "flex cursor-pointer items-center bg-application2 pl-4 text-white"
+                                  )}
+                                >
+                                  <div className="overflow-hidden truncate opacity-80">
+                                    {value && typeof value === "object"
+                                      ? value.name
+                                      : typeof value === "string"
+                                      ? value
+                                      : "Igazolás"}
+                                  </div>
+                                </div>
+                                <input
+                                  type="file"
+                                  autoComplete="off"
+                                  className="hidden"
+                                  onChange={(e) =>
+                                    onChange(
+                                      e.target.files ? e.target.files[0] : null
+                                    )
+                                  }
+                                />
+                              </label>
+                            );
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:w-[700px] md:p-6 ">
+                      <p className="text-3xl text-darkcherry">
+                        {index + 1}. Dolgozat:
+                      </p>
+                      <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:pl-2">
+                        <Controller
+                          name={`projects.${index}.title`}
+                          control={arrayControl}
+                          render={({ field }) => (
+                            <input
+                              {...field}
+                              type="text"
+                              autoComplete="off"
+                              className={classNames(
+                                inputClasses,
+                                "bg-application3 text-darkcherry placeholder:text-darkcherry"
+                              )}
+                              placeholder="Cím"
+                            />
+                          )}
+                        />
+                        <Controller
+                          name={`projects.${index}.extract`}
+                          control={arrayControl}
+                          render={({ field: { onChange, value } }) => {
+                            return (
+                              <label>
+                                <div
+                                  className={classNames(
+                                    inputClasses,
+                                    "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
+                                  )}
+                                >
+                                  <div className="overflow-hidden truncate opacity-80">
+                                    {value && typeof value === "object"
+                                      ? value.name
+                                      : typeof value === "string"
+                                      ? value
+                                      : "Kivonat"}
+                                  </div>
+                                </div>
+                                <input
+                                  type="file"
+                                  autoComplete="off"
+                                  className="hidden"
+                                  onChange={(e) =>
+                                    onChange(
+                                      e.target.files ? e.target.files[0] : null
+                                    )
+                                  }
+                                />
+                              </label>
+                            );
+                          }}
+                        />
+                        <Controller
+                          name={`projects.${index}.section`}
+                          control={arrayControl}
+                          render={({ field: { onChange, value } }) => {
+                            const sectionsOptions = sections.map((s) => ({
+                              name: s.name,
+                              value: s._id,
+                            }));
+                            return (
+                              <Select
+                                onChange={(value: string | number) => {
+                                  onChange(value as string);
+                                }}
+                                options={sectionsOptions}
+                                value={
+                                  sectionsOptions.find(
+                                    (s) => s.value === value
+                                  ) || null
+                                }
+                                placeholder="Szekció"
+                                text="text-darkcherry"
+                                bg="bg-application3"
+                              />
+                            );
+                          }}
+                        />
+                        {defaultValues && (
+                          <Controller
+                            name={`projects.${index}.annex`}
+                            control={arrayControl}
+                            render={({ field: { onChange, value } }) => {
+                              return (
+                                <label>
+                                  <div
+                                    className={classNames(
+                                      inputClasses,
+                                      "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
+                                    )}
+                                  >
+                                    <div className="overflow-hidden truncate opacity-80">
+                                      {value && typeof value === "object"
+                                        ? value.name
+                                        : typeof value === "string"
+                                        ? value
+                                        : "Melléklet"}
+                                    </div>
+                                  </div>
+                                  <input
+                                    type="file"
+                                    autoComplete="off"
+                                    className="hidden"
+                                    onChange={(e) =>
+                                      onChange(
+                                        e.target.files
+                                          ? e.target.files[0]
+                                          : null
+                                      )
+                                    }
+                                  />
+                                </label>
+                              );
+                            }}
+                          />
+                        )}
+                        {defaultValues && (
+                          <Controller
+                            name={`projects.${index}.declaration`}
+                            control={arrayControl}
+                            render={({ field: { onChange, value } }) => {
+                              return (
+                                <label>
+                                  <div
+                                    className={classNames(
+                                      inputClasses,
+                                      "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
+                                    )}
+                                  >
+                                    <div className="overflow-hidden truncate opacity-80">
+                                      {value && typeof value === "object"
+                                        ? value.name
+                                        : typeof value === "string"
+                                        ? value
+                                        : "Adatbankos nyilatkozat"}
+                                    </div>
+                                  </div>
+                                  <input
+                                    type="file"
+                                    autoComplete="off"
+                                    className="hidden"
+                                    onChange={(e) =>
+                                      onChange(
+                                        e.target.files
+                                          ? e.target.files[0]
+                                          : null
+                                      )
+                                    }
+                                  />
+                                </label>
+                              );
+                            }}
+                          />
+                        )}
+                        {defaultValues && <ContributionField index={index} />}
+                      </div>
+                    </div>
+                  </Disclosure.Panel>
+                </Transition>
+              </>
+            )}
+          </Disclosure>
         ))}
 
         <button
-          className="float-right flex h-10 items-center rounded-xl bg-darkcherry py-2 px-4 text-white"
+          className="rounded-xl bg-gray-900 py-2 px-4 text-white md:mr-6"
+          onClick={() =>
+            append({
+              advisorName: "",
+              advisorEmail: "",
+              advisorMobileNumber: "",
+              advisorTitle: "",
+              advisorUniversity: "",
+              advisorFaculty: "",
+              advisorSubject: "",
+              advisorCertificate: null,
+
+              title: "",
+              extract: null,
+              section: "",
+              contribution: null,
+              annex: null,
+              declaration: null,
+            })
+          }
+        >
+          <p>Új dolgozat hozzáadása</p>
+        </button>
+        <button
+          className="float-right flex h-10 items-center rounded-xl bg-gray-900 py-2 px-4 font-bold text-white"
           onClick={() => onSubmit()}
         >
           {loading && (
@@ -1077,7 +1650,7 @@ const ApplicationForm = ({
                 cy="12"
                 r="10"
                 stroke="currentColor"
-                stroke-width="4"
+                strokeWidth="4"
               ></circle>
               <path
                 className="opacity-75"
