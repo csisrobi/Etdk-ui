@@ -16,6 +16,7 @@ import React from "react";
 import { Disclosure, Transition } from "@headlessui/react";
 import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 import { TrashIcon } from "@heroicons/react/24/outline";
+import { nanoid } from "nanoid";
 
 //TODO SORREND DOCX
 
@@ -134,6 +135,19 @@ const titleOptions = [
   },
 ];
 
+export type AdvisorInputs = {
+  name: string;
+  email: string;
+  mobileNumber: string;
+  title: string;
+  university: string;
+  faculty: string;
+  subject: string;
+  universityOther?: string;
+  facultyOther?: string;
+  subjectOther?: string;
+  certificate: File | null | string;
+};
 export type PersonInputs = {
   name: string;
   idNumber: string;
@@ -154,17 +168,6 @@ export type PersonInputs = {
 
 export type ProjectInputs = {
   _id?: string;
-  advisorName: string;
-  advisorEmail: string;
-  advisorMobileNumber: string;
-  advisorTitle: string;
-  advisorUniversity: string;
-  advisorFaculty: string;
-  advisorSubject: string;
-  advisorUniversityOther?: string;
-  advisorFacultyOther?: string;
-  advisorSubjectOther?: string;
-  advisorCertificate: File | null | string;
 
   title: string;
   extract: File | null | string;
@@ -172,10 +175,8 @@ export type ProjectInputs = {
   annex: File | null | string;
   declaration: File | null | string;
   contribution: File | null | string;
-};
-
-export type CompanionInputs = {
-  companions: PersonInputs[];
+  advisors: AdvisorInputs[];
+  companions?: PersonInputs[];
 };
 
 export type Inputs = {
@@ -226,219 +227,266 @@ const ApplicationForm = ({
         }
       : defaultValues.personData,
   });
+
   const {
-    control: companionFormControl,
-    getValues: companionGetValues,
-    setValue: companionSetValue,
-  } = useForm<CompanionInputs>({
-    defaultValues: {
-      companions: [
-        {
-          name: "",
-          idNumber: "",
-          degree: "",
-          class: "",
-          university: "",
-          faculty: "",
-          subject: "",
-          universityOther: undefined,
-          facultyOther: undefined,
-          subjectOther: undefined,
-          finishedSemester: "",
-          email: "",
-          mobileNumber: "",
-          idPhoto: null,
-        },
-      ],
-    },
-  });
-  const {
-    append: companionAppend,
-    remove: companionRemove,
-    fields: companionFields,
-  } = useFieldArray({
-    control: companionFormControl,
-    name: "companions",
-  });
-  const {
-    control: arrayControl,
+    control: projectsControl,
     handleSubmit,
     setValue: projectSetValue,
+    getValues: projectGetValues,
   } = useForm<Inputs>({
     defaultValues: {
       projects: !defaultValues
         ? [
             {
-              advisorName: "",
-              advisorEmail: "",
-              advisorMobileNumber: "",
-              advisorTitle: "",
-              advisorUniversity: "",
-              advisorFaculty: "",
-              advisorSubject: "",
-              advisorUniversityOther: undefined,
-              advisorFacultyOther: undefined,
-              advisorSubjectOther: undefined,
-              advisorCertificate: null,
-
+              advisors: [
+                {
+                  name: "",
+                  email: "",
+                  mobileNumber: "",
+                  title: "",
+                  university: "",
+                  faculty: "",
+                  subject: "",
+                  universityOther: undefined,
+                  facultyOther: undefined,
+                  subjectOther: undefined,
+                  certificate: null,
+                },
+              ],
               title: "",
               extract: null,
               section: "",
               contribution: null,
               annex: null,
               declaration: null,
+              companions: [],
             },
           ]
         : defaultValues.projectsData,
     },
   });
 
-  const { append, remove, fields } = useFieldArray({
-    control: arrayControl,
+  const { append, remove, fields, update } = useFieldArray({
+    control: projectsControl,
     name: "projects",
   });
 
+  const mapAdvisorData = async (advisorData: AdvisorInputs) => {
+    const certificateData =
+      advisorData.certificate && typeof advisorData.certificate === "object"
+        ? await getClient().assets.upload("file", advisorData.certificate, {
+            filename: advisorData.certificate.name,
+          })
+        : null;
+    return {
+      _key: nanoid(),
+      name: advisorData.name,
+      ...(advisorData.universityOther
+        ? {
+            universityOther: advisorData.universityOther,
+          }
+        : {
+            university: {
+              _type: "reference",
+              _ref: advisorData.university,
+            },
+          }),
+      ...(advisorData.facultyOther
+        ? { facultyOther: advisorData.facultyOther }
+        : {
+            faculty: {
+              _type: "reference",
+              _ref: advisorData.faculty,
+            },
+          }),
+      ...(advisorData.subjectOther
+        ? { subjectOther: advisorData.subjectOther }
+        : {
+            subject: {
+              _type: "reference",
+              _ref: advisorData.subject,
+            },
+          }),
+      title: advisorData.title,
+      email: advisorData.email,
+      mobileNumber: advisorData.mobileNumber,
+      ...(certificateData && {
+        certificate: {
+          _type: "file",
+          asset: {
+            _ref: certificateData._id,
+            _type: "reference",
+          },
+        },
+      }),
+    };
+  };
+
+  const mapCompanionsData = async (participantData: PersonInputs) => {
+    const idPhotoData =
+      participantData.idPhoto && typeof participantData.idPhoto === "object"
+        ? await getClient().assets.upload("file", participantData.idPhoto, {
+            filename: participantData.idPhoto.name,
+          })
+        : null;
+    return {
+      _key: nanoid(),
+      name: participantData.name,
+      idNumber: participantData.idNumber,
+      ...(participantData.universityOther
+        ? { universityOther: participantData.universityOther }
+        : {
+            university: {
+              _type: "reference",
+              _ref: participantData.university,
+            },
+          }),
+
+      ...(participantData.facultyOther
+        ? { facultyOther: participantData.facultyOther }
+        : {
+            faculty: {
+              _type: "reference",
+              _ref: participantData.faculty,
+            },
+          }),
+      ...(participantData.subjectOther
+        ? { subjectOther: participantData.subjectOther }
+        : {
+            subject: {
+              _type: "reference",
+              _ref: participantData.subject,
+            },
+          }),
+      degree: participantData.degree,
+      class: participantData.class,
+      finishedSemester: participantData.finishedSemester,
+      email: participantData.email,
+      mobileNumber: participantData.mobileNumber,
+      ...(idPhotoData && {
+        idPhoto: {
+          _type: "file",
+          asset: {
+            _ref: idPhotoData._id,
+            _type: "reference",
+          },
+        },
+      }),
+    };
+  };
+
   const onSubmit = React.useMemo(() => {
     return handleSubmit(async (data) => {
-      console.log(data, personGetValues());
       setLoading(true);
       const participantData = personGetValues();
       const checkEmail = await getClient().fetch(
         checkIfUniqueEmail(participantData.email)
       );
-      console.log(checkEmail.length);
-      if (
-        !checkEmail.length &&
-        participantData.idPhoto &&
-        typeof participantData.idPhoto === "object"
-      ) {
-        const idPhotoData = await getClient().assets.upload(
-          "file",
-          participantData.idPhoto,
-          { filename: participantData.idPhoto.name }
-        );
+      if (!checkEmail.length) {
+        const idPhotoData =
+          participantData.idPhoto && typeof participantData.idPhoto === "object"
+            ? await getClient().assets.upload("file", participantData.idPhoto, {
+                filename: participantData.idPhoto.name,
+              })
+            : null;
+
         Promise.all(
           data.projects.map(async (project) => {
-            if (
-              project.extract &&
-              project.advisorCertificate &&
-              typeof project.extract === "object" &&
-              typeof project.advisorCertificate === "object"
-            ) {
+            if (project.extract && typeof project.extract === "object") {
               const extractData = await getClient().assets.upload(
                 "file",
                 project.extract,
                 { filename: project.extract.name }
               );
-              const advisorCertificateData = await getClient().assets.upload(
-                "file",
-                project.advisorCertificate,
-                { filename: project.advisorCertificate.name }
-              );
-              const mutations = [
-                {
-                  create: {
-                    _type: "participants",
-                    name: participantData.name,
-                    idNumber: participantData.idNumber,
-                    ...(participantData.universityOther
-                      ? { universityOther: participantData.universityOther }
-                      : {
-                          university: {
-                            _type: "reference",
-                            _ref: participantData.university,
+              Promise.all(
+                project.advisors.map(
+                  async (advisor) => await mapAdvisorData(advisor)
+                )
+              ).then((advisors) => {
+                Promise.all(
+                  (project.companions || []).map(
+                    async (companion) => await mapCompanionsData(companion)
+                  )
+                ).then(async (companions) => {
+                  const mutations = [
+                    {
+                      create: {
+                        _type: "participants",
+                        name: participantData.name,
+                        idNumber: participantData.idNumber,
+                        ...(participantData.universityOther
+                          ? {
+                              universityOther: participantData.universityOther,
+                            }
+                          : {
+                              university: {
+                                _type: "reference",
+                                _ref: participantData.university,
+                              },
+                            }),
+
+                        ...(participantData.facultyOther
+                          ? { facultyOther: participantData.facultyOther }
+                          : {
+                              faculty: {
+                                _type: "reference",
+                                _ref: participantData.faculty,
+                              },
+                            }),
+                        ...(participantData.subjectOther
+                          ? { subjectOther: participantData.subjectOther }
+                          : {
+                              subject: {
+                                _type: "reference",
+                                _ref: participantData.subject,
+                              },
+                            }),
+                        degree: participantData.degree,
+                        class: participantData.class,
+                        finishedSemester: participantData.finishedSemester,
+                        email: participantData.email,
+                        mobileNumber: participantData.mobileNumber,
+                        ...(idPhotoData && {
+                          idPhoto: {
+                            _type: "file",
+                            asset: {
+                              _ref: idPhotoData._id,
+                              _type: "reference",
+                            },
                           },
                         }),
 
-                    ...(participantData.facultyOther
-                      ? { facultyOther: participantData.facultyOther }
-                      : {
-                          faculty: {
-                            _type: "reference",
-                            _ref: participantData.faculty,
-                          },
-                        }),
-                    ...(participantData.subjectOther
-                      ? { subjectOther: participantData.subjectOther }
-                      : {
-                          subject: {
-                            _type: "reference",
-                            _ref: participantData.subject,
-                          },
-                        }),
-                    degree: participantData.degree,
-                    class: participantData.class,
-                    finishedSemester: participantData.finishedSemester,
-                    email: participantData.email,
-                    mobileNumber: participantData.mobileNumber,
-                    idPhoto: {
-                      _type: "file",
-                      asset: {
-                        _ref: idPhotoData._id,
-                        _type: "reference",
-                      },
-                    },
-                    advisorName: project.advisorName,
-                    ...(project.advisorUniversityOther
-                      ? {
-                          advisorUniversityOther:
-                            project.advisorUniversityOther,
-                        }
-                      : {
-                          advisorUniversity: {
-                            _type: "reference",
-                            _ref: project.advisorUniversity,
-                          },
-                        }),
-                    ...(project.advisorFacultyOther
-                      ? { advisorFacultyOther: project.advisorFacultyOther }
-                      : {
-                          advisorFaculty: {
-                            _type: "reference",
-                            _ref: project.advisorFaculty,
-                          },
-                        }),
-                    ...(project.advisorSubjectOther
-                      ? { advisorSubjectOther: project.advisorSubjectOther }
-                      : {
-                          advisorSubject: {
-                            _type: "reference",
-                            _ref: project.advisorSubject,
-                          },
-                        }),
-                    advisorTitle: project.advisorTitle,
-                    advisorEmail: project.advisorEmail,
-                    advisorMobileNumber: project.advisorMobileNumber,
-                    advisorCertificate: {
-                      _type: "file",
-                      asset: {
-                        _ref: advisorCertificateData._id,
-                        _type: "reference",
-                      },
-                    },
+                        advisors: advisors,
 
-                    title: project.title,
-                    extract: {
-                      _type: "file",
-                      asset: { _ref: extractData._id, _type: "reference" },
+                        companions: companions,
+
+                        title: project.title,
+                        extract: {
+                          _type: "file",
+                          asset: {
+                            _ref: extractData._id,
+                            _type: "reference",
+                          },
+                        },
+                        section: {
+                          _type: "reference",
+                          _ref: project.section,
+                        },
+                        accepted: false,
+                      },
                     },
-                    section: {
-                      _type: "reference",
-                      _ref: project.section,
-                    },
-                    accepted: false,
-                  },
-                },
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              ] as any;
-              //TODO:MOVE TO THE SERVER THE WHOLE UPLOAD SHIT
-              return await getClient()
-                .mutate(mutations)
-                .then(() => setLoading(false))
-                .catch((error) => {
-                  setLoading(false);
-                  console.error(error);
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  ] as any;
+                  //TODO:MOVE TO THE SERVER THE WHOLE UPLOAD SHIT
+                  return await getClient()
+                    .mutate(mutations)
+                    .then(() => setLoading(false))
+                    .catch((error) => {
+                      setLoading(false);
+                      console.error(error);
+                    });
                 });
+              });
             }
           })
         );
@@ -652,7 +700,7 @@ const ApplicationForm = ({
 
   const ContributionField = ({ index }: { index: number }) => {
     const selectedSection = useWatch({
-      control: arrayControl,
+      control: projectsControl,
       name: `projects.${index}.section`,
     });
     const findSection = sections.find((s) => s._id === selectedSection);
@@ -660,7 +708,7 @@ const ApplicationForm = ({
       return (
         <Controller
           name={`projects.${index}.contribution`}
-          control={arrayControl}
+          control={projectsControl}
           render={({ field: { onChange, value } }) => {
             return (
               <label>
@@ -690,6 +738,91 @@ const ApplicationForm = ({
             );
           }}
         />
+      );
+    }
+    return null;
+  };
+
+  const AddAdvisorButton = ({ index }: { index: number }) => {
+    const advisors = useWatch({
+      control: projectsControl,
+      name: `projects.${index}.advisors`,
+    });
+    if (advisors.length < 4) {
+      return (
+        <div className="flex flex-col items-center md:flex-row ">
+          <button
+            className="rounded-xl bg-gray-900 py-2 px-4 text-white md:mr-6"
+            onClick={() => {
+              const projectValues = projectGetValues(`projects.${index}`);
+              update(index, {
+                ...projectValues,
+                advisors: [
+                  ...(projectValues.advisors || []),
+                  {
+                    name: "",
+                    email: "",
+                    mobileNumber: "",
+                    title: "",
+                    university: "",
+                    faculty: "",
+                    subject: "",
+                    universityOther: undefined,
+                    facultyOther: undefined,
+                    subjectOther: undefined,
+                    certificate: null,
+                  },
+                ],
+              });
+            }}
+          >
+            <p>Témavezető hozzáadása</p>
+          </button>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const AddCompanionButton = ({ index }: { index: number }) => {
+    const companions = useWatch({
+      control: projectsControl,
+      name: `projects.${index}.companions`,
+    });
+    if (!companions || companions.length < 4) {
+      return (
+        <div className="flex flex-col items-center md:flex-row ">
+          <button
+            className="rounded-xl bg-gray-900 py-2 px-4 text-white md:mr-6"
+            onClick={() => {
+              const projectValues = projectGetValues(`projects.${index}`);
+              update(index, {
+                ...projectValues,
+                companions: [
+                  ...(projectValues.companions || []),
+                  {
+                    name: "",
+                    idNumber: "",
+                    degree: "",
+                    class: "",
+                    university: "",
+                    faculty: "",
+                    subject: "",
+                    universityOther: undefined,
+                    facultyOther: undefined,
+                    subjectOther: undefined,
+                    finishedSemester: "",
+                    email: "",
+                    mobileNumber: "",
+                    idPhoto: null,
+                  },
+                ],
+              });
+            }}
+          >
+            <p>Társszerző hozzáadása</p>
+          </button>
+        </div>
       );
     }
     return null;
@@ -935,306 +1068,8 @@ const ApplicationForm = ({
             )}
           </div>
         </div>
-        {companionFields.map((data, index) => (
-          <React.Fragment key={data.id}>
-            <Disclosure defaultOpen={index === 0}>
-              {({ open }) => (
-                <>
-                  <Disclosure.Button className="flex w-full items-center rounded-xl bg-application1 py-2 px-4">
-                    <p className="flex-1 text-start text-lg text-darkcherry">
-                      {index + 1}. Társszerző adatok:
-                    </p>
-                    {fields.length > 1 && (
-                      <TrashIcon
-                        className="mr-6 h-7 w-7 text-darkcherry"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          companionRemove(index);
-                        }}
-                      />
-                    )}
-
-                    {!open ? (
-                      <ChevronDownIcon
-                        className="h-7 w-7 text-darkcherry"
-                        aria-hidden="true"
-                      />
-                    ) : (
-                      <ChevronUpIcon
-                        className="h-7 w-7 text-darkcherry"
-                        aria-hidden="true"
-                      />
-                    )}
-                  </Disclosure.Button>
-                  <Transition
-                    enter="transition duration-150 ease-out"
-                    enterFrom="transform scale-95 opacity-0"
-                    enterTo="transform scale-100 opacity-100"
-                    leave="transition duration-150 ease-out"
-                    leaveFrom="transform scale-100 opacity-100"
-                    leaveTo="transform scale-95 opacity-0"
-                  >
-                    <Disclosure.Panel>
-                      <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:w-[700px] md:p-6 ">
-                        <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:pl-2">
-                          <Controller
-                            name={`companions.${index}.name`}
-                            control={companionFormControl}
-                            render={({ field }) => (
-                              <input
-                                {...field}
-                                autoComplete="off"
-                                type="text"
-                                className={classNames(
-                                  inputClasses,
-                                  "bg-application1 text-darkcherry placeholder:text-darkcherry"
-                                )}
-                                placeholder="Név"
-                              />
-                            )}
-                          />
-                          <Controller
-                            name={`companions.${index}.idNumber`}
-                            control={companionFormControl}
-                            render={({ field }) => (
-                              <input
-                                {...field}
-                                autoComplete="off"
-                                type="text"
-                                className={classNames(
-                                  inputClasses,
-                                  "bg-application1 text-darkcherry placeholder:text-darkcherry"
-                                )}
-                                placeholder="Ellenőrző száma"
-                              />
-                            )}
-                          />
-                          <UniversityField
-                            control={companionFormControl}
-                            fieldName={`companions.${index}.university`}
-                            text="text-darkcherry"
-                            bg="bg-application1"
-                            setAdditional={(value: string | undefined) => {
-                              companionSetValue(
-                                `companions.${index}.universityOther`,
-                                value
-                              );
-                            }}
-                          />
-                          <OtherField
-                            control={companionFormControl}
-                            text="text-darkcherry"
-                            bg="bg-application1"
-                            dependencyName={`companions.${index}.university`}
-                            fieldName={`companions.${index}.universityOther`}
-                            placeholder="Egyéb egyetem"
-                          />
-                          <FacultyField
-                            control={companionFormControl}
-                            fieldName={`companions.${index}.faculty`}
-                            dependencyName={`companions.${index}.university`}
-                            text="text-darkcherry"
-                            bg="bg-application1"
-                            setAdditional={(value: string | undefined) =>
-                              companionSetValue(
-                                `companions.${index}.facultyOther`,
-                                value
-                              )
-                            }
-                          />
-                          <OtherField
-                            control={companionFormControl}
-                            text="text-darkcherry"
-                            bg="bg-application1"
-                            dependencyName={`companions.${index}.faculty`}
-                            fieldName={`companions.${index}.facultyOther`}
-                            placeholder="Egyéb kar"
-                          />
-                          <SubjectField
-                            fieldName={`companions.${index}.subject`}
-                            dependencyName={`companions.${index}.faculty`}
-                            control={companionFormControl}
-                            text="text-darkcherry"
-                            bg="bg-application1"
-                            setAdditional={(value: string | undefined) =>
-                              companionSetValue(
-                                `companions.${index}.subjectOther`,
-                                value
-                              )
-                            }
-                          />
-                          <OtherField
-                            control={companionFormControl}
-                            text="text-darkcherry"
-                            bg="bg-application1"
-                            dependencyName="subject"
-                            fieldName="subjectOther"
-                            placeholder="Egyéb szak"
-                          />
-                          <Controller
-                            name={`companions.${index}.degree`}
-                            control={companionFormControl}
-                            render={({ field: { onChange, value } }) => (
-                              <Select
-                                onChange={(value: string | number) => {
-                                  onChange(value as string);
-                                }}
-                                options={degreeOptions}
-                                value={
-                                  degreeOptions.find(
-                                    (d) => d.value === value
-                                  ) || null
-                                }
-                                placeholder="Képzési szint"
-                                text="text-darkcherry"
-                                bg="bg-application1"
-                              />
-                            )}
-                          />
-                          <Controller
-                            name={`companions.${index}.class`}
-                            control={companionFormControl}
-                            render={({ field: { onChange, value } }) => (
-                              <Select
-                                onChange={(value: string | number) => {
-                                  onChange(value as string);
-                                }}
-                                options={classOptions}
-                                value={
-                                  classOptions.find((c) => c.value === value) ||
-                                  null
-                                }
-                                placeholder="Évfolyam"
-                                text="text-darkcherry"
-                                bg="bg-application1"
-                              />
-                            )}
-                          />
-                          <Controller
-                            name={`companions.${index}.finishedSemester`}
-                            control={companionFormControl}
-                            render={({ field: { onChange, value } }) => (
-                              <Select
-                                onChange={(value: string | number) => {
-                                  onChange(value as string);
-                                }}
-                                options={semesterOptions}
-                                value={
-                                  semesterOptions.find(
-                                    (c) => c.value === value
-                                  ) || null
-                                }
-                                placeholder="Elvégzett félévek száma"
-                                text="text-darkcherry"
-                                bg="bg-application1"
-                              />
-                            )}
-                          />
-                          <Controller
-                            name={`companions.${index}.email`}
-                            control={companionFormControl}
-                            render={({ field }) => (
-                              <input
-                                {...field}
-                                autoComplete="off"
-                                disabled={!!defaultValues}
-                                type="text"
-                                className={classNames(
-                                  inputClasses,
-                                  "bg-application1 text-darkcherry placeholder:text-darkcherry"
-                                )}
-                                placeholder="E-mail cím"
-                              />
-                            )}
-                          />
-                          <Controller
-                            name={`companions.${index}.mobileNumber`}
-                            control={companionFormControl}
-                            render={({ field }) => (
-                              <input
-                                {...field}
-                                autoComplete="off"
-                                type="text"
-                                className={classNames(
-                                  inputClasses,
-                                  "bg-application1 text-darkcherry placeholder:text-darkcherry"
-                                )}
-                                placeholder="Telefonszám"
-                              />
-                            )}
-                          />
-                          <Controller
-                            name={`companions.${index}.idPhoto`}
-                            control={companionFormControl}
-                            render={({ field: { onChange, value } }) => {
-                              return (
-                                <label>
-                                  <div
-                                    className={classNames(
-                                      inputClasses,
-                                      "flex cursor-pointer items-center bg-application1 pl-4 text-darkcherry  placeholder:text-darkcherry "
-                                    )}
-                                  >
-                                    <div className="overflow-hidden truncate opacity-80">
-                                      {value && typeof value === "object"
-                                        ? value.name
-                                        : typeof value === "string"
-                                        ? value
-                                        : "Ellenőrző kép"}
-                                    </div>
-                                  </div>
-                                  <input
-                                    type="file"
-                                    autoComplete="off"
-                                    className="hidden"
-                                    onChange={(e) =>
-                                      onChange(
-                                        e.target.files
-                                          ? e.target.files[0]
-                                          : null
-                                      )
-                                    }
-                                  />
-                                </label>
-                              );
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </Disclosure.Panel>
-                  </Transition>
-                </>
-              )}
-            </Disclosure>
-          </React.Fragment>
-        ))}
-        <div className="flex flex-col items-center md:flex-row ">
-          <button
-            className="rounded-xl bg-gray-900 py-2 px-4 text-white md:mr-6"
-            onClick={() =>
-              companionAppend({
-                name: "",
-                idNumber: "",
-                degree: "",
-                class: "",
-                university: "",
-                faculty: "",
-                subject: "",
-                universityOther: undefined,
-                facultyOther: undefined,
-                subjectOther: undefined,
-                finishedSemester: "",
-                email: "",
-                mobileNumber: "",
-                idPhoto: null,
-              })
-            }
-          >
-            <p>Társszerző hozzáadása</p>
-          </button>
-        </div>
-        {fields.map((data, index) => (
-          <Disclosure defaultOpen={index === 0} key={data.id}>
+        {fields.map((project, index) => (
+          <Disclosure defaultOpen={index === 0} key={project.id}>
             {({ open }) => (
               <>
                 <Disclosure.Button className="flex w-full items-center rounded-xl bg-application3 py-2 px-4">
@@ -1274,182 +1109,12 @@ const ApplicationForm = ({
                   <Disclosure.Panel>
                     <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:w-[700px] md:p-6 ">
                       <p className="text-3xl text-darkcherry">
-                        {index + 1}. Témavezető adatai:
-                      </p>
-                      <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:pl-2">
-                        <Controller
-                          name={`projects.${index}.advisorName`}
-                          control={arrayControl}
-                          render={({ field }) => (
-                            <input
-                              {...field}
-                              autoComplete="off"
-                              type="text"
-                              className={classNames(
-                                inputClasses,
-                                "bg-application2 text-white placeholder:text-white"
-                              )}
-                              placeholder="Név"
-                            />
-                          )}
-                        />
-                        <UniversityField
-                          fieldName={`projects.${index}.advisorUniversity`}
-                          control={arrayControl}
-                          text="text-white"
-                          bg="bg-application2"
-                          setAdditional={(value: string | undefined) =>
-                            projectSetValue(
-                              `projects.${index}.advisorUniversityOther`,
-                              value
-                            )
-                          }
-                        />
-                        <OtherField
-                          control={arrayControl}
-                          text="text-white"
-                          bg="bg-application2"
-                          dependencyName={`projects.${index}.advisorUniversity`}
-                          fieldName={`projects.${index}.advisorUniversityOther`}
-                          placeholder="Egyéb egyetem"
-                        />
-                        <FacultyField
-                          fieldName={`projects.${index}.advisorFaculty`}
-                          dependencyName={`projects.${index}.advisorUniversity`}
-                          control={arrayControl}
-                          text="text-white"
-                          bg="bg-application2"
-                          setAdditional={(value: string | undefined) =>
-                            projectSetValue(
-                              `projects.${index}.advisorFacultyOther`,
-                              value
-                            )
-                          }
-                        />
-                        <OtherField
-                          control={arrayControl}
-                          text="text-white"
-                          bg="bg-application2"
-                          dependencyName={`projects.${index}.advisorFaculty`}
-                          fieldName={`projects.${index}.advisorFacultyOther`}
-                          placeholder="Egyéb kar"
-                        />
-                        <SubjectField
-                          fieldName={`projects.${index}.advisorSubject`}
-                          dependencyName={`projects.${index}.advisorFaculty`}
-                          control={arrayControl}
-                          text="text-white"
-                          bg="bg-application2"
-                          setAdditional={(value: string | undefined) =>
-                            projectSetValue(
-                              `projects.${index}.advisorSubjectOther`,
-                              value
-                            )
-                          }
-                        />
-                        <OtherField
-                          control={arrayControl}
-                          text="text-white"
-                          bg="bg-application2"
-                          dependencyName={`projects.${index}.advisorSubject`}
-                          fieldName={`projects.${index}.advisorSubjectOther`}
-                          placeholder="Egyéb szak"
-                        />
-                        <Controller
-                          name={`projects.${index}.advisorTitle`}
-                          control={arrayControl}
-                          render={({ field: { onChange, value } }) => (
-                            <Select
-                              onChange={(value: string | number) => {
-                                onChange(value as string);
-                              }}
-                              options={titleOptions}
-                              value={
-                                titleOptions.find((t) => t.value === value) ||
-                                null
-                              }
-                              placeholder="Titulus"
-                              text="text-white"
-                              bg="bg-application2"
-                            />
-                          )}
-                        />
-                        <Controller
-                          name={`projects.${index}.advisorEmail`}
-                          control={arrayControl}
-                          render={({ field }) => (
-                            <input
-                              {...field}
-                              autoComplete="off"
-                              type="text"
-                              className={classNames(
-                                inputClasses,
-                                "bg-application2 text-white placeholder:text-white"
-                              )}
-                              placeholder="E-mail cím"
-                            />
-                          )}
-                        />
-                        <Controller
-                          name={`projects.${index}.advisorMobileNumber`}
-                          control={arrayControl}
-                          render={({ field }) => (
-                            <input
-                              {...field}
-                              autoComplete="off"
-                              type="text"
-                              className={classNames(
-                                inputClasses,
-                                "bg-application2 text-white placeholder:text-white"
-                              )}
-                              placeholder="Telefonszám"
-                            />
-                          )}
-                        />
-                        <Controller
-                          name={`projects.${index}.advisorCertificate`}
-                          control={arrayControl}
-                          render={({ field: { onChange, value } }) => {
-                            return (
-                              <label>
-                                <div
-                                  className={classNames(
-                                    inputClasses,
-                                    "flex cursor-pointer items-center bg-application2 pl-4 text-white"
-                                  )}
-                                >
-                                  <div className="overflow-hidden truncate opacity-80">
-                                    {value && typeof value === "object"
-                                      ? value.name
-                                      : typeof value === "string"
-                                      ? value
-                                      : "Igazolás"}
-                                  </div>
-                                </div>
-                                <input
-                                  type="file"
-                                  autoComplete="off"
-                                  className="hidden"
-                                  onChange={(e) =>
-                                    onChange(
-                                      e.target.files ? e.target.files[0] : null
-                                    )
-                                  }
-                                />
-                              </label>
-                            );
-                          }}
-                        />
-                      </div>
-                    </div>
-                    <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:w-[700px] md:p-6 ">
-                      <p className="text-3xl text-darkcherry">
                         {index + 1}. Dolgozat:
                       </p>
                       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:pl-2">
                         <Controller
                           name={`projects.${index}.title`}
-                          control={arrayControl}
+                          control={projectsControl}
                           render={({ field }) => (
                             <input
                               {...field}
@@ -1465,7 +1130,7 @@ const ApplicationForm = ({
                         />
                         <Controller
                           name={`projects.${index}.extract`}
-                          control={arrayControl}
+                          control={projectsControl}
                           render={({ field: { onChange, value } }) => {
                             return (
                               <label>
@@ -1499,7 +1164,7 @@ const ApplicationForm = ({
                         />
                         <Controller
                           name={`projects.${index}.section`}
-                          control={arrayControl}
+                          control={projectsControl}
                           render={({ field: { onChange, value } }) => {
                             const sectionsOptions = sections.map((s) => ({
                               name: s.name,
@@ -1526,7 +1191,7 @@ const ApplicationForm = ({
                         {defaultValues && (
                           <Controller
                             name={`projects.${index}.annex`}
-                            control={arrayControl}
+                            control={projectsControl}
                             render={({ field: { onChange, value } }) => {
                               return (
                                 <label>
@@ -1564,7 +1229,7 @@ const ApplicationForm = ({
                         {defaultValues && (
                           <Controller
                             name={`projects.${index}.declaration`}
-                            control={arrayControl}
+                            control={projectsControl}
                             render={({ field: { onChange, value } }) => {
                               return (
                                 <label>
@@ -1602,6 +1267,549 @@ const ApplicationForm = ({
                         {defaultValues && <ContributionField index={index} />}
                       </div>
                     </div>
+                    {project.advisors.map((_advisor, ai) => (
+                      <React.Fragment key={"companion" + ai}>
+                        <Disclosure defaultOpen>
+                          {({ open }) => (
+                            <>
+                              <Disclosure.Button className="my-4 flex w-full items-center rounded-xl bg-application1 py-2 px-4 ">
+                                <p className="flex-1 text-start text-lg text-darkcherry">
+                                  {ai + 1}. Témavezető adatai:
+                                </p>
+                                {ai !== 0 && (
+                                  <TrashIcon
+                                    className="mr-6 h-7 w-7 text-darkcherry"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      const projectValues = projectGetValues(
+                                        `projects.${index}`
+                                      );
+                                      const projectAdvisors =
+                                        projectValues.advisors || [];
+                                      projectAdvisors.splice(ai, 1);
+                                      update(index, {
+                                        ...projectValues,
+                                        advisors: projectAdvisors,
+                                      });
+                                    }}
+                                  />
+                                )}
+
+                                {!open ? (
+                                  <ChevronDownIcon
+                                    className="h-7 w-7 text-darkcherry"
+                                    aria-hidden="true"
+                                  />
+                                ) : (
+                                  <ChevronUpIcon
+                                    className="h-7 w-7 text-darkcherry"
+                                    aria-hidden="true"
+                                  />
+                                )}
+                              </Disclosure.Button>
+                              <Transition
+                                enter="transition duration-150 ease-out"
+                                enterFrom="transform scale-95 opacity-0"
+                                enterTo="transform scale-100 opacity-100"
+                                leave="transition duration-150 ease-out"
+                                leaveFrom="transform scale-100 opacity-100"
+                                leaveTo="transform scale-95 opacity-0"
+                              >
+                                <Disclosure.Panel>
+                                  <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:w-[700px] md:p-6 ">
+                                    <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:pl-2">
+                                      <Controller
+                                        name={`projects.${index}.advisors.${ai}.name`}
+                                        control={projectsControl}
+                                        render={({ field }) => (
+                                          <input
+                                            {...field}
+                                            autoComplete="off"
+                                            type="text"
+                                            className={classNames(
+                                              inputClasses,
+                                              "bg-application2 text-white placeholder:text-white"
+                                            )}
+                                            placeholder="Név"
+                                          />
+                                        )}
+                                      />
+                                      <UniversityField
+                                        fieldName={`projects.${index}.advisors.${ai}.university`}
+                                        control={projectsControl}
+                                        text="text-white"
+                                        bg="bg-application2"
+                                        setAdditional={(
+                                          value: string | undefined
+                                        ) =>
+                                          projectSetValue(
+                                            `projects.${index}.advisors.${ai}.universityOther`,
+                                            value
+                                          )
+                                        }
+                                      />
+                                      <OtherField
+                                        control={projectsControl}
+                                        text="text-white"
+                                        bg="bg-application2"
+                                        dependencyName={`projects.${index}.advisors.${ai}.university`}
+                                        fieldName={`projects.${index}.advisors.${ai}.universityOther`}
+                                        placeholder="Egyéb egyetem"
+                                      />
+                                      <FacultyField
+                                        fieldName={`projects.${index}.advisors.${ai}.faculty`}
+                                        dependencyName={`projects.${index}.advisors.${ai}.university`}
+                                        control={projectsControl}
+                                        text="text-white"
+                                        bg="bg-application2"
+                                        setAdditional={(
+                                          value: string | undefined
+                                        ) =>
+                                          projectSetValue(
+                                            `projects.${index}.advisors.${ai}.facultyOther`,
+                                            value
+                                          )
+                                        }
+                                      />
+                                      <OtherField
+                                        control={projectsControl}
+                                        text="text-white"
+                                        bg="bg-application2"
+                                        dependencyName={`projects.${index}.advisors.${ai}.faculty`}
+                                        fieldName={`projects.${index}.advisors.${ai}.facultyOther`}
+                                        placeholder="Egyéb kar"
+                                      />
+                                      <SubjectField
+                                        fieldName={`projects.${index}.advisors.${ai}.subject`}
+                                        dependencyName={`projects.${index}.advisors.${ai}.faculty`}
+                                        control={projectsControl}
+                                        text="text-white"
+                                        bg="bg-application2"
+                                        setAdditional={(
+                                          value: string | undefined
+                                        ) =>
+                                          projectSetValue(
+                                            `projects.${index}.advisors.${ai}.subjectOther`,
+                                            value
+                                          )
+                                        }
+                                      />
+                                      <OtherField
+                                        control={projectsControl}
+                                        text="text-white"
+                                        bg="bg-application2"
+                                        dependencyName={`projects.${index}.advisors.${ai}.subject`}
+                                        fieldName={`projects.${index}.advisors.${ai}.subjectOther`}
+                                        placeholder="Egyéb szak"
+                                      />
+                                      <Controller
+                                        name={`projects.${index}.advisors.${ai}.title`}
+                                        control={projectsControl}
+                                        render={({
+                                          field: { onChange, value },
+                                        }) => (
+                                          <Select
+                                            onChange={(
+                                              value: string | number
+                                            ) => {
+                                              onChange(value as string);
+                                            }}
+                                            options={titleOptions}
+                                            value={
+                                              titleOptions.find(
+                                                (t) => t.value === value
+                                              ) || null
+                                            }
+                                            placeholder="Titulus"
+                                            text="text-white"
+                                            bg="bg-application2"
+                                          />
+                                        )}
+                                      />
+                                      <Controller
+                                        name={`projects.${index}.advisors.${ai}.email`}
+                                        control={projectsControl}
+                                        render={({ field }) => (
+                                          <input
+                                            {...field}
+                                            autoComplete="off"
+                                            type="text"
+                                            className={classNames(
+                                              inputClasses,
+                                              "bg-application2 text-white placeholder:text-white"
+                                            )}
+                                            placeholder="E-mail cím"
+                                          />
+                                        )}
+                                      />
+                                      <Controller
+                                        name={`projects.${index}.advisors.${ai}.mobileNumber`}
+                                        control={projectsControl}
+                                        render={({ field }) => (
+                                          <input
+                                            {...field}
+                                            autoComplete="off"
+                                            type="text"
+                                            className={classNames(
+                                              inputClasses,
+                                              "bg-application2 text-white placeholder:text-white"
+                                            )}
+                                            placeholder="Telefonszám"
+                                          />
+                                        )}
+                                      />
+                                      <Controller
+                                        name={`projects.${index}.advisors.${ai}.certificate`}
+                                        control={projectsControl}
+                                        render={({
+                                          field: { onChange, value },
+                                        }) => {
+                                          return (
+                                            <label>
+                                              <div
+                                                className={classNames(
+                                                  inputClasses,
+                                                  "flex cursor-pointer items-center bg-application2 pl-4 text-white"
+                                                )}
+                                              >
+                                                <div className="overflow-hidden truncate opacity-80">
+                                                  {value &&
+                                                  typeof value === "object"
+                                                    ? value.name
+                                                    : typeof value === "string"
+                                                    ? value
+                                                    : "Igazolás"}
+                                                </div>
+                                              </div>
+                                              <input
+                                                type="file"
+                                                autoComplete="off"
+                                                className="hidden"
+                                                onChange={(e) =>
+                                                  onChange(
+                                                    e.target.files
+                                                      ? e.target.files[0]
+                                                      : null
+                                                  )
+                                                }
+                                              />
+                                            </label>
+                                          );
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                </Disclosure.Panel>
+                              </Transition>
+                            </>
+                          )}
+                        </Disclosure>
+                      </React.Fragment>
+                    ))}
+                    <AddAdvisorButton index={index} />
+                    {(project.companions || []).map((_companion, ci) => (
+                      <React.Fragment key={"companion" + ci}>
+                        <Disclosure defaultOpen>
+                          {({ open }) => (
+                            <>
+                              <Disclosure.Button className="my-4 flex w-full items-center rounded-xl bg-application1 py-2 px-4 ">
+                                <p className="flex-1 text-start text-lg text-darkcherry">
+                                  {ci + 1}. Társszerző adatok:
+                                </p>
+                                <TrashIcon
+                                  className="mr-6 h-7 w-7 text-darkcherry"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    const projectValues = projectGetValues(
+                                      `projects.${index}`
+                                    );
+                                    const projectCompanions =
+                                      projectValues.companions || [];
+                                    projectCompanions.splice(ci, 1);
+                                    update(index, {
+                                      ...projectValues,
+                                      companions: projectCompanions,
+                                    });
+                                  }}
+                                />
+
+                                {!open ? (
+                                  <ChevronDownIcon
+                                    className="h-7 w-7 text-darkcherry"
+                                    aria-hidden="true"
+                                  />
+                                ) : (
+                                  <ChevronUpIcon
+                                    className="h-7 w-7 text-darkcherry"
+                                    aria-hidden="true"
+                                  />
+                                )}
+                              </Disclosure.Button>
+                              <Transition
+                                enter="transition duration-150 ease-out"
+                                enterFrom="transform scale-95 opacity-0"
+                                enterTo="transform scale-100 opacity-100"
+                                leave="transition duration-150 ease-out"
+                                leaveFrom="transform scale-100 opacity-100"
+                                leaveTo="transform scale-95 opacity-0"
+                              >
+                                <Disclosure.Panel>
+                                  <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:w-[700px] md:p-6 ">
+                                    <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:pl-2">
+                                      <Controller
+                                        name={`projects.${index}.companions.${ci}.name`}
+                                        control={projectsControl}
+                                        render={({ field }) => (
+                                          <input
+                                            {...field}
+                                            autoComplete="off"
+                                            type="text"
+                                            className={classNames(
+                                              inputClasses,
+                                              "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                                            )}
+                                            placeholder="Név"
+                                          />
+                                        )}
+                                      />
+                                      <Controller
+                                        name={`projects.${index}.companions.${ci}.idNumber`}
+                                        control={projectsControl}
+                                        render={({ field }) => (
+                                          <input
+                                            {...field}
+                                            autoComplete="off"
+                                            type="text"
+                                            className={classNames(
+                                              inputClasses,
+                                              "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                                            )}
+                                            placeholder="Ellenőrző száma"
+                                          />
+                                        )}
+                                      />
+                                      <UniversityField
+                                        control={projectsControl}
+                                        fieldName={`projects.${index}.companions.${ci}.university`}
+                                        text="text-darkcherry"
+                                        bg="bg-application1"
+                                        setAdditional={(
+                                          value: string | undefined
+                                        ) => {
+                                          projectSetValue(
+                                            `projects.${index}.companions.${ci}.universityOther`,
+                                            value
+                                          );
+                                        }}
+                                      />
+                                      <OtherField
+                                        control={projectsControl}
+                                        text="text-darkcherry"
+                                        bg="bg-application1"
+                                        fieldName={`projects.${index}.companions.${ci}.universityOther`}
+                                        dependencyName={`projects.${index}.companions.${ci}.university`}
+                                        placeholder="Egyéb egyetem"
+                                      />
+                                      <FacultyField
+                                        control={projectsControl}
+                                        fieldName={`projects.${index}.companions.${ci}.faculty`}
+                                        dependencyName={`projects.${index}.companions.${ci}.university`}
+                                        text="text-darkcherry"
+                                        bg="bg-application1"
+                                        setAdditional={(
+                                          value: string | undefined
+                                        ) =>
+                                          projectSetValue(
+                                            `projects.${index}.companions.${ci}.facultyOther`,
+                                            value
+                                          )
+                                        }
+                                      />
+                                      <OtherField
+                                        control={projectsControl}
+                                        text="text-darkcherry"
+                                        bg="bg-application1"
+                                        dependencyName={`projects.${index}.companions.${ci}.faculty`}
+                                        fieldName={`projects.${index}.companions.${ci}.facultyOther`}
+                                        placeholder="Egyéb kar"
+                                      />
+                                      <SubjectField
+                                        fieldName={`projects.${index}.companions.${ci}.subject`}
+                                        dependencyName={`projects.${index}.companions.${ci}.faculty`}
+                                        control={projectsControl}
+                                        text="text-darkcherry"
+                                        bg="bg-application1"
+                                        setAdditional={(
+                                          value: string | undefined
+                                        ) =>
+                                          projectSetValue(
+                                            `projects.${index}.companions.${ci}.subjectOther`,
+                                            value
+                                          )
+                                        }
+                                      />
+                                      <OtherField
+                                        control={projectsControl}
+                                        text="text-darkcherry"
+                                        bg="bg-application1"
+                                        dependencyName={`projects.${index}.companions.${ci}.subject`}
+                                        fieldName={`projects.${index}.companions.${ci}.subjectOther`}
+                                        placeholder="Egyéb szak"
+                                      />
+                                      <Controller
+                                        name={`projects.${index}.companions.${ci}.degree`}
+                                        control={projectsControl}
+                                        render={({
+                                          field: { onChange, value },
+                                        }) => (
+                                          <Select
+                                            onChange={(
+                                              value: string | number
+                                            ) => {
+                                              onChange(value as string);
+                                            }}
+                                            options={degreeOptions}
+                                            value={
+                                              degreeOptions.find(
+                                                (d) => d.value === value
+                                              ) || null
+                                            }
+                                            placeholder="Képzési szint"
+                                            text="text-darkcherry"
+                                            bg="bg-application1"
+                                          />
+                                        )}
+                                      />
+                                      <Controller
+                                        name={`projects.${index}.companions.${ci}.class`}
+                                        control={projectsControl}
+                                        render={({
+                                          field: { onChange, value },
+                                        }) => (
+                                          <Select
+                                            onChange={(
+                                              value: string | number
+                                            ) => {
+                                              onChange(value as string);
+                                            }}
+                                            options={classOptions}
+                                            value={
+                                              classOptions.find(
+                                                (c) => c.value === value
+                                              ) || null
+                                            }
+                                            placeholder="Évfolyam"
+                                            text="text-darkcherry"
+                                            bg="bg-application1"
+                                          />
+                                        )}
+                                      />
+                                      <Controller
+                                        name={`projects.${index}.companions.${ci}.finishedSemester`}
+                                        control={projectsControl}
+                                        render={({
+                                          field: { onChange, value },
+                                        }) => (
+                                          <Select
+                                            onChange={(
+                                              value: string | number
+                                            ) => {
+                                              onChange(value as string);
+                                            }}
+                                            options={semesterOptions}
+                                            value={
+                                              semesterOptions.find(
+                                                (c) => c.value === value
+                                              ) || null
+                                            }
+                                            placeholder="Elvégzett félévek száma"
+                                            text="text-darkcherry"
+                                            bg="bg-application1"
+                                          />
+                                        )}
+                                      />
+                                      <Controller
+                                        name={`projects.${index}.companions.${ci}.email`}
+                                        control={projectsControl}
+                                        render={({ field }) => (
+                                          <input
+                                            {...field}
+                                            autoComplete="off"
+                                            disabled={!!defaultValues}
+                                            type="text"
+                                            className={classNames(
+                                              inputClasses,
+                                              "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                                            )}
+                                            placeholder="E-mail cím"
+                                          />
+                                        )}
+                                      />
+                                      <Controller
+                                        name={`projects.${index}.companions.${ci}.mobileNumber`}
+                                        control={projectsControl}
+                                        render={({ field }) => (
+                                          <input
+                                            {...field}
+                                            autoComplete="off"
+                                            type="text"
+                                            className={classNames(
+                                              inputClasses,
+                                              "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                                            )}
+                                            placeholder="Telefonszám"
+                                          />
+                                        )}
+                                      />
+                                      <Controller
+                                        name={`projects.${index}.companions.${ci}.idPhoto`}
+                                        control={projectsControl}
+                                        render={({
+                                          field: { onChange, value },
+                                        }) => {
+                                          return (
+                                            <label>
+                                              <div
+                                                className={classNames(
+                                                  inputClasses,
+                                                  "flex cursor-pointer items-center bg-application1 pl-4 text-darkcherry  placeholder:text-darkcherry "
+                                                )}
+                                              >
+                                                <div className="overflow-hidden truncate opacity-80">
+                                                  {value &&
+                                                  typeof value === "object"
+                                                    ? value.name
+                                                    : typeof value === "string"
+                                                    ? value
+                                                    : "Ellenőrző kép"}
+                                                </div>
+                                              </div>
+                                              <input
+                                                type="file"
+                                                autoComplete="off"
+                                                className="hidden"
+                                                onChange={(e) =>
+                                                  onChange(
+                                                    e.target.files
+                                                      ? e.target.files[0]
+                                                      : null
+                                                  )
+                                                }
+                                              />
+                                            </label>
+                                          );
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                </Disclosure.Panel>
+                              </Transition>
+                            </>
+                          )}
+                        </Disclosure>
+                      </React.Fragment>
+                    ))}
+                    <AddCompanionButton index={index} />
                   </Disclosure.Panel>
                 </Transition>
               </>
@@ -1613,15 +1821,21 @@ const ApplicationForm = ({
           className="rounded-xl bg-gray-900 py-2 px-4 text-white md:mr-6"
           onClick={() =>
             append({
-              advisorName: "",
-              advisorEmail: "",
-              advisorMobileNumber: "",
-              advisorTitle: "",
-              advisorUniversity: "",
-              advisorFaculty: "",
-              advisorSubject: "",
-              advisorCertificate: null,
-
+              advisors: [
+                {
+                  name: "",
+                  email: "",
+                  mobileNumber: "",
+                  title: "",
+                  university: "",
+                  faculty: "",
+                  subject: "",
+                  universityOther: undefined,
+                  facultyOther: undefined,
+                  subjectOther: undefined,
+                  certificate: null,
+                },
+              ],
               title: "",
               extract: null,
               section: "",

@@ -92,71 +92,189 @@ export default {
     },
 
     {
-      title: "Témavezető név",
-      name: "advisorName",
-      type: "string",
+      title: "Társszerzők",
+      name: "companions",
+      type: "array",
+      of: [
+        {
+          title: "Társszerző",
+          type: "object",
+          fields: [
+            {
+              title: "Név",
+              name: "name",
+              type: "string",
+            },
+            {
+              title: "Ellenőrző száma",
+              name: "idNumber",
+              type: "string",
+            },
+            {
+              title: "Egyetem",
+              name: "university",
+              type: "reference",
+              to: [{ type: "universities" }],
+              options: {
+                disableNew: true,
+              },
+            },
+            {
+              title: "Egyéb egyetem",
+              name: "universityOther",
+              type: "string",
+            },
+            {
+              title: "Kar",
+              name: "faculty",
+              type: "reference",
+              to: [{ type: "faculties" }],
+              options: {
+                disableNew: true,
+              },
+            },
+            {
+              title: "Egyéb Kar",
+              name: "facultyOther",
+              type: "string",
+            },
+            {
+              title: "Szak",
+              name: "subject",
+              type: "reference",
+              to: [{ type: "subjects" }],
+              options: {
+                disableNew: true,
+              },
+            },
+            {
+              title: "Egyéb Szak",
+              name: "subjectOther",
+              type: "string",
+            },
+            {
+              title: "Képzési szint",
+              name: "degree",
+              type: "string",
+            },
+            {
+              title: "Évfolyam",
+              name: "class",
+              type: "string",
+            },
+            {
+              title: "Elvégzett félévek száma",
+              name: "finishedSemester",
+              type: "string",
+            },
+            {
+              title: "Email",
+              name: "email",
+              type: "string",
+            },
+            {
+              title: "Telefonszám",
+              name: "mobileNumber",
+              type: "string",
+            },
+            {
+              title: "Ellenőrző kép",
+              name: "idPhoto",
+              type: "file",
+            },
+          ],
+          preview: {
+            select: {
+              title: "name",
+            },
+          },
+        },
+      ],
     },
     {
-      title: "Témavezető egyetem",
-      name: "advisorUniversity",
-      type: "reference",
-      to: [{ type: "universities" }],
-      options: {
-        disableNew: true,
-      },
-    },
-    {
-      title: "Témavezető egyéb egyetem",
-      name: "advisorUniversityOther",
-      type: "string",
-    },
-    {
-      title: "Témavezető kar",
-      name: "advisorFaculty",
-      type: "reference",
-      to: [{ type: "faculties" }],
-      options: {
-        disableNew: true,
-      },
-    },
-    {
-      title: "Témavezető egyéb kar",
-      name: "advisorFacultyOther",
-      type: "string",
-    },
-    {
-      title: "Témavezető szak",
-      name: "advisorSubject",
-      type: "reference",
-      to: [{ type: "subjects" }],
-      options: {
-        disableNew: true,
-      },
-    },
-    {
-      title: "Témavezető egyéb szak",
-      name: "advisorSubjectOther",
-      type: "string",
-    },
-    {
-      title: "Témavezető titulus",
-      name: "advisorTitle",
-      type: "string",
-    },
-    {
-      title: "Témavezető email",
-      name: "advisorEmail",
-      type: "string",
-    },
-    {
-      title: "Témavezető telefonszám",
-      name: "advisorMobileNumber",
-      type: "string",
-    },
-    {
-      title: "Témavezető igazolás",
-      name: "advisorCertificate",
-      type: "file",
+      title: "Témavezetők",
+      name: "advisors",
+      type: "array",
+      of: [
+        {
+          title: "Témavezető",
+          type: "object",
+          fields: [
+            {
+              title: "Név",
+              name: "name",
+              type: "string",
+            },
+            {
+              title: "Egyetem",
+              name: "university",
+              type: "reference",
+              to: [{ type: "universities" }],
+              options: {
+                disableNew: true,
+              },
+            },
+            {
+              title: "Egyéb egyetem",
+              name: "universityOther",
+              type: "string",
+            },
+            {
+              title: "Kar",
+              name: "faculty",
+              type: "reference",
+              to: [{ type: "faculties" }],
+              options: {
+                disableNew: true,
+              },
+            },
+            {
+              title: "Egyéb Kar",
+              name: "facultyOther",
+              type: "string",
+            },
+            {
+              title: "Szak",
+              name: "subject",
+              type: "reference",
+              to: [{ type: "subjects" }],
+              options: {
+                disableNew: true,
+              },
+            },
+            {
+              title: "Egyéb Szak",
+              name: "subjectOther",
+              type: "string",
+            },
+            {
+              title: "Titulus",
+              name: "title",
+              type: "string",
+            },
+            {
+              title: "Email",
+              name: "email",
+              type: "string",
+            },
+            {
+              title: "Telefonszám",
+              name: "mobileNumber",
+              type: "string",
+            },
+            {
+              title: "Igazolás",
+              name: "certificate",
+              type: "file",
+            },
+          ],
+          preview: {
+            select: {
+              title: "name",
+            },
+          },
+        },
+      ],
     },
 
     {
