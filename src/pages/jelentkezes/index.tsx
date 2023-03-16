@@ -46,7 +46,7 @@ const Jelentkezes = () => {
         <meta name="description" content={`ETDK jelentkezés`} />
       </Head>
       <div className="flex min-h-[100vh] min-w-full flex-col items-center space-y-4 bg-white p-4 pt-[100px]">
-        <div className="rounded-md bg-red p-2 ">
+        <div className="rounded-md bg-red-600 p-2 ">
           <p className="text-2xl font-semibold tracking-wider text-white">
             MÁRCIUS 27-TŐL!
           </p>

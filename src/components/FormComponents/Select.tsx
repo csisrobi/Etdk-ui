@@ -1,8 +1,8 @@
-import { Listbox, Transition } from "@headlessui/react";
+import { Combobox, Transition } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import classNames from "classnames";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import type { SelectOption } from "types";
 
 export default function Select({
@@ -11,23 +11,36 @@ export default function Select({
   value,
   disabled,
   placeholder,
+  setAdditional,
   bg = "",
   text = "",
 }: {
   options: SelectOption[] | undefined;
   onChange: (value: string | number) => void;
   value: SelectOption | null;
+  setAdditional?: (value: string | undefined) => void;
   disabled?: boolean;
   placeholder?: string;
   bg?: string;
   text?: string;
 }) {
+  const [query, setQuery] = useState("");
+  const filteredOptions =
+    query == "" || !options
+      ? options
+      : options.filter((option) => {
+          return option.name.toLowerCase().includes(query.toLowerCase());
+        });
+  const hideDropDown = !filteredOptions?.length && query !== "" && !disabled;
   return (
-    <Listbox
+    <Combobox
       value={value}
       onChange={(e) => {
         if (e) {
           onChange(e.value);
+          if (setAdditional) {
+            setAdditional(undefined);
+          }
         }
       }}
       disabled={disabled}
@@ -35,32 +48,28 @@ export default function Select({
       {({ open }) => (
         <>
           <div className="relative">
-            <Listbox.Button
+            <div
               className={`relative h-11 w-full cursor-default rounded-xl py-2 pl-3 pr-10 text-left text-lg shadow-sm focus:border-darkcherry focus:outline-none focus:ring-1 focus:ring-darkcherry sm:text-sm ${bg}`}
             >
-              <div className="flex items-center">
-                <div
-                  className={`${text} sm:text-md block truncate text-lg font-semibold tracking-tight`}
-                >
-                  {value ? (
-                    value.name
-                  ) : placeholder ? (
-                    <div className="opacity-80">{placeholder}</div>
-                  ) : (
-                    ""
-                  )}
-                </div>
-              </div>
-              {!disabled && (
-                <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+              <Combobox.Input
+                autoComplete="off"
+                onChange={(event) => setQuery(event.target.value)}
+                className={`${text} ${bg} sm:text-md block truncate text-lg font-semibold tracking-tight focus:outline-none placeholder:${text} placeholder:opacity-80`}
+                placeholder={placeholder || ""}
+                displayValue={(option: SelectOption | undefined) =>
+                  option?.name || ""
+                }
+              />
+              {!hideDropDown && (
+                <Combobox.Button className="absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
                   <ChevronDownIcon
-                    className="text-gray-400 h-5 w-5"
+                    className={`h-5 w-5 ${text}`}
                     aria-hidden="true"
                   />
-                </span>
+                </Combobox.Button>
               )}
-            </Listbox.Button>
-            {options && (
+            </div>
+            {filteredOptions && !!filteredOptions.length && (
               <Transition
                 show={open}
                 as={Fragment}
@@ -68,38 +77,28 @@ export default function Select({
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
               >
-                <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                  {options.map((option) => (
-                    <Listbox.Option
+                <Combobox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md border border-black bg-white py-1 text-base shadow-lg ring-opacity-5 focus:outline-none sm:text-sm">
+                  {filteredOptions.map((option) => (
+                    <Combobox.Option
                       key={option.value}
                       className={({ active }) =>
                         classNames(
                           active ? `${bg} ${text}` : "text-gray-900",
-                          "relative cursor-default select-none py-2 pl-3 pr-9"
+                          "relative cursor-pointer select-none py-2 pl-3 pr-9"
                         )
                       }
                       value={option}
                     >
-                      {({ selected, active }) => (
+                      {({ selected }) => (
                         <>
                           <div className="flex items-center">
-                            <div
-                              className={classNames(
-                                selected ? "font-semibold" : "font-normal",
-                                "sm:text-md ml-1 block truncate text-lg tracking-tight"
-                              )}
-                            >
+                            <div className="sm:text-md ml-1 block truncate text-lg font-normal tracking-tight ui-selected:font-semibold">
                               {option.name}
                             </div>
                           </div>
 
                           {selected ? (
-                            <span
-                              className={classNames(
-                                active ? "text-white" : "text-darkcherry",
-                                "absolute inset-y-0 right-0 flex items-center pr-4"
-                              )}
-                            >
+                            <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-darkcherry ui-active:text-white">
                               <CheckIcon
                                 className="h-5 w-5"
                                 aria-hidden="true"
@@ -108,14 +107,14 @@ export default function Select({
                           ) : null}
                         </>
                       )}
-                    </Listbox.Option>
+                    </Combobox.Option>
                   ))}
-                </Listbox.Options>
+                </Combobox.Options>
               </Transition>
             )}
           </div>
         </>
       )}
-    </Listbox>
+    </Combobox>
   );
 }

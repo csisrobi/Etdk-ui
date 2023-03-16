@@ -40,7 +40,7 @@ const MainPage = ({ date, edition, romanEdition }: Props) => {
           </div>
           <div className="flex flex-col">
             <span className="text-4xl text-white sm:text-7xl lg:text-7xl 2xl:text-8xl">
-              <span className="text-yellow">{romanEdition}.</span> erdélyi
+              <span className="text-yellow-400">{romanEdition}.</span> erdélyi
               Tudományos
             </span>
             <span className="text-4xl text-white sm:text-7xl lg:text-7xl 2xl:text-8xl">
@@ -60,7 +60,7 @@ const MainPage = ({ date, edition, romanEdition }: Props) => {
               {`${edition || ""} transilvanian students’ scientific conference`}
             </span>
             <span className="text-lg sm:text-3xl lg:text-3xl 2xl:text-4xl">
-              <span className="text-yellow"> ȘTIINȚE REALE ȘI UMANE /</span>
+              <span className="text-yellow-400"> ȘTIINȚE REALE ȘI UMANE /</span>
               <span className="text-darkcherry">
                 / FORMAL AND EMPIRICAL SCIENCES
               </span>

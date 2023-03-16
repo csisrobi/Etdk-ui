@@ -17,7 +17,7 @@ const NewsArchiv = ({
   const [openNewsDialog, setOpenNewsDialog] = useState(false);
   const [activeNews, setActiveNews] = useState<SanityNews>();
   return (
-    <div className="relative flex min-h-[100vh] flex-col justify-center gap-24 bg-gray py-8 lg:pb-24">
+    <div className="bg-grayCustom relative flex min-h-[100vh] flex-col justify-center gap-24 py-8 lg:pb-24">
       <div>
         <div id="hirek" className="absolute -top-[70px]" />
         <div className="flex flex-col items-center justify-center gap-8">
@@ -53,7 +53,7 @@ const NewsArchiv = ({
                         setOpenNewsDialog(true);
                       }}
                     >
-                      <div className="w-36 rounded-2xl bg-lightBrown text-center text-3xl tracking-wide text-yellow">
+                      <div className="w-36 rounded-2xl bg-lightBrown text-center text-3xl tracking-wide text-yellow-400">
                         <span>{newElem.date}</span>
                       </div>
                       <span className="text-2xl text-lightcherry">
@@ -77,7 +77,7 @@ const NewsArchiv = ({
             <Link key={archivEl.year} href={`archivum/${archivEl.year}`}>
               <button
                 type="button"
-                className="relative h-11 w-40 cursor-pointer rounded-3xl bg-lightBrown py-2 px-2 text-center text-3xl tracking-wide text-yellow"
+                className="relative h-11 w-40 cursor-pointer rounded-3xl bg-lightBrown py-2 px-2 text-center text-3xl tracking-wide text-yellow-400"
                 disabled
               >
                 <span className="absolute -top-3 right-0 left-0 mx-auto text-7xl">

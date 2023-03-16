@@ -1,7 +1,10 @@
 import { fetcher } from "@lib/queries";
 import type { GetServerSidePropsContext } from "next";
 import { getSession } from "next-auth/react";
-import type { Inputs } from "src/components/ApplicationForm";
+import type {
+  ProjectInputs,
+  PersonInputs,
+} from "src/components/ApplicationForm";
 import ApplicationForm from "src/components/ApplicationForm";
 import type { FacultySanity, SectionsSanity, UniversitiesSanity } from "types";
 
@@ -14,7 +17,10 @@ const AdminJelentkezes = ({
   universities: UniversitiesSanity[];
   faculties: FacultySanity[];
   sections: SectionsSanity[];
-  participantData: Inputs;
+  participantData: {
+    personData: PersonInputs;
+    projectsData: ProjectInputs[];
+  };
 }) => {
   if (!Object.keys(participantData).length) {
     return (
@@ -50,26 +56,41 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       },
     };
   }
-  const defaultParticipantData = await fetcher("/participants/data", {
+  // const defaultParticipantData = await fetcher("/participants/data", {
+  //   email: session.user.email,
+  // });
+
+  if (session.user.role !== "participant") {
+    return {
+      redirect: {
+        destination: "/admin/ellenorzes",
+        permanent: false,
+      },
+    };
+  }
+  const defaultParticipantPersonData = await fetcher("/participants/data", {
     email: session.user.email,
   });
-
-  const participantData = defaultParticipantData.length
-    ? {
-        ...defaultParticipantData[0],
-        subject: defaultParticipantData[0]?.subject?._ref,
-        university: defaultParticipantData[0]?.university?._ref,
-        faculty: defaultParticipantData[0]?.faculty?._ref,
-      }
-    : undefined;
-
+  const defaultParticipantProjectsData = await fetcher(
+    "/participants/projectData",
+    {
+      email: session.user.email,
+    }
+  );
   return {
     props: {
       universities,
       faculties,
       subjects,
       sections,
-      participantData: participantData || {},
+      participantData:
+        !!defaultParticipantPersonData.length &&
+        !!defaultParticipantProjectsData.length
+          ? {
+              personData: defaultParticipantPersonData[0],
+              projectsData: defaultParticipantProjectsData,
+            }
+          : {},
       preview: preview || false,
     },
   };

@@ -14,7 +14,7 @@ const ParticipationCondition = ({
   ];
 
   return (
-    <div className="relative flex min-h-[calc(100vh-71px)] w-full flex-col bg-gray px-8 pt-14">
+    <div className="bg-grayCustom relative flex min-h-[calc(100vh-71px)] w-full flex-col px-8 pt-14">
       <div id="altalanos_tudnivalok" className="absolute -top-[70px]" />
       <div className="flex w-full justify-center">
         <span className="text-center text-3xl text-white sm:text-6xl lg:text-8xl">

@@ -87,22 +87,24 @@ export const ParticipantScoring = ({
               </td>
             </tr>
           ))}
-          <td>
-            <Button
-              variant="contained"
-              disabled={Object.keys(errors).length > 0}
-              onClick={scoreParticipant}
-              className="bg-darkcherry"
-            >
-              Mentés
-            </Button>
-          </td>
-          <td className="pl-4">
-            {Object.keys(scores).reduce(
-              (acc, current) => acc + (scores[current]?.score || 0),
-              0
-            )}
-          </td>
+          <tr>
+            <td>
+              <Button
+                variant="contained"
+                disabled={Object.keys(errors).length > 0}
+                onClick={scoreParticipant}
+                className="bg-darkcherry"
+              >
+                Mentés
+              </Button>
+            </td>
+            <td className="pl-4">
+              {Object.keys(scores).reduce(
+                (acc, current) => acc + (scores[current]?.score || 0),
+                0
+              )}
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
