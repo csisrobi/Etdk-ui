@@ -218,9 +218,11 @@ export const sectionParticipants = (section: string) => groq`
 export const fetcher = async (url: string, data?: any, isFormData = false) => {
   return await fetch(process.env.NEXT_PUBLIC_API_URL + `${url}`, {
     method: data ? "POST" : "GET",
-    headers: {
-      "Content-Type": isFormData ? "multipart/form-data" : "application/json",
-    },
+    ...(!isFormData && {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }),
     body: data,
   })
     .then((res) => res.json())

@@ -9,7 +9,7 @@ export default async function handler(
     case "POST":
       try {
         const resp = await getClient()
-          .mutate(req.body.mutations)
+          .mutate(req.body)
           .then((response) => response);
 
         res.send({ status: 200, body: resp });
