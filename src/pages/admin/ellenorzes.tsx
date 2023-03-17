@@ -7,7 +7,6 @@ import type { SanityParticipant } from "types";
 import { Switch } from "@headlessui/react";
 import useSWR from "swr";
 import { fetcher } from "@lib/queries";
-import { useRouter } from "next/router";
 
 const headers = {
   name: "Név",
@@ -38,10 +37,9 @@ const headers = {
 };
 
 const EllenorzoFelulet = () => {
-  const router = useRouter();
   const { data: allParticipantData, isLoading } = useSWR<SanityParticipant[]>(
     "/participants_data",
-    async () => await fetcher(`${router.pathname}/api/participants`)
+    async () => await fetcher(`/participants`)
   );
 
   const columns = useMemo<MRT_ColumnDef<SanityParticipant>[]>(
@@ -66,7 +64,7 @@ const EllenorzoFelulet = () => {
             <Switch
               checked={row.original.accepted}
               onChange={async () =>
-                await fetcher(`${router.pathname}/api/participants/accept`, {
+                await fetcher(`/participants/accept`, {
                   id: row.original._id,
                   currentValue: row.original.accepted,
                 })

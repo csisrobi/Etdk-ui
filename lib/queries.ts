@@ -216,7 +216,7 @@ export const sectionParticipants = (section: string) => groq`
 }`;
 
 export const fetcher = async (url: string, data?: any, isFormData = false) => {
-  return await fetch(url, {
+  return await fetch(`/api/${url}`, {
     method: data ? "POST" : "GET",
     ...(!isFormData && {
       headers: {
