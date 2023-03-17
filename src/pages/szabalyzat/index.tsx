@@ -1,4 +1,5 @@
-import { fetcher } from "@lib/queries";
+import { queryGeneralRules } from "@lib/queries";
+import { getClient } from "@lib/sanity";
 import RichText from "@utils/RichText";
 import type { SanityGeneral } from "types";
 
@@ -19,7 +20,7 @@ const Szabalyzat = ({ general }: Props) => {
 };
 
 export async function getStaticProps({ preview = false }) {
-  const generals = await fetcher("/rules");
+  const generals = await getClient(preview).fetch(queryGeneralRules);
   return {
     props: {
       general: generals[0],

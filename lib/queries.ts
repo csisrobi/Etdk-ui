@@ -216,7 +216,7 @@ export const sectionParticipants = (section: string) => groq`
 }`;
 
 export const fetcher = async (url: string, data?: any, isFormData = false) => {
-  return await fetch(process.env.NEXT_PUBLIC_API_URL + `${url}`, {
+  return await fetch(url, {
     method: data ? "POST" : "GET",
     ...(!isFormData && {
       headers: {

@@ -1,9 +1,10 @@
+import { queryArhivDetails } from "@lib/queries";
+import { getClient } from "@lib/sanity";
 import GetImage from "@utils/getImage";
 import type { GetServerSideProps } from "next";
-import type { SanityArchiv } from "types";
 import Image from "next/image";
 import Link from "next/link";
-import { fetcher } from "@lib/queries";
+import type { SanityArchiv } from "types";
 
 const Hirek = ({ archivData }: { archivData: SanityArchiv }) => {
   const imageSettings = GetImage(archivData.book_image);
@@ -52,7 +53,7 @@ const Hirek = ({ archivData }: { archivData: SanityArchiv }) => {
                       <td>
                         <span
                           key={winnerPerson.name}
-                          className="text-grayCustom whitespace-pre-wrap text-lg md:text-xl"
+                          className="whitespace-pre-wrap text-lg text-grayCustom md:text-xl"
                         >
                           {winnerPerson.name.split(",").join(",\n")}
                         </span>
@@ -60,7 +61,7 @@ const Hirek = ({ archivData }: { archivData: SanityArchiv }) => {
                       <td>
                         <span
                           key={winnerPerson.name}
-                          className="text-grayCustom text-lg md:text-xl"
+                          className="text-lg text-grayCustom md:text-xl"
                         >
                           {winnerPerson.result}
                         </span>
@@ -81,9 +82,9 @@ export const getServerSideProps: GetServerSideProps = async ({
   preview = false,
   params,
 }) => {
-  const archivData = await fetcher("/archivedetails", {
-    year: params?.slug as string,
-  });
+  const archivData = await getClient(preview).fetch(
+    queryArhivDetails(params?.slug as string)
+  );
   return {
     props: {
       archivData: archivData[0],

@@ -1,5 +1,11 @@
-import { checkIfUniqueEmail, fetcher } from "@lib/queries";
-import { getClient } from "@lib/sanity";
+import { Disclosure, Transition } from "@headlessui/react";
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
+import { TrashIcon } from "@heroicons/react/24/outline";
+import { fetcher } from "@lib/queries";
+import classNames from "classnames";
+import { nanoid } from "nanoid";
+import { useRouter } from "next/router";
+import React, { useState } from "react";
 import {
   Control,
   Controller,
@@ -9,14 +15,7 @@ import {
 } from "react-hook-form";
 import Select from "src/components/FormComponents/Select";
 import Snackbar from "src/components/UtilityComponents/Snackbar";
-import { useState } from "react";
-import type { UniversitiesSanity, FacultySanity, SectionsSanity } from "types";
-import classNames from "classnames";
-import React from "react";
-import { Disclosure, Transition } from "@headlessui/react";
-import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
-import { TrashIcon } from "@heroicons/react/24/outline";
-import { nanoid } from "nanoid";
+import type { FacultySanity, SectionsSanity, UniversitiesSanity } from "types";
 
 //TODO SORREND DOCX
 
@@ -200,6 +199,7 @@ const ApplicationForm = ({
     projectsData: ProjectInputs[];
   };
 }) => {
+  const router = useRouter();
   const [notiMessage, setNotiMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const {
@@ -283,7 +283,11 @@ const ApplicationForm = ({
 
     const certificateData =
       advisorData.certificate && typeof advisorData.certificate === "object"
-        ? await fetcher("/participants/upload/file", formData, true)
+        ? await fetcher(
+            `${router.pathname}/api/participants/upload/file`,
+            formData,
+            true
+          )
         : null;
     console.log(certificateData);
     return {
@@ -342,7 +346,11 @@ const ApplicationForm = ({
 
     const idPhotoData =
       participantData.idPhoto && typeof participantData.idPhoto === "object"
-        ? await fetcher("/participants/upload/file", formData, true)
+        ? await fetcher(
+            `${router.pathname}/api/participants/upload/file`,
+            formData,
+            true
+          )
         : null;
     return {
       _key: nanoid(),
@@ -394,8 +402,11 @@ const ApplicationForm = ({
     return handleSubmit(async (data) => {
       setLoading(true);
       const participantData = personGetValues();
-      const checkEmail = await getClient().fetch(
-        checkIfUniqueEmail(participantData.email)
+      const checkEmail = await fetcher(
+        `${router.pathname}/api/participants/check`,
+        {
+          email: participantData.email,
+        }
       );
       if (!checkEmail.length) {
         const formData = new FormData();
@@ -409,7 +420,11 @@ const ApplicationForm = ({
 
         const idPhotoData =
           participantData.idPhoto && typeof participantData.idPhoto === "object"
-            ? await fetcher("/participants/upload/file", formData, true)
+            ? await fetcher(
+                `${router.pathname}/api/participants/upload/file`,
+                formData,
+                true
+              )
             : null;
         console.log(idPhotoData);
 
@@ -427,7 +442,11 @@ const ApplicationForm = ({
 
               const extractData =
                 project.extract && typeof project.extract === "object"
-                  ? await fetcher("/participants/upload/file", formData, true)
+                  ? await fetcher(
+                      `${router.pathname}/api/participants/upload/file`,
+                      formData,
+                      true
+                    )
                   : null;
               console.log(extractData);
 
@@ -514,7 +533,7 @@ const ApplicationForm = ({
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   ] as any;
                   return await fetcher(
-                    "/participants/upload/mutations",
+                    `${router.pathname}/api/participants/upload/mutations`,
                     JSON.stringify(mutations)
                   );
                 });
@@ -528,7 +547,13 @@ const ApplicationForm = ({
         setTimeout(() => setNotiMessage(""), 3000);
       }
     });
-  }, [personGetValues, handleSubmit]);
+  }, [
+    handleSubmit,
+    personGetValues,
+    router.pathname,
+    mapAdvisorData,
+    mapCompanionsData,
+  ]);
 
   const UniversityField = ({
     text,
