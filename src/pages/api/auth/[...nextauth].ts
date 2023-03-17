@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { checkIfAdmin, checkIfUniqueEmail } from "@lib/queries";
-import { getClient } from "@lib/sanity";
+import { fetcher } from "@lib/queries";
 import NextAuth from "next-auth";
 import { SessionStrategy } from "next-auth/core/types";
 import GoogleProvider from "next-auth/providers/google";
@@ -23,10 +22,10 @@ export const authOptions = {
   },
   callbacks: {
     signIn: async ({ user }: { user: any }) => {
-      const participant = await getClient().fetch(
-        checkIfUniqueEmail(user.email)
-      );
-      const admin = await getClient().fetch(checkIfAdmin(user.email));
+      const participant = await fetcher("/participants/check", {
+        email: user.email,
+      });
+      const admin = await fetcher("/admin/check", { body: user.email });
       if (!participant.length && !admin.length) {
         return false;
       }

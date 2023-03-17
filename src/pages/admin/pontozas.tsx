@@ -14,9 +14,7 @@ import { useState, useMemo } from "react";
 import useSWR from "swr";
 import type { SanityParticipant } from "types";
 import { ParticipantScoring } from "src/components/AdminComponents/Scoring";
-import { fetcher, querySectionsForScoring } from "@lib/queries";
-import { useRouter } from "next/router";
-import { getClient } from "@lib/sanity";
+import { fetcher } from "@lib/queries";
 
 export type Criteria = {
   _id: string;
@@ -31,14 +29,13 @@ type Section = {
 };
 
 const AdminPontozoFelulet = ({ sections }: { sections: Section[] }) => {
-  const router = useRouter();
   const [tabValue, setTabValue] = useState<number>(0);
   const { data: sectionParticipantsData, isLoading } = useSWR<
     SanityParticipant[]
   >(
     ["/section_participants", tabValue],
     async () =>
-      await fetcher(`${router.pathname}/api/sections/participants`, {
+      await fetcher("/sections/participants", {
         id: sections[tabValue]?._id || "",
       })
   );
@@ -139,9 +136,9 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   }
 
   //TODO: FILTER AFTER LOGGED IN USER RESPONSABILITY
-  const sections = (await getClient(preview || false).fetch(
-    querySectionsForScoring
-  )) as Section[];
+
+  const sections = (await fetcher("/sections/score")) as Section[];
+
   return {
     props: {
       sections: sections.sort((a, b) =>

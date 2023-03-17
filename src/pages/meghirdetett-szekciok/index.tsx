@@ -1,5 +1,4 @@
-import { queryActiveSections } from "@lib/queries";
-import { getClient } from "@lib/sanity";
+import { fetcher } from "@lib/queries";
 import GetImage from "@utils/getImage";
 import type { GetServerSideProps } from "next";
 import Image from "next/image";
@@ -53,9 +52,7 @@ const MeghirdetettSzekciok = ({
 export const getServerSideProps: GetServerSideProps = async ({
   preview = false,
 }) => {
-  const sections: SanitySectionPart[] = await getClient(preview).fetch(
-    queryActiveSections
-  );
+  const sections: SanitySectionPart[] = await fetcher("/sections");
   return {
     props: {
       sections: sections.sort((a, b) =>
