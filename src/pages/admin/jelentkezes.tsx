@@ -1,4 +1,12 @@
-import { fetcher } from "@lib/queries";
+import {
+  getPersonDataForParticipant,
+  getProjectsDataForParticipant,
+  queryActiveSections,
+  queryFaculties,
+  querySubjects,
+  queryUniversities,
+} from "@lib/queries";
+import { getClient } from "@lib/sanity";
 import type { GetServerSidePropsContext } from "next";
 import { getSession } from "next-auth/react";
 import type {
@@ -42,10 +50,12 @@ const AdminJelentkezes = ({
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const { preview } = ctx;
-  const universities = await fetcher("/universities");
-  const faculties = await fetcher("/universities");
-  const subjects = await fetcher("/subjects");
-  const sections = await fetcher("/sections");
+  const universities = await getClient(preview || false).fetch(
+    queryUniversities
+  );
+  const faculties = await getClient(preview || false).fetch(queryFaculties);
+  const subjects = await getClient(preview || false).fetch(querySubjects);
+  const sections = await getClient(preview).fetch(queryActiveSections);
 
   const session = await getSession(ctx);
   if (!session?.user || !session.user.email) {
@@ -56,9 +66,6 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       },
     };
   }
-  // const defaultParticipantData = await fetcher("/participants/data", {
-  //   email: session.user.email,
-  // });
 
   if (session.user.role !== "participant") {
     return {
@@ -68,15 +75,12 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       },
     };
   }
-  const defaultParticipantPersonData = await fetcher("/participants/data", {
-    email: session.user.email,
-  });
-  const defaultParticipantProjectsData = await fetcher(
-    "/participants/projectData",
-    {
-      email: session.user.email,
-    }
+  const defaultParticipantPersonData = await getClient(preview || false).fetch(
+    getPersonDataForParticipant(session.user.email)
   );
+  const defaultParticipantProjectsData = await getClient(
+    preview || false
+  ).fetch(getProjectsDataForParticipant(session.user.email));
   return {
     props: {
       universities,

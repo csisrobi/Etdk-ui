@@ -1,5 +1,6 @@
 import { fetcher } from "@lib/queries";
 import { Button, InputAdornment, TextField } from "@mui/material";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { Criteria } from "src/pages/admin/pontozas";
 import { SanityParticipant } from "types";
@@ -22,6 +23,7 @@ export const ParticipantScoring = ({
   criteria: Criteria[];
   participant: SanityParticipant;
 }) => {
+  const router = useRouter();
   const [scores, setScores] = useState<ScoreType>(
     participant.score
       ? participant.score.reduce(
@@ -35,7 +37,7 @@ export const ParticipantScoring = ({
   );
   const [errors, setErrors] = useState<ErrorType>({});
   const scoreParticipant = async () =>
-    await fetcher("/participants/score", {
+    await fetcher(`${router.pathname}/api/participants/score`, {
       id: participant._id,
       scores: scores,
     });

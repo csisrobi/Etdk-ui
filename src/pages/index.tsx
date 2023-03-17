@@ -1,4 +1,13 @@
-import { fetcher } from "@lib/queries";
+import {
+  queryApplicate,
+  queryArchivsBasic,
+  queryContact,
+  queryGeneral,
+  queryNews,
+  queryOrg,
+  querySponsor,
+} from "@lib/queries";
+import { getClient } from "@lib/sanity";
 import { type NextPage } from "next";
 import Head from "next/head";
 import type {
@@ -77,13 +86,13 @@ const Home: NextPage<Props> = ({
 };
 
 export async function getStaticProps({ preview = false }) {
-  const sponsors = await fetcher("/main/sponsors");
-  const organizers = await fetcher("/main/organizers");
-  const contacts = await fetcher("/main/contacts");
-  const generals = await fetcher("/main/general");
-  const applicate = await fetcher("/main/applicate");
-  const news = await fetcher("/main/news");
-  const archivs = await fetcher("/archives");
+  const sponsors = await getClient(preview).fetch(querySponsor);
+  const organizers = await getClient(preview).fetch(queryOrg);
+  const contacts = await getClient(preview).fetch(queryContact);
+  const generals = await getClient(preview).fetch(queryGeneral);
+  const applicate = await getClient(preview).fetch(queryApplicate);
+  const news = await getClient(preview).fetch(queryNews);
+  const archivs = await getClient(preview).fetch(queryArchivsBasic);
 
   return {
     props: {

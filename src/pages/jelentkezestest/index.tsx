@@ -1,6 +1,11 @@
-import { fetcher } from "@lib/queries";
+import {
+  queryActiveSections,
+  queryFaculties,
+  queryUniversities,
+} from "@lib/queries";
+import { getClient } from "@lib/sanity";
 import ApplicationForm from "src/components/ApplicationForm";
-import type { UniversitiesSanity, FacultySanity, SectionsSanity } from "types";
+import type { FacultySanity, SectionsSanity, UniversitiesSanity } from "types";
 
 const JelentkezesTest = ({
   universities,
@@ -21,9 +26,9 @@ const JelentkezesTest = ({
 };
 
 export async function getStaticProps({ preview = false }) {
-  const universities = await fetcher("/universities");
-  const faculties = await fetcher("/faculties");
-  const sections = await fetcher("/sections");
+  const universities = await getClient(preview).fetch(queryUniversities);
+  const faculties = await getClient(preview).fetch(queryFaculties);
+  const sections = await getClient(preview).fetch(queryActiveSections);
 
   return {
     props: {
