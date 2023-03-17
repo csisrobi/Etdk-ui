@@ -1,11 +1,11 @@
 import {
+  queryActiveSections,
   queryFaculties,
   queryUniversities,
-  queryActiveSections,
 } from "@lib/queries";
 import { getClient } from "@lib/sanity";
 import ApplicationForm from "src/components/ApplicationForm";
-import type { UniversitiesSanity, FacultySanity, SectionsSanity } from "types";
+import type { FacultySanity, SectionsSanity, UniversitiesSanity } from "types";
 
 const JelentkezesTest = ({
   universities,

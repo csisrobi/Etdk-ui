@@ -1,12 +1,10 @@
-import { getClient } from "@lib/sanity";
+import { fetcher } from "@lib/queries";
 import { Button, InputAdornment, TextField } from "@mui/material";
-import { nanoid } from "nanoid";
 import { useState } from "react";
 import { Criteria } from "src/pages/admin/pontozas";
-import { mutate } from "swr";
 import { SanityParticipant } from "types";
 
-type ScoreType = {
+export type ScoreType = {
   [key: string]: {
     name: string;
     score: number;
@@ -36,23 +34,11 @@ export const ParticipantScoring = ({
       : {}
   );
   const [errors, setErrors] = useState<ErrorType>({});
-  const scoreParticipant = async () => {
-    await getClient()
-      .patch(participant._id, {
-        set: {
-          score: Object.keys(scores).map((s) => ({
-            score: scores[s]?.score || 0,
-            criteria: { _type: "reference", _ref: s },
-            _key: nanoid(),
-          })),
-        },
-      })
-      .commit()
-      .then(() => {
-        mutate("/section_participants");
-      })
-      .catch((e) => console.error(e));
-  };
+  const scoreParticipant = async () =>
+    await fetcher(`/participants/score`, {
+      id: participant._id,
+      scores: scores,
+    });
 
   return (
     <div>

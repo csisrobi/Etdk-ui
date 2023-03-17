@@ -1,5 +1,4 @@
 import { groq } from "next-sanity";
-
 //TODO: CREATE A GENERAL QUERY
 export const querySponsor = groq`
 *[_type == "sponsor"]{
@@ -215,3 +214,18 @@ export const sectionParticipants = (section: string) => groq`
     score
   }
 }`;
+
+export const fetcher = async (url: string, data?: any, isFormData = false) => {
+  return await fetch(`/api/${url}`, {
+    method: data ? "POST" : "GET",
+    ...(!isFormData && {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }),
+    body: data,
+  })
+    .then((res) => res.json())
+    .then((r) => r.body)
+    .catch((e) => console.error(e));
+};

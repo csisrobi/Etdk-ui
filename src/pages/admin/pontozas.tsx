@@ -1,27 +1,21 @@
-import { querySectionsForScoring, sectionParticipants } from "@lib/queries";
-import { getClient } from "@lib/sanity";
+import { Download, ExpandMore } from "@mui/icons-material";
 import {
-  Autocomplete,
-  TextField,
   Accordion,
-  AccordionSummary,
-  Typography,
-  Button,
   AccordionDetails,
+  AccordionSummary,
+  Autocomplete,
+  Button,
+  TextField,
+  Typography,
 } from "@mui/material";
-import ExpandMore from "@mui/icons-material/ExpandMore";
-import Download from "@mui/icons-material/Download";
 import type { GetServerSidePropsContext } from "next";
 import { getSession } from "next-auth/react";
 import { useState, useMemo } from "react";
 import useSWR from "swr";
 import type { SanityParticipant } from "types";
 import { ParticipantScoring } from "src/components/AdminComponents/Scoring";
-
-//TODO LEKELL TUDNI TOLTENI A PROJEKTET, KIVONAT, MELLEKLET, BIOSZOS HOZZAJARULAS
-// TALAN ZIP
-
-//TODO: JELOLVE OTDKRA CHECKBOX -> SANITY
+import { fetcher, querySectionsForScoring } from "@lib/queries";
+import { getClient } from "@lib/sanity";
 
 export type Criteria = {
   _id: string;
@@ -42,9 +36,9 @@ const AdminPontozoFelulet = ({ sections }: { sections: Section[] }) => {
   >(
     ["/section_participants", tabValue],
     async () =>
-      await getClient().fetch(
-        sectionParticipants(sections[tabValue]?._id || "")
-      )
+      await fetcher(`/sections/participants`, {
+        id: sections[tabValue]?._id || "",
+      })
   );
 
   const sectionsOptions = useMemo(
@@ -146,7 +140,6 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const sections = (await getClient(preview || false).fetch(
     querySectionsForScoring
   )) as Section[];
-
   return {
     props: {
       sections: sections.sort((a, b) =>

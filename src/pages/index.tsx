@@ -1,11 +1,11 @@
 import {
-  queryNews,
   queryApplicate,
+  queryArchivsBasic,
   queryContact,
   queryGeneral,
+  queryNews,
   queryOrg,
   querySponsor,
-  queryArchivsBasic,
 } from "@lib/queries";
 import { getClient } from "@lib/sanity";
 import { type NextPage } from "next";
@@ -26,9 +26,6 @@ import ParticipationCondition from "../components/ParticipationCondition";
 import SponsorsOrg from "../components/SponsorsOrg";
 import WhyApplicate from "../components/WhyApplicate";
 import Year from "../components/Year";
-
-//TODO: pontozasi kriteriumok a main pagerol torolni, kovetelmenyek nem altalanos adat hanem szekciohoz tartozik
-// kovetelmenyek menupont alatt elojon megint minden szekcio es rajuk kattintva dialogusban megjleneik a kovetelemeny
 
 type Props = {
   sponsors: SanitySponsor[];
@@ -96,6 +93,7 @@ export async function getStaticProps({ preview = false }) {
   const applicate = await getClient(preview).fetch(queryApplicate);
   const news = await getClient(preview).fetch(queryNews);
   const archivs = await getClient(preview).fetch(queryArchivsBasic);
+
   return {
     props: {
       contact: contacts[0],

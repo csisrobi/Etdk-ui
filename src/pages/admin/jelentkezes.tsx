@@ -37,6 +37,7 @@ const AdminJelentkezes = ({
       </div>
     );
   }
+
   return (
     <ApplicationForm
       universities={universities}
@@ -65,6 +66,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       },
     };
   }
+
   if (session.user.role !== "participant") {
     return {
       redirect: {
@@ -79,7 +81,6 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const defaultParticipantProjectsData = await getClient(
     preview || false
   ).fetch(getProjectsDataForParticipant(session.user.email));
-
   return {
     props: {
       universities,

@@ -1,5 +1,10 @@
-import { checkIfUniqueEmail } from "@lib/queries";
-import { getClient } from "@lib/sanity";
+import { Disclosure, Transition } from "@headlessui/react";
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
+import { TrashIcon } from "@heroicons/react/24/outline";
+import { fetcher } from "@lib/queries";
+import classNames from "classnames";
+import { nanoid } from "nanoid";
+import React, { useCallback, useState } from "react";
 import {
   Control,
   Controller,
@@ -9,14 +14,7 @@ import {
 } from "react-hook-form";
 import Select from "src/components/FormComponents/Select";
 import Snackbar from "src/components/UtilityComponents/Snackbar";
-import { useState } from "react";
-import type { UniversitiesSanity, FacultySanity, SectionsSanity } from "types";
-import classNames from "classnames";
-import React from "react";
-import { Disclosure, Transition } from "@headlessui/react";
-import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
-import { TrashIcon } from "@heroicons/react/24/outline";
-import { nanoid } from "nanoid";
+import type { FacultySanity, SectionsSanity, UniversitiesSanity } from "types";
 
 //TODO SORREND DOCX
 
@@ -271,13 +269,21 @@ const ApplicationForm = ({
     name: "projects",
   });
 
-  const mapAdvisorData = async (advisorData: AdvisorInputs) => {
+  const mapAdvisorData = useCallback(async (advisorData: AdvisorInputs) => {
+    const formData = new FormData();
+    formData.append("file", advisorData.certificate || "");
+    formData.append(
+      "name",
+      advisorData.certificate && typeof advisorData.certificate === "object"
+        ? advisorData.certificate.name
+        : ""
+    );
+
     const certificateData =
       advisorData.certificate && typeof advisorData.certificate === "object"
-        ? await getClient().assets.upload("file", advisorData.certificate, {
-            filename: advisorData.certificate.name,
-          })
+        ? await fetcher(`/participants/upload/file`, formData, true)
         : null;
+    console.log(certificateData);
     return {
       _key: nanoid(),
       name: advisorData.name,
@@ -314,100 +320,131 @@ const ApplicationForm = ({
         certificate: {
           _type: "file",
           asset: {
-            _ref: certificateData._id,
+            _ref: certificateData,
             _type: "reference",
           },
         },
       }),
     };
-  };
+  }, []);
 
-  const mapCompanionsData = async (participantData: PersonInputs) => {
-    const idPhotoData =
-      participantData.idPhoto && typeof participantData.idPhoto === "object"
-        ? await getClient().assets.upload("file", participantData.idPhoto, {
-            filename: participantData.idPhoto.name,
-          })
-        : null;
-    return {
-      _key: nanoid(),
-      name: participantData.name,
-      idNumber: participantData.idNumber,
-      ...(participantData.universityOther
-        ? { universityOther: participantData.universityOther }
-        : {
-            university: {
-              _type: "reference",
-              _ref: participantData.university,
-            },
-          }),
+  const mapCompanionsData = useCallback(
+    async (participantData: PersonInputs) => {
+      const formData = new FormData();
+      formData.append("file", participantData.idPhoto || "");
+      formData.append(
+        "name",
+        participantData.idPhoto && typeof participantData.idPhoto === "object"
+          ? participantData.idPhoto.name
+          : ""
+      );
 
-      ...(participantData.facultyOther
-        ? { facultyOther: participantData.facultyOther }
-        : {
-            faculty: {
+      const idPhotoData =
+        participantData.idPhoto && typeof participantData.idPhoto === "object"
+          ? await fetcher(`/participants/upload/file`, formData, true)
+          : null;
+      return {
+        _key: nanoid(),
+        name: participantData.name,
+        idNumber: participantData.idNumber,
+        ...(participantData.universityOther
+          ? { universityOther: participantData.universityOther }
+          : {
+              university: {
+                _type: "reference",
+                _ref: participantData.university,
+              },
+            }),
+
+        ...(participantData.facultyOther
+          ? { facultyOther: participantData.facultyOther }
+          : {
+              faculty: {
+                _type: "reference",
+                _ref: participantData.faculty,
+              },
+            }),
+        ...(participantData.subjectOther
+          ? { subjectOther: participantData.subjectOther }
+          : {
+              subject: {
+                _type: "reference",
+                _ref: participantData.subject,
+              },
+            }),
+        degree: participantData.degree,
+        class: participantData.class,
+        finishedSemester: participantData.finishedSemester,
+        email: participantData.email,
+        mobileNumber: participantData.mobileNumber,
+        ...(idPhotoData && {
+          idPhoto: {
+            _type: "file",
+            asset: {
+              _ref: idPhotoData,
               _type: "reference",
-              _ref: participantData.faculty,
             },
-          }),
-      ...(participantData.subjectOther
-        ? { subjectOther: participantData.subjectOther }
-        : {
-            subject: {
-              _type: "reference",
-              _ref: participantData.subject,
-            },
-          }),
-      degree: participantData.degree,
-      class: participantData.class,
-      finishedSemester: participantData.finishedSemester,
-      email: participantData.email,
-      mobileNumber: participantData.mobileNumber,
-      ...(idPhotoData && {
-        idPhoto: {
-          _type: "file",
-          asset: {
-            _ref: idPhotoData._id,
-            _type: "reference",
           },
-        },
-      }),
-    };
-  };
+        }),
+      };
+    },
+    []
+  );
 
   const onSubmit = React.useMemo(() => {
     return handleSubmit(async (data) => {
       setLoading(true);
       const participantData = personGetValues();
-      const checkEmail = await getClient().fetch(
-        checkIfUniqueEmail(participantData.email)
-      );
+      const checkEmail = await fetcher(`/participants/check`, {
+        email: participantData.email,
+      });
       if (!checkEmail.length) {
+        const formData = new FormData();
+        formData.append("file", participantData.idPhoto || "");
+        formData.append(
+          "name",
+          participantData.idPhoto && typeof participantData.idPhoto === "object"
+            ? participantData.idPhoto.name
+            : ""
+        );
+
         const idPhotoData =
           participantData.idPhoto && typeof participantData.idPhoto === "object"
-            ? await getClient().assets.upload("file", participantData.idPhoto, {
-                filename: participantData.idPhoto.name,
-              })
+            ? await fetcher(`/participants/upload/file`, formData, true)
             : null;
+        console.log(idPhotoData);
 
         Promise.all(
           data.projects.map(async (project) => {
             if (project.extract && typeof project.extract === "object") {
-              const extractData = await getClient().assets.upload(
-                "file",
-                project.extract,
-                { filename: project.extract.name }
+              const formData = new FormData();
+              formData.append("file", project.extract || "");
+              formData.append(
+                "name",
+                project.extract && typeof project.extract === "object"
+                  ? project.extract.name
+                  : ""
               );
+
+              const extractData =
+                project.extract && typeof project.extract === "object"
+                  ? await fetcher(`/participants/upload/file`, formData, true)
+                  : null;
+              console.log(extractData);
+
               Promise.all(
                 project.advisors.map(
                   async (advisor) => await mapAdvisorData(advisor)
                 )
               ).then((advisors) => {
+                console.log(advisors);
                 Promise.all(
                   (project.companions || []).map(
                     async (companion) => await mapCompanionsData(companion)
                   )
                 ).then(async (companions) => {
+                  console.log(companions);
+
                   const mutations = [
                     {
                       create: {
@@ -450,7 +487,7 @@ const ApplicationForm = ({
                           idPhoto: {
                             _type: "file",
                             asset: {
-                              _ref: idPhotoData._id,
+                              _ref: idPhotoData,
                               _type: "reference",
                             },
                           },
@@ -464,7 +501,7 @@ const ApplicationForm = ({
                         extract: {
                           _type: "file",
                           asset: {
-                            _ref: extractData._id,
+                            _ref: extractData,
                             _type: "reference",
                           },
                         },
@@ -477,14 +514,10 @@ const ApplicationForm = ({
                     },
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   ] as any;
-                  //TODO:MOVE TO THE SERVER THE WHOLE UPLOAD SHIT
-                  return await getClient()
-                    .mutate(mutations)
-                    .then(() => setLoading(false))
-                    .catch((error) => {
-                      setLoading(false);
-                      console.error(error);
-                    });
+                  return await fetcher(
+                    `/participants/upload/mutations`,
+                    JSON.stringify(mutations)
+                  );
                 });
               });
             }
@@ -496,7 +529,7 @@ const ApplicationForm = ({
         setTimeout(() => setNotiMessage(""), 3000);
       }
     });
-  }, [personGetValues, handleSubmit]);
+  }, [handleSubmit, personGetValues, mapAdvisorData, mapCompanionsData]);
 
   const UniversityField = ({
     text,
@@ -544,7 +577,6 @@ const ApplicationForm = ({
       />
     );
   };
-
   const FacultyField = ({
     text,
     bg,
