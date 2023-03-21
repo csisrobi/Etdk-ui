@@ -11,10 +11,9 @@ export default async function handler(
         const resp = await getClient()
           .mutate(req.body)
           .then((response) => response);
-
         res.send({ status: 200, body: resp });
       } catch (e) {
-        res.send({ status: 500, message: e });
+        res.status(500).json({ message: e });
       }
   }
 }

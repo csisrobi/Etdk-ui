@@ -36,7 +36,7 @@ export default async function handler(
                     filename: (fields as { name: string }).name,
                   }
                 );
-                res.send({ status: 200, body: imageData._id });
+                res.status(200).send({ body: imageData._id });
               } else {
                 throw Error("No fields found");
               }
@@ -46,7 +46,7 @@ export default async function handler(
           }
         );
       } catch (e) {
-        res.send({ status: 500, message: e });
+        res.status(500).json({ message: e });
       }
   }
 }

@@ -13,7 +13,7 @@ const Snackbar = ({ message, open }: { message: string; open: boolean }) => {
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
     >
-      <div className="fixed bottom-10 left-10 z-10 flex min-w-[200px] justify-center rounded-lg bg-red-400  px-4 py-3">
+      <div className="fixed bottom-10 left-10 z-10 flex min-w-[200px] justify-center rounded-lg bg-red-300  px-4 py-3">
         <p className="text-lg font-black text-red-800">{message}</p>
       </div>
     </Transition>

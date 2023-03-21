@@ -358,6 +358,16 @@ export default {
       name: "accepted",
       type: "boolean",
     },
+    {
+      title: "GDPR",
+      name: "gdpr",
+      type: "boolean",
+    },
+    {
+      title: "Jelszó",
+      name: "password",
+      type: "string",
+    },
   ],
   preview: {
     select: {

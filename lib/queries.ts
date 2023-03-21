@@ -117,6 +117,11 @@ export const checkIfUniqueEmail = (email: string) => groq`
   email
 }`;
 
+export const checkIfCredentialsOk = (email: string, password: string) => groq`
+*[_type in ["participants", "admins"] && email == "${email}" && password == "${password}"]{
+  email
+}`;
+
 export const checkIfAdmin = (email: string) => groq`
 *[_type == "admins" && email == "${email}"]{
   email,
@@ -216,7 +221,7 @@ export const sectionParticipants = (section: string) => groq`
 }`;
 
 export const fetcher = async (url: string, data?: any, isFormData = false) => {
-  return await fetch(`/api/${url}`, {
+  return await fetch(`/api${url}`, {
     method: data ? "POST" : "GET",
     ...(!isFormData && {
       headers: {

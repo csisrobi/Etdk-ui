@@ -1,20 +1,23 @@
-import { Disclosure, Transition } from "@headlessui/react";
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
+import { Dialog, Disclosure, Transition } from "@headlessui/react";
+import {
+  CheckBadgeIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+} from "@heroicons/react/20/solid";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { fetcher } from "@lib/queries";
 import classNames from "classnames";
 import { nanoid } from "nanoid";
-import React, { useCallback, useState } from "react";
-import {
-  Control,
-  Controller,
-  useFieldArray,
-  useForm,
-  useWatch,
-} from "react-hook-form";
+import React, { Fragment, useCallback, useState } from "react";
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import Select from "src/components/FormComponents/Select";
 import Snackbar from "src/components/UtilityComponents/Snackbar";
 import type { FacultySanity, SectionsSanity, UniversitiesSanity } from "types";
+import { ContributionField } from "./ContributionField";
+import { FacultyField } from "./FacultyField";
+import { OtherField } from "./OtherField";
+import { SubjectField } from "./SubjectField";
+import { UniversityField } from "./UniversityField";
 
 //TODO SORREND DOCX
 
@@ -24,19 +27,20 @@ import type { FacultySanity, SectionsSanity, UniversitiesSanity } from "types";
 //TODO ELLENORZO KEP -------------- DONE
 
 //TODO: jelentkezes utan, masodik fazisba
-// Dolgozat - pdf, akár 100 oldalas dokumentum, képekkel, ábrákkal
-// 	Melléklet - pdf, max. 20 oldalas dokumentum
+// Dolgozat - pdf, akár 100 oldalas dokumentum, képekkel, ábrákkal -------------- DONE
+// 	Melléklet - pdf, max. 20 oldalas dokumentum -------------- DONE
 
 // Egyéb dokumentumok:
-// Adatbankos nyilatkozat - pdf, 1 oldalas dokumentum
-// Kifizetési bizonylat - pdf vagy jpg.
-// Kivételes eset: Biológia szekció esetében, hozzájárulási nyilatkozat, pdf, 1 oldalas (ha nem megoldható e-mailen továbbítják, kb. 10-15 ember érint)
+// Adatbankos nyilatkozat - pdf, 1 oldalas dokumentum -------------- DONE
+// Kifizetési bizonylat - pdf vagy jpg. -------------- DONE
+// Kivételes eset: Biológia szekció esetében, hozzájárulási nyilatkozat, pdf, 1 oldalas (ha nem megoldható e-mailen továbbítják, kb. 10-15 ember érint) -------------- DONE
 
 //TODO: GDPR kocka enelkul nem lehet jelentkezni + lekell menteni hogy beleegyezett
 //TODO: JELENTKEZETT -> NOW sanitybe
 
 //TODO: EGYEB szaknak, karnak es egyetemnek!
 
+//TODO: ERROR HANDLING
 const degreeOptions = [
   {
     name: "BA (alapképzés)",
@@ -199,6 +203,7 @@ const ApplicationForm = ({
   };
 }) => {
   const [notiMessage, setNotiMessage] = useState("");
+  const [confirmationMessage, setConfirmationMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const {
     control: personFormControl,
@@ -283,7 +288,6 @@ const ApplicationForm = ({
       advisorData.certificate && typeof advisorData.certificate === "object"
         ? await fetcher(`/participants/upload/file`, formData, true)
         : null;
-    console.log(certificateData);
     return {
       _key: nanoid(),
       name: advisorData.name,
@@ -395,10 +399,15 @@ const ApplicationForm = ({
     return handleSubmit(async (data) => {
       setLoading(true);
       const participantData = personGetValues();
-      const checkEmail = await fetcher(`/participants/check`, {
-        email: participantData.email,
-      });
+      const checkEmail = await fetcher(
+        `/participants/check`,
+        JSON.stringify({
+          email: participantData.email,
+        })
+      );
       if (!checkEmail.length) {
+        const password = Math.random().toString(36).slice(-8);
+
         const formData = new FormData();
         formData.append("file", participantData.idPhoto || "");
         formData.append(
@@ -412,10 +421,9 @@ const ApplicationForm = ({
           participantData.idPhoto && typeof participantData.idPhoto === "object"
             ? await fetcher(`/participants/upload/file`, formData, true)
             : null;
-        console.log(idPhotoData);
 
         Promise.all(
-          data.projects.map(async (project) => {
+          data.projects.map(async (project, index) => {
             if (project.extract && typeof project.extract === "object") {
               const formData = new FormData();
               formData.append("file", project.extract || "");
@@ -430,21 +438,16 @@ const ApplicationForm = ({
                 project.extract && typeof project.extract === "object"
                   ? await fetcher(`/participants/upload/file`, formData, true)
                   : null;
-              console.log(extractData);
-
               Promise.all(
                 project.advisors.map(
                   async (advisor) => await mapAdvisorData(advisor)
                 )
               ).then((advisors) => {
-                console.log(advisors);
                 Promise.all(
                   (project.companions || []).map(
                     async (companion) => await mapCompanionsData(companion)
                   )
                 ).then(async (companions) => {
-                  console.log(companions);
-
                   const mutations = [
                     {
                       create: {
@@ -510,6 +513,7 @@ const ApplicationForm = ({
                           _ref: project.section,
                         },
                         accepted: false,
+                        password: password,
                       },
                     },
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -517,12 +521,31 @@ const ApplicationForm = ({
                   return await fetcher(
                     `/participants/upload/mutations`,
                     JSON.stringify(mutations)
-                  );
+                  ).catch(() => {
+                    setNotiMessage(
+                      `${
+                        index + 1
+                      } projekt: Ellenőrizd, hogy minden adat helyesen volt bevezetve.`
+                    );
+                    setLoading(false);
+                    setTimeout(() => setNotiMessage(""), 3000);
+                  });
                 });
               });
             }
           })
-        );
+        )
+          .catch(() => {
+            console.log("asd");
+            setNotiMessage(
+              `Ellenőrizd, hogy minden adat helyesen volt bevezetve.`
+            );
+            setLoading(false);
+            setTimeout(() => setNotiMessage(""), 3000);
+          })
+          .then(() => {
+            // setConfirmationMessage(password);
+          });
       } else {
         setNotiMessage("Ezen az emailen már regisztrálva van");
         setLoading(false);
@@ -530,250 +553,6 @@ const ApplicationForm = ({
       }
     });
   }, [handleSubmit, personGetValues, mapAdvisorData, mapCompanionsData]);
-
-  const UniversityField = ({
-    text,
-    bg,
-    control,
-    setAdditional,
-    fieldName,
-  }: {
-    advisor?: boolean;
-    setAdditional?: (value: string | undefined) => void;
-    text: string;
-    bg: string;
-    fieldName: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    control: Control<any, any>;
-    index?: number;
-  }) => {
-    const universitiesOption = universities
-      .map((uni) => ({
-        name: uni.name,
-        value: uni._id,
-      }))
-      .concat([{ name: "Egyéb", value: "additional" }]);
-    return (
-      <Controller
-        name={fieldName}
-        control={control}
-        render={({ field: { onChange, value } }) => (
-          <Select
-            onChange={(value: string | number) => {
-              onChange(value as string);
-            }}
-            options={universitiesOption}
-            value={
-              universitiesOption
-                ? universitiesOption.find((uni) => uni.value === value) || null
-                : null
-            }
-            placeholder="Egyetem"
-            text={text}
-            bg={bg}
-            setAdditional={setAdditional}
-          />
-        )}
-      />
-    );
-  };
-  const FacultyField = ({
-    text,
-    bg,
-    control,
-    setAdditional,
-    dependencyName,
-    fieldName,
-  }: {
-    setAdditional?: (value: string | undefined) => void;
-    fieldName: string;
-    dependencyName: string;
-    text: string;
-    bg: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    control: Control<any, any>;
-  }) => {
-    const selectedUniversity = useWatch({
-      control,
-      name: dependencyName,
-    });
-    const uniData = universities.find((uni) => uni._id === selectedUniversity);
-    const faculties =
-      uniData && uniData.faculties
-        ? uniData.faculties
-            .map((fac) => ({ name: fac.name, value: fac._id }))
-            .concat([{ name: "Egyéb", value: "additional" }])
-        : selectedUniversity === "additional"
-        ? [{ name: "Egyéb", value: "additional" }]
-        : undefined;
-    return (
-      <Controller
-        name={fieldName}
-        control={control}
-        render={({ field: { onChange, value } }) => (
-          <Select
-            onChange={(value: string | number) => {
-              onChange(value as string);
-            }}
-            options={faculties}
-            value={
-              faculties
-                ? faculties.find((f) => f.value === value) || null
-                : null
-            }
-            placeholder="Kar"
-            text={text}
-            bg={bg}
-            setAdditional={setAdditional}
-          />
-        )}
-      />
-    );
-  };
-
-  const SubjectField = ({
-    text,
-    bg,
-    control,
-    setAdditional,
-    dependencyName,
-    fieldName,
-  }: {
-    advisor?: boolean;
-    index?: number;
-    setAdditional?: (value: string | undefined) => void;
-    text: string;
-    bg: string;
-    dependencyName: string;
-    fieldName: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    control: Control<any, any>;
-  }) => {
-    const selectedFaculty = useWatch({
-      control,
-      name: dependencyName,
-    });
-    const facultyData = faculties.find((f) => f._id === selectedFaculty);
-    const subjects =
-      facultyData && facultyData.subjects
-        ? facultyData.subjects
-            .map((sb) => ({ name: sb.name, value: sb._id }))
-            .concat([{ name: "Egyéb", value: "additional" }])
-        : selectedFaculty === "additional"
-        ? [{ name: "Egyéb", value: "additional" }]
-        : undefined;
-    return (
-      <Controller
-        name={fieldName}
-        control={control}
-        render={({ field: { onChange, value } }) => (
-          <Select
-            onChange={(value: string | number) => {
-              onChange(value as string);
-            }}
-            options={subjects}
-            value={
-              subjects ? subjects.find((s) => s.value === value) || null : null
-            }
-            placeholder="Szak"
-            setAdditional={setAdditional}
-            text={text}
-            bg={bg}
-          />
-        )}
-      />
-    );
-  };
-
-  const OtherField = ({
-    fieldName,
-    dependencyName,
-    placeholder,
-    text,
-    bg,
-    control,
-  }: {
-    dependencyName: string;
-    fieldName: string;
-    placeholder: string;
-    index?: number;
-    text: string;
-    bg: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    control: Control<any, any>;
-  }) => {
-    const dependencyValue = useWatch({
-      control,
-      name: dependencyName,
-    });
-    if (dependencyValue === "additional") {
-      return (
-        <Controller
-          name={fieldName}
-          control={control}
-          render={({ field: { value, onChange } }) => (
-            <input
-              onChange={onChange}
-              value={value || ""}
-              autoComplete="off"
-              type="text"
-              className={classNames(
-                inputClasses,
-                `${text} ${bg} placeholder:${text}`
-              )}
-              placeholder={placeholder}
-            />
-          )}
-        />
-      );
-    }
-    return null;
-  };
-
-  const ContributionField = ({ index }: { index: number }) => {
-    const selectedSection = useWatch({
-      control: projectsControl,
-      name: `projects.${index}.section`,
-    });
-    const findSection = sections.find((s) => s._id === selectedSection);
-    if (findSection && findSection.contributionNeeded === true) {
-      return (
-        <Controller
-          name={`projects.${index}.contribution`}
-          control={projectsControl}
-          render={({ field: { onChange, value } }) => {
-            return (
-              <label>
-                <div
-                  className={classNames(
-                    inputClasses,
-                    "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
-                  )}
-                >
-                  <div className="overflow-hidden truncate opacity-80">
-                    {value && typeof value === "object"
-                      ? value.name
-                      : typeof value === "string"
-                      ? value
-                      : "Hozzájárulási nyilatkozat"}
-                  </div>
-                </div>
-                <input
-                  type="file"
-                  autoComplete="off"
-                  className="hidden"
-                  onChange={(e) =>
-                    onChange(e.target.files ? e.target.files[0] : null)
-                  }
-                />
-              </label>
-            );
-          }}
-        />
-      );
-    }
-    return null;
-  };
 
   const AddAdvisorButton = ({ index }: { index: number }) => {
     const advisors = useWatch({
@@ -906,6 +685,7 @@ const ApplicationForm = ({
               setAdditional={(value: string | undefined) => {
                 personSetValue("universityOther", value);
               }}
+              universities={universities}
             />
             <OtherField
               control={personFormControl}
@@ -924,6 +704,7 @@ const ApplicationForm = ({
               setAdditional={(value: string | undefined) =>
                 personSetValue("facultyOther", value)
               }
+              universities={universities}
             />
             <OtherField
               control={personFormControl}
@@ -942,6 +723,7 @@ const ApplicationForm = ({
               setAdditional={(value: string | undefined) =>
                 personSetValue("subjectOther", value)
               }
+              faculties={faculties}
             />
             <OtherField
               control={personFormControl}
@@ -1296,7 +1078,13 @@ const ApplicationForm = ({
                             }}
                           />
                         )}
-                        {defaultValues && <ContributionField index={index} />}
+                        {defaultValues && (
+                          <ContributionField
+                            index={index}
+                            control={projectsControl}
+                            sections={sections}
+                          />
+                        )}
                       </div>
                     </div>
                     {project.advisors.map((_advisor, ai) => (
@@ -1379,6 +1167,7 @@ const ApplicationForm = ({
                                             value
                                           )
                                         }
+                                        universities={universities}
                                       />
                                       <OtherField
                                         control={projectsControl}
@@ -1402,6 +1191,7 @@ const ApplicationForm = ({
                                             value
                                           )
                                         }
+                                        universities={universities}
                                       />
                                       <OtherField
                                         control={projectsControl}
@@ -1425,6 +1215,7 @@ const ApplicationForm = ({
                                             value
                                           )
                                         }
+                                        faculties={faculties}
                                       />
                                       <OtherField
                                         control={projectsControl}
@@ -1633,6 +1424,7 @@ const ApplicationForm = ({
                                             value
                                           );
                                         }}
+                                        universities={universities}
                                       />
                                       <OtherField
                                         control={projectsControl}
@@ -1656,6 +1448,7 @@ const ApplicationForm = ({
                                             value
                                           )
                                         }
+                                        universities={universities}
                                       />
                                       <OtherField
                                         control={projectsControl}
@@ -1679,6 +1472,7 @@ const ApplicationForm = ({
                                             value
                                           )
                                         }
+                                        faculties={faculties}
                                       />
                                       <OtherField
                                         control={projectsControl}
@@ -1910,6 +1704,54 @@ const ApplicationForm = ({
         </button>
       </div>
       <Snackbar message={notiMessage} open={notiMessage !== ""} />
+      <Transition.Root show={confirmationMessage !== ""} as={Fragment}>
+        <Dialog
+          as="div"
+          className="relative z-10"
+          onClose={() => setConfirmationMessage("")}
+        >
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 z-10 overflow-y-auto">
+            <div className="relative flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                enterTo="opacity-100 translate-y-0 sm:scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              >
+                <Dialog.Panel className="relative flex transform flex-col items-center justify-center space-y-4 rounded-lg bg-white p-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                  <div className="flex items-center">
+                    <CheckBadgeIcon className="h-12 w-12 text-green-300" />
+                    <p className="text-xl">Sikeres jelentkezés</p>
+                  </div>
+                  <div className="flex">
+                    Jelszó:{" "}
+                    <p className="pl-5 font-black">{confirmationMessage}</p>
+                  </div>
+                  <p className="pl-5 text-center text-sm">
+                    Ezt jegyezze le, a kesőbbiekben ennek a segítségével tudja
+                    majd a feltöltőtt adatokat kiegészíteni.
+                  </p>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition.Root>
     </div>
   );
 };
