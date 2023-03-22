@@ -8,6 +8,7 @@ export const OtherField = ({
   text,
   bg,
   control,
+  clearError,
 }: {
   dependencyName: string;
   fieldName: string;
@@ -17,6 +18,7 @@ export const OtherField = ({
   bg: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: Control<any, any>;
+  clearError?: () => void;
 }) => {
   const dependencyValue = useWatch({
     control,
@@ -27,14 +29,21 @@ export const OtherField = ({
       <Controller
         name={fieldName}
         control={control}
-        render={({ field: { value, onChange } }) => (
+        rules={{ required: true }}
+        render={({ field: { value, onChange }, fieldState: { error } }) => (
           <input
-            onChange={onChange}
+            onChange={(e) => {
+              onChange(e.target.value);
+              if (clearError) {
+                clearError();
+              }
+            }}
             value={value || ""}
             autoComplete="off"
             type="text"
             className={classNames(
               "block h-11 w-full rounded-xl border-none pl-3 text-lg font-semibold placeholder:opacity-80 focus:border-darkcherry focus:ring-darkcherry",
+              error ? "ring ring-red-700" : "",
               `${text} ${bg} placeholder:${text}`
             )}
             placeholder={placeholder}

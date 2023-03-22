@@ -209,6 +209,8 @@ const ApplicationForm = ({
     control: personFormControl,
     getValues: personGetValues,
     setValue: personSetValue,
+    setError: personSetError,
+    clearErrors: personClearErrors,
   } = useForm<PersonInputs>({
     defaultValues: !defaultValues
       ? {
@@ -554,6 +556,33 @@ const ApplicationForm = ({
     });
   }, [handleSubmit, personGetValues, mapAdvisorData, mapCompanionsData]);
 
+  const submitData = () => {
+    const participantData = personGetValues();
+    let error = false;
+    Object.entries(participantData).forEach((data) => {
+      if (!data[1]) {
+        if (
+          (data[0] === "universityOther" &&
+            participantData.university !== "additional") ||
+          (data[0] === "facultyOther" &&
+            participantData.faculty !== "additional") ||
+          (data[0] === "subjectOther" &&
+            participantData.subject !== "additional") ||
+          data[0] === "voucher"
+        ) {
+          return;
+        }
+        console.log(data[0]);
+        error = true;
+        personSetError(data[0] as keyof PersonInputs, { type: "required" });
+      }
+    });
+    if (!error) {
+      personClearErrors();
+      onSubmit();
+    }
+  };
+
   const AddAdvisorButton = ({ index }: { index: number }) => {
     const advisors = useWatch({
       control: projectsControl,
@@ -642,19 +671,27 @@ const ApplicationForm = ({
   return (
     <div className="flex min-h-[100vh] min-w-full flex-col items-center space-y-4 bg-white pb-40 pt-[66px]">
       <div className="w-full space-y-4 md:w-fit">
-        <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:w-[700px] md:p-6 ">
+        <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:p-6 ">
           <p className="text-3xl text-darkcherry">Személyes adatok:</p>
           <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:pl-2">
             <Controller
               name="name"
               control={personFormControl}
-              render={({ field }) => (
+              render={({
+                field: { value, onChange },
+                fieldState: { error },
+              }) => (
                 <input
-                  {...field}
+                  value={value}
+                  onChange={(e) => {
+                    personClearErrors("name");
+                    onChange(e.target.value);
+                  }}
                   autoComplete="off"
                   type="text"
                   className={classNames(
                     inputClasses,
+                    error ? "ring ring-red-700" : "",
                     "bg-application1 text-darkcherry placeholder:text-darkcherry"
                   )}
                   placeholder="Név"
@@ -664,13 +701,21 @@ const ApplicationForm = ({
             <Controller
               name="idNumber"
               control={personFormControl}
-              render={({ field }) => (
+              render={({
+                field: { value, onChange },
+                fieldState: { error },
+              }) => (
                 <input
-                  {...field}
+                  value={value}
+                  onChange={(e) => {
+                    personClearErrors("idNumber");
+                    onChange(e.target.value);
+                  }}
                   autoComplete="off"
                   type="text"
                   className={classNames(
                     inputClasses,
+                    error ? "ring ring-red-700" : "",
                     "bg-application1 text-darkcherry placeholder:text-darkcherry"
                   )}
                   placeholder="Ellenőrző száma"
@@ -686,6 +731,7 @@ const ApplicationForm = ({
                 personSetValue("universityOther", value);
               }}
               universities={universities}
+              clearError={() => personClearErrors("university")}
             />
             <OtherField
               control={personFormControl}
@@ -694,6 +740,7 @@ const ApplicationForm = ({
               dependencyName="university"
               fieldName="universityOther"
               placeholder="Egyéb egyetem"
+              clearError={() => personClearErrors("universityOther")}
             />
             <FacultyField
               control={personFormControl}
@@ -705,6 +752,7 @@ const ApplicationForm = ({
                 personSetValue("facultyOther", value)
               }
               universities={universities}
+              clearError={() => personClearErrors("faculty")}
             />
             <OtherField
               control={personFormControl}
@@ -713,6 +761,7 @@ const ApplicationForm = ({
               dependencyName="faculty"
               fieldName="facultyOther"
               placeholder="Egyéb kar"
+              clearError={() => personClearErrors("facultyOther")}
             />
             <SubjectField
               fieldName="subject"
@@ -724,6 +773,7 @@ const ApplicationForm = ({
                 personSetValue("subjectOther", value)
               }
               faculties={faculties}
+              clearError={() => personClearErrors("subject")}
             />
             <OtherField
               control={personFormControl}
@@ -732,13 +782,18 @@ const ApplicationForm = ({
               dependencyName="subject"
               fieldName="subjectOther"
               placeholder="Egyéb szak"
+              clearError={() => personClearErrors("subjectOther")}
             />
             <Controller
               name="degree"
               control={personFormControl}
-              render={({ field: { onChange, value } }) => (
+              render={({
+                field: { onChange, value },
+                fieldState: { error },
+              }) => (
                 <Select
                   onChange={(value: string | number) => {
+                    personClearErrors("degree");
                     onChange(value as string);
                   }}
                   options={degreeOptions}
@@ -746,15 +801,20 @@ const ApplicationForm = ({
                   placeholder="Képzési szint"
                   text="text-darkcherry"
                   bg="bg-application1"
+                  error={!!error}
                 />
               )}
             />
             <Controller
               name="class"
               control={personFormControl}
-              render={({ field: { onChange, value } }) => (
+              render={({
+                field: { onChange, value },
+                fieldState: { error },
+              }) => (
                 <Select
                   onChange={(value: string | number) => {
+                    personClearErrors("class");
                     onChange(value as string);
                   }}
                   options={classOptions}
@@ -762,15 +822,20 @@ const ApplicationForm = ({
                   placeholder="Évfolyam"
                   text="text-darkcherry"
                   bg="bg-application1"
+                  error={!!error}
                 />
               )}
             />
             <Controller
               name="finishedSemester"
               control={personFormControl}
-              render={({ field: { onChange, value } }) => (
+              render={({
+                field: { onChange, value },
+                fieldState: { error },
+              }) => (
                 <Select
                   onChange={(value: string | number) => {
+                    personClearErrors("finishedSemester");
                     onChange(value as string);
                   }}
                   options={semesterOptions}
@@ -778,20 +843,29 @@ const ApplicationForm = ({
                   placeholder="Elvégzett félévek száma"
                   text="text-darkcherry"
                   bg="bg-application1"
+                  error={!!error}
                 />
               )}
             />
             <Controller
               name="email"
               control={personFormControl}
-              render={({ field }) => (
+              render={({
+                field: { value, onChange },
+                fieldState: { error },
+              }) => (
                 <input
-                  {...field}
+                  value={value}
+                  onChange={(e) => {
+                    personClearErrors("email");
+                    onChange(e.target.value);
+                  }}
                   autoComplete="off"
                   disabled={!!defaultValues}
                   type="text"
                   className={classNames(
                     inputClasses,
+                    error ? "ring ring-red-700" : "",
                     "bg-application1 text-darkcherry placeholder:text-darkcherry"
                   )}
                   placeholder="E-mail cím"
@@ -801,13 +875,21 @@ const ApplicationForm = ({
             <Controller
               name="mobileNumber"
               control={personFormControl}
-              render={({ field }) => (
+              render={({
+                field: { value, onChange },
+                fieldState: { error },
+              }) => (
                 <input
-                  {...field}
+                  value={value}
+                  onChange={(e) => {
+                    personClearErrors("mobileNumber");
+                    onChange(e.target.value);
+                  }}
                   autoComplete="off"
                   type="text"
                   className={classNames(
                     inputClasses,
+                    error ? "ring ring-red-700" : "",
                     "bg-application1 text-darkcherry placeholder:text-darkcherry"
                   )}
                   placeholder="Telefonszám"
@@ -817,13 +899,17 @@ const ApplicationForm = ({
             <Controller
               name="idPhoto"
               control={personFormControl}
-              render={({ field: { onChange, value } }) => {
+              render={({
+                field: { onChange, value },
+                fieldState: { error },
+              }) => {
                 return (
                   <label>
                     <div
                       className={classNames(
                         inputClasses,
-                        "flex cursor-pointer items-center bg-application1 pl-4 text-darkcherry  placeholder:text-darkcherry "
+                        error ? "ring ring-red-700" : "",
+                        "flex max-w-[328px] cursor-pointer items-center bg-application1 pl-4  text-darkcherry placeholder:text-darkcherry"
                       )}
                     >
                       <div className="overflow-hidden truncate opacity-80">
@@ -838,9 +924,10 @@ const ApplicationForm = ({
                       type="file"
                       autoComplete="off"
                       className="hidden"
-                      onChange={(e) =>
-                        onChange(e.target.files ? e.target.files[0] : null)
-                      }
+                      onChange={(e) => {
+                        personClearErrors("idPhoto");
+                        onChange(e.target.files ? e.target.files[0] : null);
+                      }}
                     />
                   </label>
                 );
@@ -920,7 +1007,7 @@ const ApplicationForm = ({
                   leaveFrom="transform scale-100 opacity-100"
                   leaveTo="transform scale-95 opacity-0"
                 >
-                  <Disclosure.Panel>
+                  <Disclosure.Panel className="border-2 border-application3 p-2">
                     <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:w-[700px] md:p-6 ">
                       <p className="text-3xl text-darkcherry">
                         {index + 1}. Dolgozat:
@@ -929,13 +1016,15 @@ const ApplicationForm = ({
                         <Controller
                           name={`projects.${index}.title`}
                           control={projectsControl}
-                          render={({ field }) => (
+                          rules={{ required: true }}
+                          render={({ field, fieldState: { error } }) => (
                             <input
                               {...field}
                               type="text"
                               autoComplete="off"
                               className={classNames(
                                 inputClasses,
+                                error ? "ring ring-red-700" : "",
                                 "bg-application3 text-darkcherry placeholder:text-darkcherry"
                               )}
                               placeholder="Cím"
@@ -945,12 +1034,17 @@ const ApplicationForm = ({
                         <Controller
                           name={`projects.${index}.extract`}
                           control={projectsControl}
-                          render={({ field: { onChange, value } }) => {
+                          rules={{ required: true }}
+                          render={({
+                            field: { onChange, value },
+                            fieldState: { error },
+                          }) => {
                             return (
                               <label>
                                 <div
                                   className={classNames(
                                     inputClasses,
+                                    error ? "ring ring-red-700" : "",
                                     "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
                                   )}
                                 >
@@ -979,7 +1073,11 @@ const ApplicationForm = ({
                         <Controller
                           name={`projects.${index}.section`}
                           control={projectsControl}
-                          render={({ field: { onChange, value } }) => {
+                          rules={{ required: true }}
+                          render={({
+                            field: { onChange, value },
+                            fieldState: { error },
+                          }) => {
                             const sectionsOptions = sections.map((s) => ({
                               name: s.name,
                               value: s._id,
@@ -998,6 +1096,7 @@ const ApplicationForm = ({
                                 placeholder="Szekció"
                                 text="text-darkcherry"
                                 bg="bg-application3"
+                                error={!!error}
                               />
                             );
                           }}
@@ -1141,13 +1240,18 @@ const ApplicationForm = ({
                                       <Controller
                                         name={`projects.${index}.advisors.${ai}.name`}
                                         control={projectsControl}
-                                        render={({ field }) => (
+                                        rules={{ required: true }}
+                                        render={({
+                                          field,
+                                          fieldState: { error },
+                                        }) => (
                                           <input
                                             {...field}
                                             autoComplete="off"
                                             type="text"
                                             className={classNames(
                                               inputClasses,
+                                              error ? "ring ring-red-700" : "",
                                               "bg-application2 text-white placeholder:text-white"
                                             )}
                                             placeholder="Név"
@@ -1228,8 +1332,10 @@ const ApplicationForm = ({
                                       <Controller
                                         name={`projects.${index}.advisors.${ai}.title`}
                                         control={projectsControl}
+                                        rules={{ required: true }}
                                         render={({
                                           field: { onChange, value },
+                                          fieldState: { error },
                                         }) => (
                                           <Select
                                             onChange={(
@@ -1246,19 +1352,25 @@ const ApplicationForm = ({
                                             placeholder="Titulus"
                                             text="text-white"
                                             bg="bg-application2"
+                                            error={!!error}
                                           />
                                         )}
                                       />
                                       <Controller
                                         name={`projects.${index}.advisors.${ai}.email`}
                                         control={projectsControl}
-                                        render={({ field }) => (
+                                        rules={{ required: true }}
+                                        render={({
+                                          field,
+                                          fieldState: { error },
+                                        }) => (
                                           <input
                                             {...field}
                                             autoComplete="off"
                                             type="text"
                                             className={classNames(
                                               inputClasses,
+                                              error ? "ring ring-red-700" : "",
                                               "bg-application2 text-white placeholder:text-white"
                                             )}
                                             placeholder="E-mail cím"
@@ -1268,13 +1380,19 @@ const ApplicationForm = ({
                                       <Controller
                                         name={`projects.${index}.advisors.${ai}.mobileNumber`}
                                         control={projectsControl}
-                                        render={({ field }) => (
+                                        rules={{ required: true }}
+                                        render={({
+                                          field,
+                                          fieldState: { error },
+                                        }) => (
                                           <input
                                             {...field}
                                             autoComplete="off"
                                             type="text"
                                             className={classNames(
                                               inputClasses,
+                                              error ? "ring ring-red-700" : "",
+
                                               "bg-application2 text-white placeholder:text-white"
                                             )}
                                             placeholder="Telefonszám"
@@ -1284,14 +1402,19 @@ const ApplicationForm = ({
                                       <Controller
                                         name={`projects.${index}.advisors.${ai}.certificate`}
                                         control={projectsControl}
+                                        rules={{ required: true }}
                                         render={({
                                           field: { onChange, value },
+                                          fieldState: { error },
                                         }) => {
                                           return (
                                             <label>
                                               <div
                                                 className={classNames(
                                                   inputClasses,
+                                                  error
+                                                    ? "ring ring-red-700"
+                                                    : "",
                                                   "flex cursor-pointer items-center bg-application2 pl-4 text-white"
                                                 )}
                                               >
@@ -1329,7 +1452,6 @@ const ApplicationForm = ({
                         </Disclosure>
                       </React.Fragment>
                     ))}
-                    <AddAdvisorButton index={index} />
                     {(project.companions || []).map((_companion, ci) => (
                       <React.Fragment key={"companion" + ci}>
                         <Disclosure defaultOpen>
@@ -1381,14 +1503,19 @@ const ApplicationForm = ({
                                     <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:pl-2">
                                       <Controller
                                         name={`projects.${index}.companions.${ci}.name`}
+                                        rules={{ required: true }}
                                         control={projectsControl}
-                                        render={({ field }) => (
+                                        render={({
+                                          field,
+                                          fieldState: { error },
+                                        }) => (
                                           <input
                                             {...field}
                                             autoComplete="off"
                                             type="text"
                                             className={classNames(
                                               inputClasses,
+                                              error ? "ring ring-red-700" : "",
                                               "bg-application1 text-darkcherry placeholder:text-darkcherry"
                                             )}
                                             placeholder="Név"
@@ -1397,14 +1524,19 @@ const ApplicationForm = ({
                                       />
                                       <Controller
                                         name={`projects.${index}.companions.${ci}.idNumber`}
+                                        rules={{ required: true }}
                                         control={projectsControl}
-                                        render={({ field }) => (
+                                        render={({
+                                          field,
+                                          fieldState: { error },
+                                        }) => (
                                           <input
                                             {...field}
                                             autoComplete="off"
                                             type="text"
                                             className={classNames(
                                               inputClasses,
+                                              error ? "ring ring-red-700" : "",
                                               "bg-application1 text-darkcherry placeholder:text-darkcherry"
                                             )}
                                             placeholder="Ellenőrző száma"
@@ -1485,8 +1617,10 @@ const ApplicationForm = ({
                                       <Controller
                                         name={`projects.${index}.companions.${ci}.degree`}
                                         control={projectsControl}
+                                        rules={{ required: true }}
                                         render={({
                                           field: { onChange, value },
+                                          fieldState: { error },
                                         }) => (
                                           <Select
                                             onChange={(
@@ -1503,14 +1637,17 @@ const ApplicationForm = ({
                                             placeholder="Képzési szint"
                                             text="text-darkcherry"
                                             bg="bg-application1"
+                                            error={!!error}
                                           />
                                         )}
                                       />
                                       <Controller
                                         name={`projects.${index}.companions.${ci}.class`}
+                                        rules={{ required: true }}
                                         control={projectsControl}
                                         render={({
                                           field: { onChange, value },
+                                          fieldState: { error },
                                         }) => (
                                           <Select
                                             onChange={(
@@ -1527,14 +1664,17 @@ const ApplicationForm = ({
                                             placeholder="Évfolyam"
                                             text="text-darkcherry"
                                             bg="bg-application1"
+                                            error={!!error}
                                           />
                                         )}
                                       />
                                       <Controller
                                         name={`projects.${index}.companions.${ci}.finishedSemester`}
+                                        rules={{ required: true }}
                                         control={projectsControl}
                                         render={({
                                           field: { onChange, value },
+                                          fieldState: { error },
                                         }) => (
                                           <Select
                                             onChange={(
@@ -1551,13 +1691,18 @@ const ApplicationForm = ({
                                             placeholder="Elvégzett félévek száma"
                                             text="text-darkcherry"
                                             bg="bg-application1"
+                                            error={!!error}
                                           />
                                         )}
                                       />
                                       <Controller
                                         name={`projects.${index}.companions.${ci}.email`}
+                                        rules={{ required: true }}
                                         control={projectsControl}
-                                        render={({ field }) => (
+                                        render={({
+                                          field,
+                                          fieldState: { error },
+                                        }) => (
                                           <input
                                             {...field}
                                             autoComplete="off"
@@ -1565,6 +1710,7 @@ const ApplicationForm = ({
                                             type="text"
                                             className={classNames(
                                               inputClasses,
+                                              error ? "ring ring-red-700" : "",
                                               "bg-application1 text-darkcherry placeholder:text-darkcherry"
                                             )}
                                             placeholder="E-mail cím"
@@ -1573,14 +1719,19 @@ const ApplicationForm = ({
                                       />
                                       <Controller
                                         name={`projects.${index}.companions.${ci}.mobileNumber`}
+                                        rules={{ required: true }}
                                         control={projectsControl}
-                                        render={({ field }) => (
+                                        render={({
+                                          field,
+                                          fieldState: { error },
+                                        }) => (
                                           <input
                                             {...field}
                                             autoComplete="off"
                                             type="text"
                                             className={classNames(
                                               inputClasses,
+                                              error ? "ring ring-red-700" : "",
                                               "bg-application1 text-darkcherry placeholder:text-darkcherry"
                                             )}
                                             placeholder="Telefonszám"
@@ -1589,15 +1740,20 @@ const ApplicationForm = ({
                                       />
                                       <Controller
                                         name={`projects.${index}.companions.${ci}.idPhoto`}
+                                        rules={{ required: true }}
                                         control={projectsControl}
                                         render={({
                                           field: { onChange, value },
+                                          fieldState: { error },
                                         }) => {
                                           return (
                                             <label>
                                               <div
                                                 className={classNames(
                                                   inputClasses,
+                                                  error
+                                                    ? "ring ring-red-700"
+                                                    : "",
                                                   "flex cursor-pointer items-center bg-application1 pl-4 text-darkcherry  placeholder:text-darkcherry "
                                                 )}
                                               >
@@ -1635,7 +1791,10 @@ const ApplicationForm = ({
                         </Disclosure>
                       </React.Fragment>
                     ))}
-                    <AddCompanionButton index={index} />
+                    <div className="mt-4 flex space-x-2">
+                      <AddCompanionButton index={index} />
+                      <AddAdvisorButton index={index} />
+                    </div>
                   </Disclosure.Panel>
                 </Transition>
               </>
@@ -1674,8 +1833,8 @@ const ApplicationForm = ({
           <p>Új dolgozat hozzáadása</p>
         </button>
         <button
-          className="float-right flex h-10 items-center rounded-xl bg-gray-900 py-2 px-4 font-bold text-white"
-          onClick={() => onSubmit()}
+          className="float-right flex h-10 items-center rounded-xl bg-lightcherry py-2 px-4 font-bold text-white"
+          onClick={() => submitData()}
         >
           {loading && (
             <svg
@@ -1699,7 +1858,6 @@ const ApplicationForm = ({
               ></path>
             </svg>
           )}
-
           <p>Mentés</p>
         </button>
       </div>

@@ -9,6 +9,7 @@ export const UniversityField = ({
   setAdditional,
   fieldName,
   universities,
+  clearError,
 }: {
   advisor?: boolean;
   setAdditional?: (value: string | undefined) => void;
@@ -19,6 +20,7 @@ export const UniversityField = ({
   control: Control<any, any>;
   index?: number;
   universities: UniversitiesSanity[];
+  clearError?: () => void;
 }) => {
   const universitiesOption = universities
     .map((uni) => ({
@@ -30,10 +32,14 @@ export const UniversityField = ({
     <Controller
       name={fieldName}
       control={control}
-      render={({ field: { onChange, value } }) => (
+      rules={{ required: true }}
+      render={({ field: { onChange, value }, fieldState: { error } }) => (
         <Select
           onChange={(value: string | number) => {
             onChange(value as string);
+            if (clearError) {
+              clearError();
+            }
           }}
           options={universitiesOption}
           value={
@@ -45,6 +51,7 @@ export const UniversityField = ({
           text={text}
           bg={bg}
           setAdditional={setAdditional}
+          error={!!error}
         />
       )}
     />

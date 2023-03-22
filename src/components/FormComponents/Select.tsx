@@ -14,6 +14,7 @@ export default function Select({
   setAdditional,
   bg = "",
   text = "",
+  error = false,
 }: {
   options: SelectOption[] | undefined;
   onChange: (value: string | number) => void;
@@ -23,6 +24,7 @@ export default function Select({
   placeholder?: string;
   bg?: string;
   text?: string;
+  error?: boolean;
 }) {
   const [query, setQuery] = useState("");
   const filteredOptions =
@@ -49,7 +51,10 @@ export default function Select({
         <>
           <div className="relative">
             <div
-              className={`relative h-11 w-full cursor-default rounded-xl py-2 pl-3 pr-10 text-left text-lg shadow-sm focus:border-darkcherry focus:outline-none focus:ring-1 focus:ring-darkcherry sm:text-sm ${bg}`}
+              className={classNames(
+                error ? "ring ring-red-700" : "",
+                `relative h-11 w-full cursor-default rounded-xl py-2 pl-3 pr-10 text-left text-lg shadow-sm focus:border-darkcherry focus:outline-none focus:ring-1 focus:ring-darkcherry sm:text-sm ${bg}`
+              )}
             >
               <Combobox.Input
                 autoComplete="off"

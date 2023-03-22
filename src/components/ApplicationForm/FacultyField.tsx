@@ -10,6 +10,7 @@ export const FacultyField = ({
   dependencyName,
   fieldName,
   universities,
+  clearError,
 }: {
   setAdditional?: (value: string | undefined) => void;
   fieldName: string;
@@ -19,6 +20,7 @@ export const FacultyField = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: Control<any, any>;
   universities: UniversitiesSanity[];
+  clearError?: () => void;
 }) => {
   const selectedUniversity = useWatch({
     control,
@@ -31,15 +33,21 @@ export const FacultyField = ({
           .map((fac) => ({ name: fac.name, value: fac._id }))
           .concat([{ name: "Egyéb", value: "additional" }])
       : [{ name: "Egyéb", value: "additional" }]
+    : selectedUniversity === "additional"
+    ? [{ name: "Egyéb", value: "additional" }]
     : undefined;
   return (
     <Controller
       name={fieldName}
       control={control}
-      render={({ field: { onChange, value } }) => (
+      rules={{ required: true }}
+      render={({ field: { onChange, value }, fieldState: { error } }) => (
         <Select
           onChange={(value: string | number) => {
             onChange(value as string);
+            if (clearError) {
+              clearError();
+            }
           }}
           options={faculties}
           value={
@@ -49,6 +57,7 @@ export const FacultyField = ({
           text={text}
           bg={bg}
           setAdditional={setAdditional}
+          error={!!error}
         />
       )}
     />
