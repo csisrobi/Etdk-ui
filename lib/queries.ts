@@ -36,6 +36,14 @@ export const queryGeneral = groq`
   "certificateURL": certificate.asset->url
 }`;
 
+export const queryFiles = groq`
+*[_type == "files"]{
+  "certificateURL": certificate.asset->url,
+  "declarationURL": declaration.asset->url,
+  "declarationProjectURL": declarationProject.asset->url,
+  "contributionURL": contribution.asset->url,
+}`;
+
 export const queryApplicate = groq`
 *[_type == "applicate"]{
   title,
