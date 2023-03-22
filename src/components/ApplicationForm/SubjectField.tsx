@@ -60,6 +60,7 @@ export const SubjectField = ({
           text={text}
           bg={bg}
           error={!!error}
+          disabled={!subjects}
         />
       )}
     />

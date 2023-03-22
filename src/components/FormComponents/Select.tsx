@@ -2,7 +2,7 @@ import { Combobox, Transition } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import classNames from "classnames";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import type { SelectOption } from "types";
 
 export default function Select({
@@ -28,12 +28,18 @@ export default function Select({
 }) {
   const [query, setQuery] = useState("");
   const filteredOptions =
-    query == "" || !options
+    query === "" || !options
       ? options
       : options.filter((option) => {
           return option.name.toLowerCase().includes(query.toLowerCase());
         });
-  const hideDropDown = !filteredOptions?.length && query !== "" && !disabled;
+
+  useEffect(() => {
+    if (!value) {
+      setQuery("");
+    }
+  }, [value]);
+
   return (
     <Combobox
       value={value}
@@ -65,7 +71,7 @@ export default function Select({
                   option?.name || ""
                 }
               />
-              {!hideDropDown && (
+              {!disabled && (
                 <Combobox.Button className="absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
                   <ChevronDownIcon
                     className={`h-5 w-5 ${text}`}

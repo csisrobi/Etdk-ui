@@ -36,6 +36,7 @@ export const FacultyField = ({
     : selectedUniversity === "additional"
     ? [{ name: "Egyéb", value: "additional" }]
     : undefined;
+
   return (
     <Controller
       name={fieldName}
@@ -58,6 +59,7 @@ export const FacultyField = ({
           bg={bg}
           setAdditional={setAdditional}
           error={!!error}
+          disabled={!faculties}
         />
       )}
     />

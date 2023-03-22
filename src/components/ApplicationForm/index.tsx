@@ -538,7 +538,6 @@ const ApplicationForm = ({
           })
         )
           .catch(() => {
-            console.log("asd");
             setNotiMessage(
               `Ellenőrizd, hogy minden adat helyesen volt bevezetve.`
             );
@@ -572,7 +571,6 @@ const ApplicationForm = ({
         ) {
           return;
         }
-        console.log(data[0]);
         error = true;
         personSetError(data[0] as keyof PersonInputs, { type: "required" });
       }
@@ -728,6 +726,7 @@ const ApplicationForm = ({
               text="text-darkcherry"
               bg="bg-application1"
               setAdditional={(value: string | undefined) => {
+                personSetValue("faculty", "");
                 personSetValue("universityOther", value);
               }}
               universities={universities}
@@ -748,9 +747,10 @@ const ApplicationForm = ({
               dependencyName="university"
               text="text-darkcherry"
               bg="bg-application1"
-              setAdditional={(value: string | undefined) =>
-                personSetValue("facultyOther", value)
-              }
+              setAdditional={(value: string | undefined) => {
+                personSetValue("subject", "");
+                personSetValue("facultyOther", value);
+              }}
               universities={universities}
               clearError={() => personClearErrors("faculty")}
             />
@@ -1265,12 +1265,16 @@ const ApplicationForm = ({
                                         bg="bg-application2"
                                         setAdditional={(
                                           value: string | undefined
-                                        ) =>
+                                        ) => {
+                                          projectSetValue(
+                                            `projects.${index}.advisors.${ai}.faculty`,
+                                            ""
+                                          );
                                           projectSetValue(
                                             `projects.${index}.advisors.${ai}.universityOther`,
                                             value
-                                          )
-                                        }
+                                          );
+                                        }}
                                         universities={universities}
                                       />
                                       <OtherField
@@ -1289,12 +1293,16 @@ const ApplicationForm = ({
                                         bg="bg-application2"
                                         setAdditional={(
                                           value: string | undefined
-                                        ) =>
+                                        ) => {
+                                          projectSetValue(
+                                            `projects.${index}.advisors.${ai}.subject`,
+                                            ""
+                                          );
                                           projectSetValue(
                                             `projects.${index}.advisors.${ai}.facultyOther`,
                                             value
-                                          )
-                                        }
+                                          );
+                                        }}
                                         universities={universities}
                                       />
                                       <OtherField
