@@ -21,9 +21,9 @@ const LetolthetoDokumentumok = ({ files }: Props) => {
             </a>
           </div>
         )}
-        {files.contributionURL && (
+        {files.declarationURL && (
           <div className="w-fit rounded-lg bg-lightcherry px-4 py-2 text-white">
-            <a target="_blank" href={files.contributionURL} rel="noreferrer">
+            <a target="_blank" href={files.declarationURL} rel="noreferrer">
               Adatbankos nyilatkozat - a kivonatos füzetre vonatkozóan
             </a>
           </div>
@@ -39,9 +39,9 @@ const LetolthetoDokumentumok = ({ files }: Props) => {
             </a>
           </div>
         )}
-        {files.declarationURL && (
+        {files.contributionURL && (
           <div className="w-fit rounded-lg bg-lightcherry px-4 py-2 text-white">
-            <a target="_blank" href={files.declarationURL} rel="noreferrer">
+            <a target="_blank" href={files.contributionURL} rel="noreferrer">
               Hozzájárulási nyilatkozat - a Biológia szekcióban résztvevőknek
             </a>
           </div>
