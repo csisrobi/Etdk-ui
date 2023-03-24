@@ -1,18 +1,16 @@
 import Image from "next/image";
 import LinkWrapper from "./UtilityComponents/LinkWrapper";
 
-const ParticipationCondition = ({
-  certificateURL,
-}: {
-  certificateURL: string;
-}) => {
+const ParticipationCondition = () => {
   const conditions = [
     { text: "Szabályzat", link: "/szabalyzat" },
-    { text: "Követelmények" },
+    { text: "Követelmények", link: "/kovetelmenyek" },
     { text: "Pontozási kritériumok" },
-    { text: "Témavezetői igazolás", link: certificateURL, target: "_blank" },
+    {
+      text: "Letölthető dokumentumok",
+      link: "/letoltheto-dokumentumok",
+    },
   ];
-
   return (
     <div className="bg-grayCustom relative flex min-h-[calc(100vh-71px)] w-full flex-col px-8 pt-14">
       <div id="altalanos_tudnivalok" className="absolute -top-[70px]" />
@@ -42,11 +40,7 @@ const ParticipationCondition = ({
         <div className="mt-8 flex flex-col sm:mt-0 sm:w-2/5">
           <div className="flex w-full flex-col items-center gap-4">
             {conditions.map((condition) => (
-              <LinkWrapper
-                key={condition.text}
-                href={condition.link || "#"}
-                target={condition.target}
-              >
+              <LinkWrapper key={condition.text} href={condition.link || "#"}>
                 <button
                   type="button"
                   className="min-w-max cursor-pointer rounded-2xl bg-white py-2 px-2 text-center text-3xl tracking-wide text-lightcherry"

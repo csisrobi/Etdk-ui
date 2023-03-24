@@ -14,16 +14,18 @@ import subject from "./subject";
 import participant from "./participant";
 import criteria from "./criteria";
 import admin from "./admin";
+import singletonDocumentsGeneral from "./singletonDocumentsGeneral";
 
 export default createSchema({
   name: "default",
   types: schemaTypes.concat([
+    singletonGeneralData,
+    singletonDocumentsGeneral,
     sponsor,
     organizer,
     news,
     sections,
     archiv,
-    singletonGeneralData,
     singletonContact,
     whyApplicateData,
     subject,
