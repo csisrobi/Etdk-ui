@@ -35,6 +35,14 @@ export const queryGeneral = groq`
   "certificateURL": certificate.asset->url
 }`;
 
+export const queryFiles = groq`
+*[_type == "files"]{
+  "certificateURL": certificate.asset->url,
+  "declarationURL": declaration.asset->url,
+  "declarationProjectURL": declarationProject.asset->url,
+  "contributionURL": contribution.asset->url,
+}`;
+
 export const queryApplicate = groq`
 *[_type == "applicate"]{
   title,
@@ -60,6 +68,11 @@ export const queryNews = groq`
 export const queryDeadline = groq`
 *[_type == "general"]{
   deadline
+}`;
+
+export const queryRequirement = groq`
+*[_type == "general"]{
+  requirement
 }`;
 
 export const queryArchivsBasic = groq`

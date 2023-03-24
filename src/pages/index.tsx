@@ -59,7 +59,7 @@ const Home: NextPage<Props> = ({
         small_benefit={applicate.small_benefit}
         big_benefit={applicate.big_benefit}
       />
-      <ParticipationCondition certificateURL={general.certificateURL} />
+      <ParticipationCondition />
       <Year />
       <NewsArchiv news={news} archivs={archivs} />
       <SponsorsOrg sponsors={sponsors} organizers={organizers} />
