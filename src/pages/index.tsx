@@ -66,7 +66,7 @@ const Home: NextPage<Props> = ({
       <Contact
         address={contact.address}
         email={contact.email}
-        phone={contact.phone}
+        // phone={contact.phone}
         facebook={contact.facebook}
         instagram={contact.instagram}
         date={general.date}
