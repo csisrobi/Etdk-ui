@@ -44,5 +44,11 @@ export default {
       type: "array",
       of: [{ type: "block" }],
     },
+    {
+      title: "GDPR",
+      name: "gdpr",
+      type: "array",
+      of: [{ type: "block" }],
+    },
   ],
 };

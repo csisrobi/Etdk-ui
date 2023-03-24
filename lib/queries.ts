@@ -48,6 +48,11 @@ export const queryGeneralRules = groq`
   rules,
 }`;
 
+export const queryGeneralGDPR = groq`
+*[_type == "general"]{
+  gdpr,
+}`;
+
 export const queryNews = groq`
 *[_type == "news"]{
   name,

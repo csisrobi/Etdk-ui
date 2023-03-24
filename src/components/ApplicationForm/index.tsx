@@ -6,39 +6,24 @@ import {
 } from "@heroicons/react/20/solid";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { fetcher } from "@lib/queries";
+import RichText from "@utils/RichText";
 import classNames from "classnames";
 import { nanoid } from "nanoid";
 import React, { Fragment, useCallback, useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import Select from "src/components/FormComponents/Select";
 import Snackbar from "src/components/UtilityComponents/Snackbar";
-import type { FacultySanity, SectionsSanity, UniversitiesSanity } from "types";
+import type {
+  FacultySanity,
+  SanityRichText,
+  SectionsSanity,
+  UniversitiesSanity,
+} from "types";
 import { ContributionField } from "./ContributionField";
 import { FacultyField } from "./FacultyField";
 import { OtherField } from "./OtherField";
 import { SubjectField } from "./SubjectField";
 import { UniversityField } from "./UniversityField";
-
-//TODO SORREND DOCX
-
-// Szemelyes adatok
-//TODO KELL ELLENORZO SZAM -------------- DONE
-//TODO KELL ELVEGZETT FELEVEK SZAMA, 1-10 -------------- DONE
-//TODO ELLENORZO KEP -------------- DONE
-
-//TODO: jelentkezes utan, masodik fazisba
-// Dolgozat - pdf, akár 100 oldalas dokumentum, képekkel, ábrákkal -------------- DONE
-// 	Melléklet - pdf, max. 20 oldalas dokumentum -------------- DONE
-
-// Egyéb dokumentumok:
-// Adatbankos nyilatkozat - pdf, 1 oldalas dokumentum -------------- DONE
-// Kifizetési bizonylat - pdf vagy jpg. -------------- DONE
-// Kivételes eset: Biológia szekció esetében, hozzájárulási nyilatkozat, pdf, 1 oldalas (ha nem megoldható e-mailen továbbítják, kb. 10-15 ember érint) -------------- DONE
-
-//TODO: GDPR kocka enelkul nem lehet jelentkezni + lekell menteni hogy beleegyezett
-//TODO: JELENTKEZETT -> NOW sanitybe
-
-//TODO: EGYEB szaknak, karnak es egyetemnek!
 
 //TODO: ERROR HANDLING
 const degreeOptions = [
@@ -193,6 +178,7 @@ const ApplicationForm = ({
   faculties,
   sections,
   defaultValues,
+  gdpr,
 }: {
   universities: UniversitiesSanity[];
   faculties: FacultySanity[];
@@ -201,6 +187,7 @@ const ApplicationForm = ({
     personData: PersonInputs;
     projectsData: ProjectInputs[];
   };
+  gdpr?: SanityRichText[];
 }) => {
   const [notiMessage, setNotiMessage] = useState("");
   const [confirmationMessage, setConfirmationMessage] = useState("");
@@ -1853,6 +1840,7 @@ const ApplicationForm = ({
           type="checkbox"
           value={`${gdprApproved}`}
           onChange={(e) => setGdprApproved(e.target.checked)}
+          className="cursor-pointer"
         />
         <p>
           A <b>Mentés</b> gombra való kattintáshoz el kell fogadja a{" "}
@@ -1961,61 +1949,48 @@ const ApplicationForm = ({
           </div>
         </Dialog>
       </Transition.Root>
-      <Transition.Root show={gdprDialog} as={Fragment}>
-        <Dialog
-          as="div"
-          className="relative z-10"
-          onClose={() => setGdprDialog(false)}
-        >
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
+      {gdpr && (
+        <Transition.Root show={gdprDialog} as={Fragment}>
+          <Dialog
+            as="div"
+            className="relative z-10"
+            onClose={() => setGdprDialog(false)}
           >
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-          </Transition.Child>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            </Transition.Child>
 
-          <div className="fixed inset-0 z-10 overflow-y-auto">
-            <div className="relative flex min-h-full items-center justify-center p-4 text-center sm:p-0">
-              <Transition.Child
-                as={Fragment}
-                enter="ease-out duration-300"
-                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                enterTo="opacity-100 translate-y-0 sm:scale-100"
-                leave="ease-in duration-200"
-                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-              >
-                <Dialog.Panel className="relative flex transform flex-col items-center justify-center space-y-4 rounded-lg bg-white p-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                  <div>
-                    {/* TODO: SANITY */}
-                    <p>
-                      A négyzet bejelölésével hozzájárulok, hogy fotókat és
-                      videókat készítsenek rólam a Reál- és Humántudományi
-                      Erdélyi Tudományos Diákköri Konferencia teljes időtartama
-                      alatt.
-                    </p>
-                    <p>
-                      A négyzet bejelölésével hozzájárulok a megadott adataim a
-                      95/46/EK irányelv hatályon kívűl helyezéséről szóló
-                      Európai Parlament és Tanács (EU) 2016/679-es (GDPR-nak
-                      nevezett) általános adatvédelmi rendelete szerinti
-                      tárolásához és kezeléséhez és beleegyezem, hogy csakis
-                      ezen előírások betartásával kezeljék ezeket a Reál- és
-                      Humántudományi Erdélyi Tudományos Diákköri Konferencia
-                      megszervezése folyamán.
-                    </p>
-                  </div>
-                </Dialog.Panel>
-              </Transition.Child>
+            <div className="fixed inset-0 z-10 overflow-y-auto">
+              <div className="relative flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                <Transition.Child
+                  as={Fragment}
+                  enter="ease-out duration-300"
+                  enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                  enterTo="opacity-100 translate-y-0 sm:scale-100"
+                  leave="ease-in duration-200"
+                  leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                  leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                >
+                  <Dialog.Panel className="relative flex transform flex-col items-center justify-center space-y-4 rounded-lg bg-white p-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                    <div className="prose max-w-none">
+                      <RichText blocks={gdpr} />
+                    </div>
+                  </Dialog.Panel>
+                </Transition.Child>
+              </div>
             </div>
-          </div>
-        </Dialog>
-      </Transition.Root>
+          </Dialog>
+        </Transition.Root>
+      )}
+
       <Transition.Root show={confirmationMessage !== ""} as={Fragment}>
         <Dialog
           as="div"
