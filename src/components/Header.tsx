@@ -3,7 +3,6 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useState } from "react";
-import { useRouter } from "next/router";
 import LinkWrapper from "./UtilityComponents/LinkWrapper";
 
 const Header = () => {
@@ -20,7 +19,7 @@ const Header = () => {
     },
     {
       title: "Igazolás kérése",
-      // id: "igazolas-kerese",
+      id: "https://kmdsz.ro/#contact",
     },
     {
       title: "Hírek",
@@ -40,34 +39,18 @@ const Header = () => {
     },
   ];
 
-  const router = useRouter();
-  const scrollTo = (id: string) => {
-    const anchor = document.getElementById(id);
-    if (anchor) {
-      anchor.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  };
-
   return (
     <div className="fixed top-0 z-20 h-fit w-full bg-lightcherry">
       <div className="flex w-full items-center p-2">
-        <div
-          onClick={() => {
-            if (router.pathname === "/") {
-              scrollTo("general");
-            }
-          }}
-        >
-          <LinkWrapper href={router.pathname === "/" ? "#" : "/"}>
-            <Image
-              src="/ETDKfeher.png"
-              alt={"logo"}
-              width={50}
-              height={50}
-              className="block hover:cursor-pointer lg:hidden xl:block"
-            />
-          </LinkWrapper>
-        </div>
+        <LinkWrapper href="#general">
+          <Image
+            src="/ETDKfeher.png"
+            alt={"logo"}
+            width={50}
+            height={50}
+            className="block hover:cursor-pointer lg:hidden xl:block"
+          />
+        </LinkWrapper>
         <div className="flex flex-1 items-center justify-end lg:hidden">
           <button className="hover:bg-lightcherry-700 inline-flex items-center justify-center p-2 text-white hover:text-black">
             <Bars3Icon
@@ -84,7 +67,7 @@ const Header = () => {
                 className="cursor-pointer text-center text-2xl tracking-wide text-white"
                 key={index}
               >
-                <LinkWrapper href={`/${link.id}`}>
+                <LinkWrapper href={link.id || ""}>
                   {link.title.toUpperCase()}
                 </LinkWrapper>
               </span>
@@ -131,7 +114,7 @@ const Header = () => {
                   leaveTo="translate-x-full"
                 >
                   <Dialog.Panel className="pointer-events-auto relative w-screen max-w-md">
-                    <div className="no-scrollbar flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl">
+                    <div className="flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl">
                       <div className="px-4 sm:px-6">
                         <Dialog.Title className="text-lightcherry-900 text-lg font-medium">
                           <div className="flex w-full items-center">
@@ -170,33 +153,31 @@ const Header = () => {
                         </Dialog.Title>
                       </div>
                       <div className="relative mt-6 flex-1 px-4 sm:px-6">
-                        <div className="">
-                          <div className=" flex h-full flex-col content-center space-y-3">
-                            {links.map((link, index) => (
-                              <span
-                                className="text-center text-2xl tracking-wide text-lightcherry "
-                                key={index}
-                                onClick={() => setOpenMobileDialog(false)}
-                              >
-                                <LinkWrapper href={`/${link.id}`}>
-                                  {link.title.toUpperCase()}
-                                </LinkWrapper>
-                              </span>
-                            ))}
-                            <div className="border-t border-lightcherry pt-4 text-center">
-                              <button
-                                type="button"
-                                className="w-48 rounded-3xl bg-lightcherry py-2 px-1 text-center text-3xl tracking-wide  text-white hover:bg-opacity-75 xl:w-52"
-                              >
-                                <Link href="/jelentkezes">
-                                  <span
-                                    onClick={() => setOpenMobileDialog(false)}
-                                  >
-                                    JELENTKEZÉS
-                                  </span>
-                                </Link>
-                              </button>
-                            </div>
+                        <div className=" flex h-full flex-col content-center space-y-3">
+                          {links.map((link, index) => (
+                            <span
+                              className="text-center text-2xl tracking-wide text-lightcherry "
+                              key={index}
+                              onClick={() => setOpenMobileDialog(false)}
+                            >
+                              <LinkWrapper href={link.id || ""}>
+                                {link.title.toUpperCase()}
+                              </LinkWrapper>
+                            </span>
+                          ))}
+                          <div className="border-t border-lightcherry pt-4 text-center">
+                            <button
+                              type="button"
+                              className="w-48 rounded-3xl bg-lightcherry py-2 px-1 text-center text-3xl tracking-wide  text-white hover:bg-opacity-75 xl:w-52"
+                            >
+                              <Link href="/jelentkezes">
+                                <span
+                                  onClick={() => setOpenMobileDialog(false)}
+                                >
+                                  JELENTKEZÉS
+                                </span>
+                              </Link>
+                            </button>
                           </div>
                         </div>
                       </div>
