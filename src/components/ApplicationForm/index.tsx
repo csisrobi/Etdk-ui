@@ -231,6 +231,7 @@ const ApplicationForm = ({
     setValue: projectSetValue,
     getValues: projectGetValues,
     formState: { errors: projectErrors },
+    clearErrors: projectCleanErrors,
   } = useForm<Inputs>({
     defaultValues: {
       projects: !defaultValues
@@ -1000,8 +1001,12 @@ const ApplicationForm = ({
                   leave="transition duration-150 ease-out"
                   leaveFrom="transform scale-100 opacity-100"
                   leaveTo="transform scale-95 opacity-0"
+                  unmount={false}
                 >
-                  <Disclosure.Panel className="border-2 border-application3 p-2">
+                  <Disclosure.Panel
+                    className="border-2 border-application3 p-2"
+                    unmount={false}
+                  >
                     <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:w-[700px] md:p-6 ">
                       <p className="text-3xl text-darkcherry">
                         {index + 1}. Dolgozat:
@@ -1204,6 +1209,9 @@ const ApplicationForm = ({
                                         ...projectValues,
                                         advisors: projectAdvisors,
                                       });
+                                      projectCleanErrors(
+                                        `projects.${index}.advisors.${ai}`
+                                      );
                                     }}
                                   />
                                 )}
@@ -1227,8 +1235,9 @@ const ApplicationForm = ({
                                 leave="transition duration-150 ease-out"
                                 leaveFrom="transform scale-100 opacity-100"
                                 leaveTo="transform scale-95 opacity-0"
+                                unmount={false}
                               >
-                                <Disclosure.Panel>
+                                <Disclosure.Panel unmount={false}>
                                   <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:w-[700px] md:p-6 ">
                                     <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:pl-2">
                                       <Controller
@@ -1477,6 +1486,9 @@ const ApplicationForm = ({
                                       ...projectValues,
                                       companions: projectCompanions,
                                     });
+                                    projectCleanErrors(
+                                      `projects.${index}.companions.${ci}`
+                                    );
                                   }}
                                 />
 
@@ -1499,8 +1511,9 @@ const ApplicationForm = ({
                                 leave="transition duration-150 ease-out"
                                 leaveFrom="transform scale-100 opacity-100"
                                 leaveTo="transform scale-95 opacity-0"
+                                unmount={false}
                               >
-                                <Disclosure.Panel>
+                                <Disclosure.Panel unmount={false}>
                                   <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:w-[700px] md:p-6 ">
                                     <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:pl-2">
                                       <Controller
@@ -1843,7 +1856,7 @@ const ApplicationForm = ({
           className="cursor-pointer"
         />
         <p>
-          A <b>Mentés</b> gombra való kattintáshoz el kell fogadja a{" "}
+          A <b>Mentés</b> gombra való kattintáshoz el kell fogadd a{" "}
           <b
             className="cursor-pointer text-blue-600"
             onClick={() => setGdprDialog(true)}
@@ -1886,6 +1899,15 @@ const ApplicationForm = ({
         )}
         <p>Mentés</p>
       </button>
+      {(!!Object.keys(projectErrors).length ||
+        !!Object.keys(personErrors).length) && (
+        <div className="mt-4">
+          <p className="text-red-600">
+            Ellenőrizd, hogy minden adat bevan bevezetve.
+          </p>
+        </div>
+      )}
+
       <Snackbar message={notiMessage} open={notiMessage !== ""} />
       <Transition.Root show={confirmDialog} as={Fragment}>
         <Dialog
@@ -2030,7 +2052,7 @@ const ApplicationForm = ({
                     <p className="pl-5 font-black">{confirmationMessage}</p>
                   </div>
                   <p className="pl-5 text-center text-sm">
-                    Ezt jegyezze le, a kesőbbiekben ennek a segítségével tudja
+                    Ezt jegyezd le, a későbbiekben ennek a segítségével tudod
                     majd a feltöltőtt adatokat kiegészíteni.
                   </p>
                 </Dialog.Panel>
