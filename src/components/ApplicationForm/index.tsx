@@ -205,12 +205,17 @@ const ApplicationForm = ({
   const [notiMessage, setNotiMessage] = useState("");
   const [confirmationMessage, setConfirmationMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState(false);
+  const [gdprDialog, setGdprDialog] = useState(false);
+  const [gdprApproved, setGdprApproved] = useState(false);
+
   const {
     control: personFormControl,
     getValues: personGetValues,
     setValue: personSetValue,
     setError: personSetError,
     clearErrors: personClearErrors,
+    formState: { errors: personErrors },
   } = useForm<PersonInputs>({
     defaultValues: !defaultValues
       ? {
@@ -238,6 +243,7 @@ const ApplicationForm = ({
     handleSubmit,
     setValue: projectSetValue,
     getValues: projectGetValues,
+    formState: { errors: projectErrors },
   } = useForm<Inputs>({
     defaultValues: {
       projects: !defaultValues
@@ -545,7 +551,8 @@ const ApplicationForm = ({
             setTimeout(() => setNotiMessage(""), 3000);
           })
           .then(() => {
-            // setConfirmationMessage(password);
+            setLoading(false);
+            setConfirmationMessage(password);
           });
       } else {
         setNotiMessage("Ezen az emailen már regisztrálva van");
@@ -577,7 +584,7 @@ const ApplicationForm = ({
     });
     if (!error) {
       personClearErrors();
-      onSubmit();
+      setConfirmDialog(true);
     }
   };
 
@@ -667,7 +674,7 @@ const ApplicationForm = ({
   };
 
   return (
-    <div className="flex min-h-[100vh] min-w-full flex-col items-center space-y-4 bg-white pb-40 pt-[66px]">
+    <div className="flex min-h-[100vh] min-w-full flex-col items-center bg-white pb-40 pt-[66px]">
       <div className="w-full space-y-4 md:w-fit">
         <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:p-6 ">
           <p className="text-3xl text-darkcherry">Személyes adatok:</p>
@@ -1188,7 +1195,7 @@ const ApplicationForm = ({
                     </div>
                     {project.advisors.map((_advisor, ai) => (
                       <React.Fragment key={"companion" + ai}>
-                        <Disclosure defaultOpen>
+                        <Disclosure>
                           {({ open }) => (
                             <>
                               <Disclosure.Button className="my-4 flex w-full items-center rounded-xl bg-application1 py-2 px-4 ">
@@ -1462,7 +1469,7 @@ const ApplicationForm = ({
                     ))}
                     {(project.companions || []).map((_companion, ci) => (
                       <React.Fragment key={"companion" + ci}>
-                        <Disclosure defaultOpen>
+                        <Disclosure>
                           {({ open }) => (
                             <>
                               <Disclosure.Button className="my-4 flex w-full items-center rounded-xl bg-application1 py-2 px-4 ">
@@ -1840,36 +1847,175 @@ const ApplicationForm = ({
         >
           <p>Új dolgozat hozzáadása</p>
         </button>
-        <button
-          className="float-right flex h-10 items-center rounded-xl bg-lightcherry py-2 px-4 font-bold text-white"
-          onClick={() => submitData()}
-        >
-          {loading && (
-            <svg
-              className="mr-2 h-5 w-5 animate-spin text-white"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              ></circle>
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
-          )}
-          <p>Mentés</p>
-        </button>
       </div>
+      <div className="mt-16 mb-4 flex space-x-4">
+        <input
+          type="checkbox"
+          value={`${gdprApproved}`}
+          onChange={(e) => setGdprApproved(e.target.checked)}
+        />
+        <p>
+          A <b>Mentés</b> gombra való kattintáshoz el kell fogadja a{" "}
+          <b
+            className="cursor-pointer text-blue-600"
+            onClick={() => setGdprDialog(true)}
+          >
+            <u>feltételeket</u>
+          </b>
+          .
+        </p>
+      </div>
+      <button
+        className="flex h-10 w-40 items-center justify-center rounded-xl bg-lightcherry py-2 px-4 font-bold text-white disabled:cursor-not-allowed disabled:bg-gray-200"
+        onClick={() => submitData()}
+        disabled={
+          !!Object.keys(projectErrors).length ||
+          !!Object.keys(personErrors).length ||
+          !gdprApproved
+        }
+      >
+        {loading && (
+          <svg
+            className="mr-2 h-5 w-5 animate-spin text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        )}
+        <p>Mentés</p>
+      </button>
       <Snackbar message={notiMessage} open={notiMessage !== ""} />
+      <Transition.Root show={confirmDialog} as={Fragment}>
+        <Dialog
+          as="div"
+          className="relative z-10"
+          onClose={() => setConfirmDialog(false)}
+        >
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 z-10 overflow-y-auto">
+            <div className="relative flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                enterTo="opacity-100 translate-y-0 sm:scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              >
+                <Dialog.Panel className="relative flex transform flex-col items-center justify-center space-y-4 rounded-lg bg-white p-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                  <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div className="sm:flex sm:items-start">
+                      <p className="text-center text-2xl text-black">
+                        Biztos a kitöltött adatok helyességében?
+                      </p>
+                    </div>
+                  </div>
+                  <div className=" px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button
+                      type="button"
+                      className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                      onClick={() => setConfirmDialog(false)}
+                    >
+                      Bezárás
+                    </button>
+                    <button
+                      type="button"
+                      className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                      onClick={() => {
+                        setConfirmDialog(false);
+                        onSubmit();
+                      }}
+                    >
+                      Elfogadás
+                    </button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition.Root>
+      <Transition.Root show={gdprDialog} as={Fragment}>
+        <Dialog
+          as="div"
+          className="relative z-10"
+          onClose={() => setGdprDialog(false)}
+        >
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 z-10 overflow-y-auto">
+            <div className="relative flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                enterTo="opacity-100 translate-y-0 sm:scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              >
+                <Dialog.Panel className="relative flex transform flex-col items-center justify-center space-y-4 rounded-lg bg-white p-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                  <div>
+                    {/* TODO: SANITY */}
+                    <p>
+                      A négyzet bejelölésével hozzájárulok, hogy fotókat és
+                      videókat készítsenek rólam a Reál- és Humántudományi
+                      Erdélyi Tudományos Diákköri Konferencia teljes időtartama
+                      alatt.
+                    </p>
+                    <p>
+                      A négyzet bejelölésével hozzájárulok a megadott adataim a
+                      95/46/EK irányelv hatályon kívűl helyezéséről szóló
+                      Európai Parlament és Tanács (EU) 2016/679-es (GDPR-nak
+                      nevezett) általános adatvédelmi rendelete szerinti
+                      tárolásához és kezeléséhez és beleegyezem, hogy csakis
+                      ezen előírások betartásával kezeljék ezeket a Reál- és
+                      Humántudományi Erdélyi Tudományos Diákköri Konferencia
+                      megszervezése folyamán.
+                    </p>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition.Root>
       <Transition.Root show={confirmationMessage !== ""} as={Fragment}>
         <Dialog
           as="div"
@@ -1905,7 +2051,7 @@ const ApplicationForm = ({
                     <p className="text-xl">Sikeres jelentkezés</p>
                   </div>
                   <div className="flex">
-                    Jelszó:{" "}
+                    Jelszó:
                     <p className="pl-5 font-black">{confirmationMessage}</p>
                   </div>
                   <p className="pl-5 text-center text-sm">
