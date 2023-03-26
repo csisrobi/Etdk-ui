@@ -2,8 +2,8 @@ import { queryActiveSections } from "@lib/queries";
 import { getClient } from "@lib/sanity";
 import GetImage from "@utils/getImage";
 import type { GetServerSideProps } from "next";
-import type { SanityImage } from "types";
 import Image from "next/image";
+import { SanityImage } from "types";
 
 type SanitySectionPart = {
   image?: SanityImage;

@@ -84,7 +84,7 @@ const Header = () => {
                 className="cursor-pointer text-center text-2xl tracking-wide text-white"
                 key={index}
               >
-                <LinkWrapper href={`/${link.id}`}>
+                <LinkWrapper href={link.id ? `/${link.id}` : "#"}>
                   {link.title.toUpperCase()}
                 </LinkWrapper>
               </span>
@@ -131,7 +131,7 @@ const Header = () => {
                   leaveTo="translate-x-full"
                 >
                   <Dialog.Panel className="pointer-events-auto relative w-screen max-w-md">
-                    <div className="no-scrollbar flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl">
+                    <div className="flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl">
                       <div className="px-4 sm:px-6">
                         <Dialog.Title className="text-lightcherry-900 text-lg font-medium">
                           <div className="flex w-full items-center">
@@ -178,7 +178,9 @@ const Header = () => {
                                 key={index}
                                 onClick={() => setOpenMobileDialog(false)}
                               >
-                                <LinkWrapper href={`/${link.id}`}>
+                                <LinkWrapper
+                                  href={link.id ? `/${link.id}` : "#"}
+                                >
                                   {link.title.toUpperCase()}
                                 </LinkWrapper>
                               </span>

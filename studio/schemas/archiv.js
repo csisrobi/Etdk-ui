@@ -28,6 +28,9 @@ export default {
               name: "section",
               type: "reference",
               to: [{ type: "sections" }],
+              options: {
+                disableNew: true,
+              },
             },
             {
               title: "Díjazottak",
@@ -51,9 +54,6 @@ export default {
                   ],
                 },
               ],
-              options: {
-                disableNew: true,
-              },
             },
           ],
           preview: {

@@ -77,4 +77,69 @@ export type SanityArchiv = {
 export type SanitySponsor = Name & { image: SanityImage };
 export type SanityOrganizer = Name & { image: SanityImage };
 
-export type SelectOption = { name: string; value: string };
+export type SelectOption = { name: string; value: string | number };
+
+export type SubjectSanity = {
+  name: string;
+  _id: string;
+};
+
+export type FacultySanity = {
+  name: string;
+  subjects?: SubjectSanity[];
+  _id: string;
+};
+
+export type UniversitiesSanity = {
+  name: string;
+  faculties?: FacultySanity[];
+  _id: string;
+};
+
+export type SectionsSanity = {
+  name: string;
+  image?: SanityImage;
+  _id: string;
+  contributionNeeded: boolean;
+};
+
+export type SanityParticipant = {
+  _id: string;
+
+  name: string;
+  email: string;
+  mobileNumber: string;
+  birthDate: string;
+  socialNumber: string;
+  degree: string;
+  class: string;
+  university: string;
+  faculty: string;
+  subject: string;
+
+  advisorName: string;
+  advisorEmail: string;
+  advisorMobileNumber: string;
+  advisorTitle: string;
+  advisorUniversity: string;
+  advisorFaculty: string;
+  advisorSubject: string;
+  advisorCertificate: {
+    originalFilename: string;
+    url: string;
+  };
+
+  title: string;
+  extract: {
+    originalFilename: string;
+    url: string;
+  };
+  section: string;
+
+  score: {
+    criteria: { name: string; _id: string };
+    score: number;
+  }[];
+
+  accepted: boolean;
+};

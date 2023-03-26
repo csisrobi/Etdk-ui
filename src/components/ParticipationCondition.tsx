@@ -18,7 +18,7 @@ const ParticipationCondition = ({
     },
   ];
   return (
-    <div className="relative flex min-h-[calc(100vh-71px)] flex-col bg-gray px-8 pt-14">
+    <div className="bg-grayCustom relative flex min-h-[calc(100vh-71px)] w-full flex-col px-8 pt-14">
       <div id="altalanos_tudnivalok" className="absolute -top-[70px]" />
       <div className="flex w-full justify-center">
         <span className="text-center text-3xl text-white sm:text-6xl lg:text-8xl">
@@ -47,7 +47,7 @@ const ParticipationCondition = ({
               </LinkWrapper>
             ))}
           </div>
-          <div className="relative mt-10 h-[60vw] w-[82vw] sm:h-[25vw] sm:w-[40vw] lg:h-[35vh] lg:w-[50vh]">
+          <div className="relative mt-10 h-[60vw] w-[82vw] sm:h-[25vw] sm:w-[40vw] lg:aspect-auto lg:max-h-[380px] lg:w-[35vw] lg:max-w-[530px]">
             <Image src="/illusztracio2.png" alt="illusztracio" fill />
           </div>
         </div>

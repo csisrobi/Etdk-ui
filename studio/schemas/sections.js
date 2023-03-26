@@ -31,5 +31,26 @@ export default {
       type: "array",
       of: [{ type: "block" }],
     },
+    {
+      title: "Hozzájárulási nyilatkozat szükséges",
+      name: "contributionNeeded",
+      type: "boolean",
+    },
+    {
+      title: "Pontozási kritériumok",
+      name: "criteria",
+      type: "array",
+      of: [
+        {
+          title: "Pontozási kritériumok",
+          type: "reference",
+          to: [{ type: "criteria" }],
+          options: {
+            disableNew: true,
+          },
+        },
+      ],
+      validation: (Rule) => Rule.unique(),
+    },
   ],
 };
