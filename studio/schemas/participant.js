@@ -220,34 +220,6 @@ export default {
               type: "string",
             },
             {
-              title: "Kar",
-              name: "faculty",
-              type: "reference",
-              to: [{ type: "faculties" }],
-              options: {
-                disableNew: true,
-              },
-            },
-            {
-              title: "Egyéb Kar",
-              name: "facultyOther",
-              type: "string",
-            },
-            {
-              title: "Szak",
-              name: "subject",
-              type: "reference",
-              to: [{ type: "subjects" }],
-              options: {
-                disableNew: true,
-              },
-            },
-            {
-              title: "Egyéb Szak",
-              name: "subjectOther",
-              type: "string",
-            },
-            {
               title: "Titulus",
               name: "title",
               type: "string",

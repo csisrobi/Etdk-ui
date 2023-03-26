@@ -129,11 +129,7 @@ export type AdvisorInputs = {
   mobileNumber: string;
   title: string;
   university: string;
-  faculty: string;
-  subject: string;
   universityOther?: string;
-  facultyOther?: string;
-  subjectOther?: string;
   certificate: File | null | string;
 };
 export type PersonInputs = {
@@ -246,11 +242,7 @@ const ApplicationForm = ({
                   mobileNumber: "",
                   title: "",
                   university: "",
-                  faculty: "",
-                  subject: "",
                   universityOther: undefined,
-                  facultyOther: undefined,
-                  subjectOther: undefined,
                   certificate: null,
                 },
               ],
@@ -290,22 +282,6 @@ const ApplicationForm = ({
             university: {
               _type: "reference",
               _ref: advisorData.university,
-            },
-          }),
-      ...(advisorData.facultyOther
-        ? { facultyOther: advisorData.facultyOther }
-        : {
-            faculty: {
-              _type: "reference",
-              _ref: advisorData.faculty,
-            },
-          }),
-      ...(advisorData.subjectOther
-        ? { subjectOther: advisorData.subjectOther }
-        : {
-            subject: {
-              _type: "reference",
-              _ref: advisorData.subject,
             },
           }),
       title: advisorData.title,
@@ -577,11 +553,7 @@ const ApplicationForm = ({
                     mobileNumber: "",
                     title: "",
                     university: "",
-                    faculty: "",
-                    subject: "",
                     universityOther: undefined,
-                    facultyOther: undefined,
-                    subjectOther: undefined,
                     certificate: null,
                   },
                 ],
@@ -1258,10 +1230,6 @@ const ApplicationForm = ({
                                           value: string | undefined
                                         ) => {
                                           projectSetValue(
-                                            `projects.${index}.advisors.${ai}.faculty`,
-                                            ""
-                                          );
-                                          projectSetValue(
                                             `projects.${index}.advisors.${ai}.universityOther`,
                                             value
                                           );
@@ -1275,58 +1243,6 @@ const ApplicationForm = ({
                                         dependencyName={`projects.${index}.advisors.${ai}.university`}
                                         fieldName={`projects.${index}.advisors.${ai}.universityOther`}
                                         placeholder="Egyéb egyetem"
-                                      />
-                                      <FacultyField
-                                        fieldName={`projects.${index}.advisors.${ai}.faculty`}
-                                        dependencyName={`projects.${index}.advisors.${ai}.university`}
-                                        control={projectsControl}
-                                        text="text-white"
-                                        bg="bg-application2"
-                                        setAdditional={(
-                                          value: string | undefined
-                                        ) => {
-                                          projectSetValue(
-                                            `projects.${index}.advisors.${ai}.subject`,
-                                            ""
-                                          );
-                                          projectSetValue(
-                                            `projects.${index}.advisors.${ai}.facultyOther`,
-                                            value
-                                          );
-                                        }}
-                                        universities={universities}
-                                      />
-                                      <OtherField
-                                        control={projectsControl}
-                                        text="text-white"
-                                        bg="bg-application2"
-                                        dependencyName={`projects.${index}.advisors.${ai}.faculty`}
-                                        fieldName={`projects.${index}.advisors.${ai}.facultyOther`}
-                                        placeholder="Egyéb kar"
-                                      />
-                                      <SubjectField
-                                        fieldName={`projects.${index}.advisors.${ai}.subject`}
-                                        dependencyName={`projects.${index}.advisors.${ai}.faculty`}
-                                        control={projectsControl}
-                                        text="text-white"
-                                        bg="bg-application2"
-                                        setAdditional={(
-                                          value: string | undefined
-                                        ) =>
-                                          projectSetValue(
-                                            `projects.${index}.advisors.${ai}.subjectOther`,
-                                            value
-                                          )
-                                        }
-                                        faculties={faculties}
-                                      />
-                                      <OtherField
-                                        control={projectsControl}
-                                        text="text-white"
-                                        bg="bg-application2"
-                                        dependencyName={`projects.${index}.advisors.${ai}.subject`}
-                                        fieldName={`projects.${index}.advisors.${ai}.subjectOther`}
-                                        placeholder="Egyéb szak"
                                       />
                                       <Controller
                                         name={`projects.${index}.advisors.${ai}.title`}
@@ -1859,11 +1775,7 @@ const ApplicationForm = ({
                   mobileNumber: "",
                   title: "",
                   university: "",
-                  faculty: "",
-                  subject: "",
                   universityOther: undefined,
-                  facultyOther: undefined,
-                  subjectOther: undefined,
                   certificate: null,
                 },
               ],
