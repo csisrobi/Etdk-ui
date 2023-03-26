@@ -6,9 +6,11 @@ import {
 } from "@heroicons/react/20/solid";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { fetcher } from "@lib/queries";
+import { getClient } from "@lib/sanity";
 import RichText from "@utils/RichText";
 import classNames from "classnames";
 import { nanoid } from "nanoid";
+import { useRouter } from "next/router";
 import React, { Fragment, useCallback, useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import Select from "src/components/FormComponents/Select";
@@ -188,8 +190,9 @@ const ApplicationForm = ({
   };
   gdpr?: SanityRichText[];
 }) => {
+  const router = useRouter();
   const [notiMessage, setNotiMessage] = useState("");
-  const [confirmationMessage, setConfirmationMessage] = useState("");
+  const [confirmationMessage, setConfirmationMessage] = useState("asd");
   const [loading, setLoading] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState(false);
   const [gdprDialog, setGdprDialog] = useState(false);
@@ -270,18 +273,11 @@ const ApplicationForm = ({
   });
 
   const mapAdvisorData = useCallback(async (advisorData: AdvisorInputs) => {
-    const formData = new FormData();
-    formData.append("file", advisorData.certificate || "");
-    formData.append(
-      "name",
-      advisorData.certificate && typeof advisorData.certificate === "object"
-        ? advisorData.certificate.name
-        : ""
-    );
-
     const certificateData =
       advisorData.certificate && typeof advisorData.certificate === "object"
-        ? await fetcher(`/participants/upload/file`, formData, true)
+        ? await getClient().assets.upload("file", advisorData.certificate, {
+            filename: advisorData.certificate.name,
+          })
         : null;
     return {
       _key: nanoid(),
@@ -319,7 +315,7 @@ const ApplicationForm = ({
         certificate: {
           _type: "file",
           asset: {
-            _ref: certificateData,
+            _ref: certificateData._id,
             _type: "reference",
           },
         },
@@ -329,18 +325,11 @@ const ApplicationForm = ({
 
   const mapCompanionsData = useCallback(
     async (participantData: PersonInputs) => {
-      const formData = new FormData();
-      formData.append("file", participantData.idPhoto || "");
-      formData.append(
-        "name",
-        participantData.idPhoto && typeof participantData.idPhoto === "object"
-          ? participantData.idPhoto.name
-          : ""
-      );
-
       const idPhotoData =
         participantData.idPhoto && typeof participantData.idPhoto === "object"
-          ? await fetcher(`/participants/upload/file`, formData, true)
+          ? await getClient().assets.upload("file", participantData.idPhoto, {
+              filename: participantData.idPhoto.name,
+            })
           : null;
       return {
         _key: nanoid(),
@@ -380,7 +369,7 @@ const ApplicationForm = ({
           idPhoto: {
             _type: "file",
             asset: {
-              _ref: idPhotoData,
+              _ref: idPhotoData._id,
               _type: "reference",
             },
           },
@@ -402,32 +391,20 @@ const ApplicationForm = ({
       );
       if (Array.isArray(checkEmail) && !checkEmail.length) {
         const password = Math.random().toString(36).slice(-8);
-        const formData = new FormData();
-        formData.append("file", participantData.idPhoto || "");
-        formData.append(
-          "name",
-          participantData.idPhoto && typeof participantData.idPhoto === "object"
-            ? participantData.idPhoto.name
-            : ""
-        );
         const idPhotoData =
           participantData.idPhoto && typeof participantData.idPhoto === "object"
-            ? await fetcher(`/participants/upload/file`, formData, true)
+            ? await getClient().assets.upload("file", participantData.idPhoto, {
+                filename: participantData.idPhoto.name,
+              })
             : null;
         Promise.all(
           data.projects.map(async (project, index) => {
             if (project.extract && typeof project.extract === "object") {
-              const formData = new FormData();
-              formData.append("file", project.extract || "");
-              formData.append(
-                "name",
-                project.extract && typeof project.extract === "object"
-                  ? project.extract.name
-                  : ""
-              );
               const extractData =
                 project.extract && typeof project.extract === "object"
-                  ? await fetcher(`/participants/upload/file`, formData, true)
+                  ? await getClient().assets.upload("file", project.extract, {
+                      filename: project.extract.name,
+                    })
                   : null;
               const advisors = await Promise.all(
                 project.advisors.map(
@@ -480,7 +457,7 @@ const ApplicationForm = ({
                       idPhoto: {
                         _type: "file",
                         asset: {
-                          _ref: idPhotoData,
+                          _ref: idPhotoData._id,
                           _type: "reference",
                         },
                       },
@@ -488,13 +465,15 @@ const ApplicationForm = ({
                     advisors: advisors,
                     companions: companions,
                     title: project.title,
-                    extract: {
-                      _type: "file",
-                      asset: {
-                        _ref: extractData,
-                        _type: "reference",
+                    ...(extractData && {
+                      extract: {
+                        _type: "file",
+                        asset: {
+                          _ref: extractData._id,
+                          _type: "reference",
+                        },
                       },
-                    },
+                    }),
                     section: {
                       _type: "reference",
                       _ref: project.section,
@@ -2069,7 +2048,10 @@ const ApplicationForm = ({
         <Dialog
           as="div"
           className="relative z-10"
-          onClose={() => setConfirmationMessage("")}
+          onClose={() => {
+            setConfirmationMessage("");
+            router.push("/");
+          }}
         >
           <Transition.Child
             as={Fragment}
@@ -2095,18 +2077,32 @@ const ApplicationForm = ({
                 leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
               >
                 <Dialog.Panel className="relative flex transform flex-col items-center justify-center space-y-4 rounded-lg bg-white p-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                  <div className="flex items-center">
-                    <CheckBadgeIcon className="h-12 w-12 text-green-300" />
-                    <p className="text-xl">Sikeres jelentkezés</p>
+                  <div className="flex flex-col items-center">
+                    <div className="flex items-center">
+                      <CheckBadgeIcon className="h-12 w-12 text-green-300" />
+                      <p className="text-xl">Sikeres jelentkezés</p>
+                    </div>
+                    <div className="flex">
+                      Jelszó:
+                      <p className="pl-5 font-black">{confirmationMessage}</p>
+                    </div>
+                    <p className="pl-5 text-center text-sm">
+                      Ezt jegyezd le, a későbbiekben ennek a segítségével tudod
+                      majd a feltöltőtt adatokat kiegészíteni.
+                    </p>
                   </div>
-                  <div className="flex">
-                    Jelszó:
-                    <p className="pl-5 font-black">{confirmationMessage}</p>
+                  <div className="flex w-full justify-end">
+                    <button
+                      type="button"
+                      className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                      onClick={() => {
+                        setConfirmationMessage("");
+                        router.push("/");
+                      }}
+                    >
+                      Bezárás
+                    </button>
                   </div>
-                  <p className="pl-5 text-center text-sm">
-                    Ezt jegyezd le, a későbbiekben ennek a segítségével tudod
-                    majd a feltöltőtt adatokat kiegészíteni.
-                  </p>
                 </Dialog.Panel>
               </Transition.Child>
             </div>
