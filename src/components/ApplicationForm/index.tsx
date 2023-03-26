@@ -1472,7 +1472,7 @@ const ApplicationForm = ({
                                                     ? value.name
                                                     : typeof value === "string"
                                                     ? value
-                                                    : "Igazolás"}
+                                                    : "Témavezetői igazolás"}
                                                 </div>
                                               </div>
                                               <input
