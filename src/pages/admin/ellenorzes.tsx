@@ -39,7 +39,8 @@ const headers = {
 const EllenorzoFelulet = () => {
   const { data: allParticipantData, isLoading } = useSWR<SanityParticipant[]>(
     "/participants_data",
-    async () => await fetcher(`/participants`)
+    async () =>
+      await fetcher(`/participants`).then((r) => (Array.isArray(r) ? r : []))
   );
 
   const columns = useMemo<MRT_ColumnDef<SanityParticipant>[]>(
