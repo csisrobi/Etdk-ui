@@ -6,7 +6,6 @@ import {
 } from "@heroicons/react/20/solid";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { fetcher } from "@lib/queries";
-import { getClient } from "@lib/sanity";
 import RichText from "@utils/RichText";
 import classNames from "classnames";
 import { nanoid } from "nanoid";
@@ -393,155 +392,146 @@ const ApplicationForm = ({
 
   const onSubmit = React.useMemo(() => {
     return handleSubmit(async (data) => {
+      setLoading(true);
       const participantData = personGetValues();
-      console.log(participantData.idPhoto);
-      const idPhotoData =
-        participantData.idPhoto && typeof participantData.idPhoto === "object"
-          ? await getClient().assets.upload("file", participantData.idPhoto, {
-              filename: participantData.idPhoto.name,
-            })
-          : null;
-      console.log(idPhotoData);
-      // setLoading(true);
-      // const participantData = personGetValues();
-      // const checkEmail = await fetcher(
-      //   `/participants/check`,
-      //   JSON.stringify({
-      //     email: participantData.email,
-      //   })
-      // );
-      // if (Array.isArray(checkEmail) && !checkEmail.length) {
-      //   const password = Math.random().toString(36).slice(-8);
-      //   const formData = new FormData();
-      //   formData.append("file", participantData.idPhoto || "");
-      //   formData.append(
-      //     "name",
-      //     participantData.idPhoto && typeof participantData.idPhoto === "object"
-      //       ? participantData.idPhoto.name
-      //       : ""
-      //   );
-      //   const idPhotoData =
-      //     participantData.idPhoto && typeof participantData.idPhoto === "object"
-      //       ? await fetcher(`/participants/upload/file`, formData, true)
-      //       : null;
-      //   Promise.all(
-      //     data.projects.map(async (project, index) => {
-      //       if (project.extract && typeof project.extract === "object") {
-      //         const formData = new FormData();
-      //         formData.append("file", project.extract || "");
-      //         formData.append(
-      //           "name",
-      //           project.extract && typeof project.extract === "object"
-      //             ? project.extract.name
-      //             : ""
-      //         );
-      //         const extractData =
-      //           project.extract && typeof project.extract === "object"
-      //             ? await fetcher(`/participants/upload/file`, formData, true)
-      //             : null;
-      //         const advisors = await Promise.all(
-      //           project.advisors.map(
-      //             async (advisor) => await mapAdvisorData(advisor)
-      //           )
-      //         ).then((advisors) => advisors);
-      //         const companions = await Promise.all(
-      //           (project.companions || []).map(
-      //             async (companion) => await mapCompanionsData(companion)
-      //           )
-      //         ).then((companions) => companions);
-      //         const mutations = [
-      //           {
-      //             create: {
-      //               _type: "participants",
-      //               name: participantData.name,
-      //               idNumber: participantData.idNumber,
-      //               ...(participantData.universityOther
-      //                 ? {
-      //                     universityOther: participantData.universityOther,
-      //                   }
-      //                 : {
-      //                     university: {
-      //                       _type: "reference",
-      //                       _ref: participantData.university,
-      //                     },
-      //                   }),
-      //               ...(participantData.facultyOther
-      //                 ? { facultyOther: participantData.facultyOther }
-      //                 : {
-      //                     faculty: {
-      //                       _type: "reference",
-      //                       _ref: participantData.faculty,
-      //                     },
-      //                   }),
-      //               ...(participantData.subjectOther
-      //                 ? { subjectOther: participantData.subjectOther }
-      //                 : {
-      //                     subject: {
-      //                       _type: "reference",
-      //                       _ref: participantData.subject,
-      //                     },
-      //                   }),
-      //               degree: participantData.degree,
-      //               class: participantData.class,
-      //               finishedSemester: participantData.finishedSemester,
-      //               email: participantData.email,
-      //               mobileNumber: participantData.mobileNumber,
-      //               ...(idPhotoData && {
-      //                 idPhoto: {
-      //                   _type: "file",
-      //                   asset: {
-      //                     _ref: idPhotoData,
-      //                     _type: "reference",
-      //                   },
-      //                 },
-      //               }),
-      //               advisors: advisors,
-      //               companions: companions,
-      //               title: project.title,
-      //               extract: {
-      //                 _type: "file",
-      //                 asset: {
-      //                   _ref: extractData,
-      //                   _type: "reference",
-      //                 },
-      //               },
-      //               section: {
-      //                 _type: "reference",
-      //                 _ref: project.section,
-      //               },
-      //               accepted: false,
-      //               password: password,
-      //             },
-      //           },
-      //           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      //         ] as any;
-      //         return await fetcher(
-      //           `/participants/upload/mutations`,
-      //           JSON.stringify(mutations)
-      //         ).then((r) => {
-      //           if (r.hasOwnProperty("error")) {
-      //             throw Error(
-      //               `${index + 1} projekt feltöltése közben hiba történt`
-      //             );
-      //           }
-      //         });
-      //       }
-      //     })
-      //   )
-      //     .then(() => {
-      //       setLoading(false);
-      //       setConfirmationMessage(password);
-      //     })
-      //     .catch((e) => {
-      //       setNotiMessage(e.message);
-      //       setLoading(false);
-      //       setTimeout(() => setNotiMessage(""), 3000);
-      //     });
-      // } else {
-      //   setNotiMessage("Ezen az emailen már regisztrálva van");
-      //   setLoading(false);
-      //   setTimeout(() => setNotiMessage(""), 3000);
-      // }
+      const checkEmail = await fetcher(
+        `/participants/check`,
+        JSON.stringify({
+          email: participantData.email,
+        })
+      );
+      if (Array.isArray(checkEmail) && !checkEmail.length) {
+        const password = Math.random().toString(36).slice(-8);
+        const formData = new FormData();
+        formData.append("file", participantData.idPhoto || "");
+        formData.append(
+          "name",
+          participantData.idPhoto && typeof participantData.idPhoto === "object"
+            ? participantData.idPhoto.name
+            : ""
+        );
+        const idPhotoData =
+          participantData.idPhoto && typeof participantData.idPhoto === "object"
+            ? await fetcher(`/participants/upload/file`, formData, true)
+            : null;
+        Promise.all(
+          data.projects.map(async (project, index) => {
+            if (project.extract && typeof project.extract === "object") {
+              const formData = new FormData();
+              formData.append("file", project.extract || "");
+              formData.append(
+                "name",
+                project.extract && typeof project.extract === "object"
+                  ? project.extract.name
+                  : ""
+              );
+              const extractData =
+                project.extract && typeof project.extract === "object"
+                  ? await fetcher(`/participants/upload/file`, formData, true)
+                  : null;
+              const advisors = await Promise.all(
+                project.advisors.map(
+                  async (advisor) => await mapAdvisorData(advisor)
+                )
+              ).then((advisors) => advisors);
+              const companions = await Promise.all(
+                (project.companions || []).map(
+                  async (companion) => await mapCompanionsData(companion)
+                )
+              ).then((companions) => companions);
+              const mutations = [
+                {
+                  create: {
+                    _type: "participants",
+                    name: participantData.name,
+                    idNumber: participantData.idNumber,
+                    ...(participantData.universityOther
+                      ? {
+                          universityOther: participantData.universityOther,
+                        }
+                      : {
+                          university: {
+                            _type: "reference",
+                            _ref: participantData.university,
+                          },
+                        }),
+                    ...(participantData.facultyOther
+                      ? { facultyOther: participantData.facultyOther }
+                      : {
+                          faculty: {
+                            _type: "reference",
+                            _ref: participantData.faculty,
+                          },
+                        }),
+                    ...(participantData.subjectOther
+                      ? { subjectOther: participantData.subjectOther }
+                      : {
+                          subject: {
+                            _type: "reference",
+                            _ref: participantData.subject,
+                          },
+                        }),
+                    degree: participantData.degree,
+                    class: participantData.class,
+                    finishedSemester: participantData.finishedSemester,
+                    email: participantData.email,
+                    mobileNumber: participantData.mobileNumber,
+                    ...(idPhotoData && {
+                      idPhoto: {
+                        _type: "file",
+                        asset: {
+                          _ref: idPhotoData,
+                          _type: "reference",
+                        },
+                      },
+                    }),
+                    advisors: advisors,
+                    companions: companions,
+                    title: project.title,
+                    extract: {
+                      _type: "file",
+                      asset: {
+                        _ref: extractData,
+                        _type: "reference",
+                      },
+                    },
+                    section: {
+                      _type: "reference",
+                      _ref: project.section,
+                    },
+                    accepted: false,
+                    password: password,
+                  },
+                },
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              ] as any;
+              return await fetcher(
+                `/participants/upload/mutations`,
+                JSON.stringify(mutations)
+              ).then((r) => {
+                if (r.hasOwnProperty("error")) {
+                  throw Error(
+                    `${index + 1} projekt feltöltése közben hiba történt`
+                  );
+                }
+              });
+            }
+          })
+        )
+          .then(() => {
+            setLoading(false);
+            setConfirmationMessage(password);
+          })
+          .catch((e) => {
+            setNotiMessage(e.message);
+            setLoading(false);
+            setTimeout(() => setNotiMessage(""), 3000);
+          });
+      } else {
+        setNotiMessage("Ezen az emailen már regisztrálva van");
+        setLoading(false);
+        setTimeout(() => setNotiMessage(""), 3000);
+      }
     });
   }, [handleSubmit, personGetValues, mapAdvisorData, mapCompanionsData]);
 
