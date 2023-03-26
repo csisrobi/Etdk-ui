@@ -855,7 +855,7 @@ const ApplicationForm = ({
                       className={classNames(
                         inputClasses,
                         error ? "ring ring-red-700" : "",
-                        "flex max-w-[328px] cursor-pointer items-center bg-application1 pl-4  text-darkcherry placeholder:text-darkcherry"
+                        "flex cursor-pointer items-center bg-application1 pl-4  text-darkcherry placeholder:text-darkcherry"
                       )}
                     >
                       <div className="overflow-hidden truncate opacity-80">
@@ -1765,7 +1765,7 @@ const ApplicationForm = ({
         ))}
 
         <button
-          className="rounded-xl bg-gray-900 py-2 px-4 text-white md:mr-6"
+          className="ml-3 rounded-xl bg-gray-900 py-2 px-4 text-white md:mr-6"
           onClick={() =>
             append({
               advisors: [
@@ -1791,7 +1791,7 @@ const ApplicationForm = ({
           <p>Új dolgozat hozzáadása</p>
         </button>
       </div>
-      <div className="mt-16 mb-4 flex space-x-4">
+      <div className="mt-16 mb-4 flex space-x-4 p-4 md:p-0">
         <input
           type="checkbox"
           value={`${gdprApproved}`}
