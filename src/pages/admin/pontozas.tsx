@@ -38,7 +38,7 @@ const AdminPontozoFelulet = ({ sections }: { sections: Section[] }) => {
     async () =>
       await fetcher(`/sections/participants`, {
         id: sections[tabValue]?._id || "",
-      })
+      }).then((r) => (Array.isArray(r) ? r : []))
   );
 
   const sectionsOptions = useMemo(
