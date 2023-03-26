@@ -76,6 +76,7 @@ export default function Select({
                   <ChevronDownIcon
                     className={`h-5 w-5 ${text}`}
                     aria-hidden="true"
+                    onClick={() => setQuery("")}
                   />
                 </Combobox.Button>
               )}
