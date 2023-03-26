@@ -11,6 +11,9 @@ import archiv from "./archiv";
 import faculty from "./faculty";
 import university from "./university";
 import subject from "./subject";
+import participant from "./participant";
+import criteria from "./criteria";
+import admin from "./admin";
 import singletonDocumentsGeneral from "./singletonDocumentsGeneral";
 
 export default createSchema({
@@ -28,5 +31,8 @@ export default createSchema({
     subject,
     faculty,
     university,
+    participant,
+    criteria,
+    admin,
   ]),
 });

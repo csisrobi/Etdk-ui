@@ -2,9 +2,9 @@ import { queryArhivDetails } from "@lib/queries";
 import { getClient } from "@lib/sanity";
 import GetImage from "@utils/getImage";
 import type { GetServerSideProps } from "next";
-import type { SanityArchiv } from "types";
 import Image from "next/image";
 import Link from "next/link";
+import type { SanityArchiv } from "types";
 
 const Archivum = ({ archivData }: { archivData: SanityArchiv }) => {
   const imageSettings = GetImage(archivData.book_image);
@@ -54,7 +54,7 @@ const Archivum = ({ archivData }: { archivData: SanityArchiv }) => {
                         <td>
                           <span
                             key={winnerPerson.name}
-                            className="whitespace-pre-wrap text-lg text-gray md:text-xl"
+                            className="text-gray whitespace-pre-wrap text-lg md:text-xl"
                           >
                             {winnerPerson.name.split(",").join(",\n")}
                           </span>
@@ -62,7 +62,7 @@ const Archivum = ({ archivData }: { archivData: SanityArchiv }) => {
                         <td>
                           <span
                             key={winnerPerson.name}
-                            className="text-lg text-gray md:text-xl"
+                            className="text-gray text-lg md:text-xl"
                           >
                             {winnerPerson.result}
                           </span>

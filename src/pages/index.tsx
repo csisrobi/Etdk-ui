@@ -1,11 +1,11 @@
 import {
-  queryNews,
   queryApplicate,
+  queryArchivsBasic,
   queryContact,
   queryGeneral,
+  queryNews,
   queryOrg,
   querySponsor,
-  queryArchivsBasic,
 } from "@lib/queries";
 import { getClient } from "@lib/sanity";
 import { type NextPage } from "next";
@@ -68,7 +68,9 @@ const Home: NextPage<Props> = ({
         small_benefit={applicate.small_benefit}
         big_benefit={applicate.big_benefit}
       />
-      <ParticipationCondition />
+      <ParticipationCondition
+        generalApplicationRules={general.generalApplicationRules}
+      />
       <Year />
       <NewsArchiv news={news} archivs={archivs} />
       <SponsorsOrg sponsors={sponsors} organizers={organizers} />
@@ -93,6 +95,7 @@ export async function getStaticProps({ preview = false }) {
   const applicate = await getClient(preview).fetch(queryApplicate);
   const news = await getClient(preview).fetch(queryNews);
   const archivs = await getClient(preview).fetch(queryArchivsBasic);
+
   return {
     props: {
       contact: contacts[0],
