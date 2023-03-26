@@ -25,7 +25,6 @@ import { OtherField } from "./OtherField";
 import { SubjectField } from "./SubjectField";
 import { UniversityField } from "./UniversityField";
 
-//TODO: ERROR HANDLING
 const degreeOptions = [
   {
     name: "BA (alapképzés)",
@@ -401,9 +400,8 @@ const ApplicationForm = ({
           email: participantData.email,
         })
       );
-      if (!checkEmail.length) {
+      if (Array.isArray(checkEmail) && !checkEmail.length) {
         const password = Math.random().toString(36).slice(-8);
-
         const formData = new FormData();
         formData.append("file", participantData.idPhoto || "");
         formData.append(
@@ -412,12 +410,10 @@ const ApplicationForm = ({
             ? participantData.idPhoto.name
             : ""
         );
-
         const idPhotoData =
           participantData.idPhoto && typeof participantData.idPhoto === "object"
             ? await fetcher(`/participants/upload/file`, formData, true)
             : null;
-
         Promise.all(
           data.projects.map(async (project, index) => {
             if (project.extract && typeof project.extract === "object") {
@@ -429,118 +425,107 @@ const ApplicationForm = ({
                   ? project.extract.name
                   : ""
               );
-
               const extractData =
                 project.extract && typeof project.extract === "object"
                   ? await fetcher(`/participants/upload/file`, formData, true)
                   : null;
-              Promise.all(
+              const advisors = await Promise.all(
                 project.advisors.map(
                   async (advisor) => await mapAdvisorData(advisor)
                 )
-              ).then((advisors) => {
-                Promise.all(
-                  (project.companions || []).map(
-                    async (companion) => await mapCompanionsData(companion)
-                  )
-                ).then(async (companions) => {
-                  const mutations = [
-                    {
-                      create: {
-                        _type: "participants",
-                        name: participantData.name,
-                        idNumber: participantData.idNumber,
-                        ...(participantData.universityOther
-                          ? {
-                              universityOther: participantData.universityOther,
-                            }
-                          : {
-                              university: {
-                                _type: "reference",
-                                _ref: participantData.university,
-                              },
-                            }),
-
-                        ...(participantData.facultyOther
-                          ? { facultyOther: participantData.facultyOther }
-                          : {
-                              faculty: {
-                                _type: "reference",
-                                _ref: participantData.faculty,
-                              },
-                            }),
-                        ...(participantData.subjectOther
-                          ? { subjectOther: participantData.subjectOther }
-                          : {
-                              subject: {
-                                _type: "reference",
-                                _ref: participantData.subject,
-                              },
-                            }),
-                        degree: participantData.degree,
-                        class: participantData.class,
-                        finishedSemester: participantData.finishedSemester,
-                        email: participantData.email,
-                        mobileNumber: participantData.mobileNumber,
-                        ...(idPhotoData && {
-                          idPhoto: {
-                            _type: "file",
-                            asset: {
-                              _ref: idPhotoData,
-                              _type: "reference",
-                            },
+              ).then((advisors) => advisors);
+              const companions = await Promise.all(
+                (project.companions || []).map(
+                  async (companion) => await mapCompanionsData(companion)
+                )
+              ).then((companions) => companions);
+              const mutations = [
+                {
+                  create: {
+                    _type: "participants",
+                    name: participantData.name,
+                    idNumber: participantData.idNumber,
+                    ...(participantData.universityOther
+                      ? {
+                          universityOther: participantData.universityOther,
+                        }
+                      : {
+                          university: {
+                            _type: "reference",
+                            _ref: participantData.university,
                           },
                         }),
-
-                        advisors: advisors,
-
-                        companions: companions,
-
-                        title: project.title,
-                        extract: {
-                          _type: "file",
-                          asset: {
-                            _ref: extractData,
+                    ...(participantData.facultyOther
+                      ? { facultyOther: participantData.facultyOther }
+                      : {
+                          faculty: {
                             _type: "reference",
+                            _ref: participantData.faculty,
                           },
-                        },
-                        section: {
+                        }),
+                    ...(participantData.subjectOther
+                      ? { subjectOther: participantData.subjectOther }
+                      : {
+                          subject: {
+                            _type: "reference",
+                            _ref: participantData.subject,
+                          },
+                        }),
+                    degree: participantData.degree,
+                    class: participantData.class,
+                    finishedSemester: participantData.finishedSemester,
+                    email: participantData.email,
+                    mobileNumber: participantData.mobileNumber,
+                    ...(idPhotoData && {
+                      idPhoto: {
+                        _type: "file",
+                        asset: {
+                          _ref: idPhotoData,
                           _type: "reference",
-                          _ref: project.section,
                         },
-                        accepted: false,
-                        password: password,
+                      },
+                    }),
+                    advisors: advisors,
+                    companions: companions,
+                    title: project.title,
+                    extract: {
+                      _type: "file",
+                      asset: {
+                        _ref: extractData,
+                        _type: "reference",
                       },
                     },
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  ] as any;
-                  return await fetcher(
-                    `/participants/upload/mutations`,
-                    JSON.stringify(mutations)
-                  ).catch(() => {
-                    setNotiMessage(
-                      `${
-                        index + 1
-                      } projekt: Ellenőrizd, hogy minden adat helyesen volt bevezetve.`
-                    );
-                    setLoading(false);
-                    setTimeout(() => setNotiMessage(""), 3000);
-                  });
-                });
+                    section: {
+                      _type: "reference",
+                      _ref: project.section,
+                    },
+                    accepted: false,
+                    password: password,
+                  },
+                },
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              ] as any;
+              return await fetcher(
+                `/participants/upload/mutations`,
+                JSON.stringify(mutations)
+              ).then((r) => {
+                if (r.hasOwnProperty("error")) {
+                  throw Error(
+                    `${index + 1} projekt feltöltése közben hiba történt`
+                  );
+                }
               });
             }
           })
         )
-          .catch(() => {
-            setNotiMessage(
-              `Ellenőrizd, hogy minden adat helyesen volt bevezetve.`
-            );
-            setLoading(false);
-            setTimeout(() => setNotiMessage(""), 3000);
-          })
           .then(() => {
             setLoading(false);
             setConfirmationMessage(password);
+          })
+          .catch((e) => {
+            setNotiMessage(e.message);
+            setLoading(false);
+            setTimeout(() => setNotiMessage(""), 3000);
           });
       } else {
         setNotiMessage("Ezen az emailen már regisztrálva van");
@@ -568,6 +553,21 @@ const ApplicationForm = ({
         }
         error = true;
         personSetError(data[0] as keyof PersonInputs, { type: "required" });
+      } else {
+        if (data[0] === "email") {
+          const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,}$/i;
+          if (!regex.test(data[1] as string)) {
+            error = true;
+            personSetError(data[0] as keyof PersonInputs, { type: "pattern" });
+          }
+        }
+        if (data[0] === "mobileNumber") {
+          const regex = /^(\+\d{1,2}\s?)?\(?\d{4}\)?[\s.-]?\d{3}[\s.-]?\d{3}$/;
+          if (!regex.test(data[1] as string)) {
+            error = true;
+            personSetError(data[0] as keyof PersonInputs, { type: "pattern" });
+          }
+        }
       }
     });
     if (!error) {
@@ -1033,7 +1033,15 @@ const ApplicationForm = ({
                         <Controller
                           name={`projects.${index}.extract`}
                           control={projectsControl}
-                          rules={{ required: true }}
+                          rules={{
+                            required: true,
+                            validate: (value) => {
+                              if (value && typeof value === "object") {
+                                return value?.type === "application/pdf";
+                              }
+                              return true;
+                            },
+                          }}
                           render={({
                             field: { onChange, value },
                             fieldState: { error },
@@ -1059,6 +1067,7 @@ const ApplicationForm = ({
                                   type="file"
                                   autoComplete="off"
                                   className="hidden"
+                                  accept="application/pdf"
                                   onChange={(e) =>
                                     onChange(
                                       e.target.files ? e.target.files[0] : null
@@ -1370,7 +1379,14 @@ const ApplicationForm = ({
                                       <Controller
                                         name={`projects.${index}.advisors.${ai}.email`}
                                         control={projectsControl}
-                                        rules={{ required: true }}
+                                        rules={{
+                                          required: true,
+                                          pattern: {
+                                            value:
+                                              /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                            message: "Helytelen email",
+                                          },
+                                        }}
                                         render={({
                                           field,
                                           fieldState: { error },
@@ -1391,7 +1407,14 @@ const ApplicationForm = ({
                                       <Controller
                                         name={`projects.${index}.advisors.${ai}.mobileNumber`}
                                         control={projectsControl}
-                                        rules={{ required: true }}
+                                        rules={{
+                                          required: true,
+                                          pattern: {
+                                            value:
+                                              /^(\+\d{1,2}\s?)?\(?\d{4}\)?[\s.-]?\d{3}[\s.-]?\d{3}$/,
+                                            message: "Helytelen telefonszám",
+                                          },
+                                        }}
                                         render={({
                                           field,
                                           fieldState: { error },
@@ -1413,7 +1436,21 @@ const ApplicationForm = ({
                                       <Controller
                                         name={`projects.${index}.advisors.${ai}.certificate`}
                                         control={projectsControl}
-                                        rules={{ required: true }}
+                                        rules={{
+                                          required: true,
+                                          validate: (value) => {
+                                            if (
+                                              value &&
+                                              typeof value === "object"
+                                            ) {
+                                              return (
+                                                value?.type ===
+                                                "application/pdf"
+                                              );
+                                            }
+                                            return true;
+                                          },
+                                        }}
                                         render={({
                                           field: { onChange, value },
                                           fieldState: { error },
@@ -1442,6 +1479,7 @@ const ApplicationForm = ({
                                                 type="file"
                                                 autoComplete="off"
                                                 className="hidden"
+                                                accept="application/pdf"
                                                 onChange={(e) =>
                                                   onChange(
                                                     e.target.files
@@ -1712,7 +1750,14 @@ const ApplicationForm = ({
                                       />
                                       <Controller
                                         name={`projects.${index}.companions.${ci}.email`}
-                                        rules={{ required: true }}
+                                        rules={{
+                                          required: true,
+                                          pattern: {
+                                            value:
+                                              /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                            message: "Helytelen email",
+                                          },
+                                        }}
                                         control={projectsControl}
                                         render={({
                                           field,
@@ -1734,7 +1779,14 @@ const ApplicationForm = ({
                                       />
                                       <Controller
                                         name={`projects.${index}.companions.${ci}.mobileNumber`}
-                                        rules={{ required: true }}
+                                        rules={{
+                                          required: true,
+                                          pattern: {
+                                            value:
+                                              /^(\+\d{1,2}\s?)?\(?\d{4}\)?[\s.-]?\d{3}[\s.-]?\d{3}$/,
+                                            message: "Helytelen telefonszám",
+                                          },
+                                        }}
                                         control={projectsControl}
                                         render={({
                                           field,
@@ -1903,7 +1955,7 @@ const ApplicationForm = ({
         !!Object.keys(personErrors).length) && (
         <div className="mt-4">
           <p className="text-red-600">
-            Ellenőrizd, hogy minden adat bevan bevezetve.
+            Ellenőrizd, hogy minden adat helyesen van bevezetve.
           </p>
         </div>
       )}

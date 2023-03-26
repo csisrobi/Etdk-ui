@@ -46,7 +46,7 @@ export default async function handler(
           }
         );
       } catch (e) {
-        res.status(500).send({ message: e });
+        res.status(500).send({ error: "File feltöltés nem sikerült" });
       }
   }
 }

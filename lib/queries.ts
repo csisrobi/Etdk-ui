@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { groq } from "next-sanity";
 //TODO: CREATE A GENERAL QUERY
 export const querySponsor = groq`
@@ -238,6 +239,10 @@ export const sectionParticipants = (section: string) => groq`
   }
 }`;
 
+type Response = {
+  [key in "body" | "error"]: string | Array<any>;
+};
+
 export const fetcher = async (url: string, data?: any, isFormData = false) => {
   return await fetch(`/api${url}`, {
     method: data ? "POST" : "GET",
@@ -248,7 +253,15 @@ export const fetcher = async (url: string, data?: any, isFormData = false) => {
     }),
     body: data,
   })
-    .then((res) => res.json())
-    .then((r) => r.body)
-    .catch((e) => console.error(e));
+    .then((res) => {
+      return res.json();
+    })
+    .then((r: Response) => {
+      if (r.error) {
+        console.log(r);
+        return r;
+      } else {
+        return r.body;
+      }
+    });
 };

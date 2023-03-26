@@ -11,9 +11,9 @@ export default async function handler(
         const resp = await getClient()
           .mutate(req.body)
           .then((response) => response);
-        res.send({ status: 200, body: resp });
+        res.status(200).send({ status: 200, body: resp });
       } catch (e) {
-        res.status(500).json({ message: e });
+        res.status(500).send({ error: "Feltöltés nem sikerült" });
       }
   }
 }
