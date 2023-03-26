@@ -1,7 +1,13 @@
+import RichText from "@utils/RichText";
 import Image from "next/image";
+import type { SanityRichText } from "types";
 import LinkWrapper from "./UtilityComponents/LinkWrapper";
 
-const ParticipationCondition = () => {
+const ParticipationCondition = ({
+  generalApplicationRules,
+}: {
+  generalApplicationRules: SanityRichText[];
+}) => {
   const conditions = [
     { text: "Szabályzat", link: "/szabalyzat" },
     { text: "Követelmények", link: "/kovetelmenyek" },
@@ -21,21 +27,11 @@ const ParticipationCondition = () => {
       </div>
       <div className="mt-8 flex min-h-[70vh] flex-col sm:flex-row">
         <div className="flex min-h-full justify-end sm:w-3/5">
-          <p className="pr-4 text-justify text-lg text-white lg:w-3/4">
-            Minden romániai felsőoktatási intézmény (alapképzésben vagy
-            mesterképzésben részt vevő) hallgatójának joga van az ETDK bármely
-            szekciójában dolgozatot bemutatni, ha a jelentkezési feltételeket
-            teljesíti.
-            <br /> A külföldi felsőoktatási intézmények hallgatói versenyen
-            kívül mutathatják be tudományos munkájukat, a többi résztvevővel
-            azonos feltételek mellett.
-            <br /> A kivonat és a dolgozat szövege magyar nyelvű. Az ETDK
-            szekcióinak munkálatai (beleértve a dolgozatok előadását) szintén
-            magyar nyelven folynak. <br />
-            Kivételt képez az Állam és Jogtudomány szekció, ahol a dolgozat
-            szövege lehet román nyelvű, de bemutatása kizárólag magyar nyelven
-            kell, hogy megtörténjen.
-          </p>
+          <div className="pr-4 lg:w-3/4">
+            <div className="prose max-w-none text-justify text-lg text-white ">
+              <RichText blocks={generalApplicationRules} />
+            </div>
+          </div>
         </div>
         <div className="mt-8 flex flex-col sm:mt-0 sm:w-2/5">
           <div className="flex w-full flex-col items-center gap-4">

@@ -21,6 +21,12 @@ export default {
     },
     { title: "Témavezetői igazolás pdf", name: "certificate", type: "file" },
     {
+      title: "Általános részvételi feltételek",
+      name: "generalApplicationRules",
+      type: "array",
+      of: [{ type: "block" }],
+    },
+    {
       title: "Szabályzat",
       name: "rules",
       type: "array",

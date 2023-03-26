@@ -33,6 +33,7 @@ export const queryGeneral = groq`
   rules,
   requirement,
   scoringcriteria,
+  generalApplicationRules,
   "certificateURL": certificate.asset->url
 }`;
 

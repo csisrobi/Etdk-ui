@@ -33,6 +33,7 @@ export type SanityGeneral = {
   edition: string;
   editionRoman: string;
   date: string;
+  generalApplicationRules: SanityRichText[];
   rules: SanityRichText[];
   requirement: SanityRichText[];
   scoringcriteria: SanityRichText[];
