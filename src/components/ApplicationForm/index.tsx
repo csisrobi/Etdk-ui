@@ -63,6 +63,10 @@ const classOptions = [
     name: "5",
     value: "5",
   },
+  {
+    name: "6",
+    value: "6",
+  },
 ];
 
 const semesterOptions = [
@@ -105,6 +109,14 @@ const semesterOptions = [
   {
     name: "10",
     value: "10",
+  },
+  {
+    name: "11",
+    value: "11",
+  },
+  {
+    name: "12",
+    value: "12",
   },
 ];
 
@@ -234,6 +246,7 @@ const ApplicationForm = ({
     getValues: projectGetValues,
     formState: { errors: projectErrors },
     clearErrors: projectCleanErrors,
+    setError: projectSetErrors,
   } = useForm<Inputs>({
     defaultValues: {
       projects: !defaultValues
@@ -460,6 +473,7 @@ const ApplicationForm = ({
                     },
                     accepted: false,
                     password: password,
+                    gdpr: true,
                   },
                 },
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -854,32 +868,51 @@ const ApplicationForm = ({
                 fieldState: { error },
               }) => {
                 return (
-                  <label>
-                    <div
-                      className={classNames(
-                        inputClasses,
-                        error ? "ring ring-red-700" : "",
-                        "flex cursor-pointer items-center bg-application1 pl-4  text-darkcherry placeholder:text-darkcherry"
-                      )}
-                    >
-                      <div className="overflow-hidden truncate opacity-80">
-                        {value && typeof value === "object"
-                          ? value.name
-                          : typeof value === "string"
-                          ? value
-                          : "Ellenőrző kép"}
+                  <div className="flex flex-col">
+                    <label>
+                      <div
+                        className={classNames(
+                          inputClasses,
+                          error ? "ring ring-red-700" : "",
+                          "flex cursor-pointer items-center bg-application1 pl-4  text-darkcherry placeholder:text-darkcherry"
+                        )}
+                      >
+                        <div className="overflow-hidden truncate opacity-80">
+                          {value && typeof value === "object"
+                            ? value.name
+                            : typeof value === "string"
+                            ? value
+                            : "Ellenőrző kép"}
+                        </div>
                       </div>
-                    </div>
-                    <input
-                      type="file"
-                      autoComplete="off"
-                      className="hidden"
-                      onChange={(e) => {
-                        personClearErrors("idPhoto");
-                        onChange(e.target.files ? e.target.files[0] : null);
-                      }}
-                    />
-                  </label>
+                      <input
+                        type="file"
+                        autoComplete="off"
+                        className="hidden"
+                        onChange={(e) => {
+                          const fileSize =
+                            e.target.files && e.target.files[0]
+                              ? Math.round((e.target.files[0].size || 0) / 1024)
+                              : null;
+
+                          if (fileSize && fileSize >= 4096) {
+                            personSetError("idPhoto", {
+                              type: "custom",
+                              message: "Kép mérete max. 4mb",
+                            });
+                          } else {
+                            personClearErrors("idPhoto");
+                            onChange(e.target.files ? e.target.files[0] : null);
+                          }
+                        }}
+                      />
+                    </label>
+                    {error && error.type === "custom" && (
+                      <p className="pt-1 pl-3 text-sm text-red-600">
+                        {error.message}
+                      </p>
+                    )}
+                  </div>
                 );
               }}
             />
@@ -1713,38 +1746,73 @@ const ApplicationForm = ({
                                           fieldState: { error },
                                         }) => {
                                           return (
-                                            <label>
-                                              <div
-                                                className={classNames(
-                                                  inputClasses,
-                                                  error
-                                                    ? "ring ring-red-700"
-                                                    : "",
-                                                  "flex cursor-pointer items-center bg-application1 pl-4 text-darkcherry  placeholder:text-darkcherry "
-                                                )}
-                                              >
-                                                <div className="overflow-hidden truncate opacity-80">
-                                                  {value &&
-                                                  typeof value === "object"
-                                                    ? value.name
-                                                    : typeof value === "string"
-                                                    ? value
-                                                    : "Ellenőrző kép"}
+                                            <div className="flex flex-col">
+                                              <label>
+                                                <div
+                                                  className={classNames(
+                                                    inputClasses,
+                                                    error
+                                                      ? "ring ring-red-700"
+                                                      : "",
+                                                    "flex cursor-pointer items-center bg-application1 pl-4 text-darkcherry  placeholder:text-darkcherry "
+                                                  )}
+                                                >
+                                                  <div className="overflow-hidden truncate opacity-80">
+                                                    {value &&
+                                                    typeof value === "object"
+                                                      ? value.name
+                                                      : typeof value ===
+                                                        "string"
+                                                      ? value
+                                                      : "Ellenőrző kép"}
+                                                  </div>
                                                 </div>
-                                              </div>
-                                              <input
-                                                type="file"
-                                                autoComplete="off"
-                                                className="hidden"
-                                                onChange={(e) =>
-                                                  onChange(
-                                                    e.target.files
-                                                      ? e.target.files[0]
-                                                      : null
-                                                  )
-                                                }
-                                              />
-                                            </label>
+                                                <input
+                                                  type="file"
+                                                  autoComplete="off"
+                                                  className="hidden"
+                                                  onChange={(e) => {
+                                                    const fileSize =
+                                                      e.target.files &&
+                                                      e.target.files[0]
+                                                        ? Math.round(
+                                                            (e.target.files[0]
+                                                              .size || 0) / 1024
+                                                          )
+                                                        : null;
+
+                                                    if (
+                                                      fileSize &&
+                                                      fileSize >= 4096
+                                                    ) {
+                                                      projectSetErrors(
+                                                        `projects.${index}.companions.${ci}.idPhoto`,
+                                                        {
+                                                          type: "custom",
+                                                          message:
+                                                            "Kép mérete max. 4mb",
+                                                        }
+                                                      );
+                                                    } else {
+                                                      projectCleanErrors(
+                                                        `projects.${index}.companions.${ci}.idPhoto`
+                                                      );
+                                                      onChange(
+                                                        e.target.files
+                                                          ? e.target.files[0]
+                                                          : null
+                                                      );
+                                                    }
+                                                  }}
+                                                />
+                                              </label>
+                                              {error &&
+                                                error.type === "custom" && (
+                                                  <p className="pt-1 pl-3 text-sm text-red-600">
+                                                    {error.message}
+                                                  </p>
+                                                )}
+                                            </div>
                                           );
                                         }}
                                       />
