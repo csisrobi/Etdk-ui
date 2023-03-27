@@ -21,6 +21,7 @@ const Hataridok = ({ deadline }: Props) => {
 
 export async function getStaticProps({ preview = false }) {
   const deadline = await getClient(preview).fetch(queryDeadline);
+
   return {
     props: {
       deadline: deadline[0].deadline,
