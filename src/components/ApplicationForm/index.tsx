@@ -36,6 +36,10 @@ const degreeOptions = [
     name: "MA (mesterképzés)",
     value: "MA",
   },
+  {
+    name: "BSc (alapképzés)",
+    value: "BSc",
+  },
 ];
 
 const classOptions = [
