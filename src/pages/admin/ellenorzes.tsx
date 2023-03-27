@@ -120,23 +120,30 @@ const EllenorzoFelulet = () => {
 };
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
-  const { preview } = ctx;
-
-  const session = await getSession(ctx);
-  if (!session?.user || !session.user.email) {
-    return {
-      redirect: {
-        destination: "/admin",
-        permanent: false,
-      },
-    };
-  }
-
+  //DISABLED FOR NOW
   return {
-    props: {
-      preview: preview || false,
+    redirect: {
+      destination: "/",
+      permanent: false,
     },
   };
+  // const { preview } = ctx;
+
+  // const session = await getSession(ctx);
+  // if (!session?.user || !session.user.email) {
+  //   return {
+  //     redirect: {
+  //       destination: "/admin",
+  //       permanent: false,
+  //     },
+  //   };
+  // }
+
+  // return {
+  //   props: {
+  //     preview: preview || false,
+  //   },
+  // };
 }
 
 export default EllenorzoFelulet;
