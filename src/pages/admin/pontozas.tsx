@@ -124,30 +124,37 @@ const AdminPontozoFelulet = ({ sections }: { sections: Section[] }) => {
 };
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
-  const { preview } = ctx;
-
-  const session = await getSession(ctx);
-  if (!session?.user || !session.user.email) {
-    return {
-      redirect: {
-        destination: "/admin",
-        permanent: false,
-      },
-    };
-  }
-
-  //TODO: FILTER AFTER LOGGED IN USER RESPONSABILITY
-  const sections = (await getClient(preview || false).fetch(
-    querySectionsForScoring
-  )) as Section[];
+  //DISABLED FOR NOW
   return {
-    props: {
-      sections: sections.sort((a, b) =>
-        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-      ),
-      preview: preview || false,
+    redirect: {
+      destination: "/",
+      permanent: false,
     },
   };
+  // const { preview } = ctx;
+
+  // const session = await getSession(ctx);
+  // if (!session?.user || !session.user.email) {
+  //   return {
+  //     redirect: {
+  //       destination: "/admin",
+  //       permanent: false,
+  //     },
+  //   };
+  // }
+
+  // //TODO: FILTER AFTER LOGGED IN USER RESPONSABILITY
+  // const sections = (await getClient(preview || false).fetch(
+  //   querySectionsForScoring
+  // )) as Section[];
+  // return {
+  //   props: {
+  //     sections: sections.sort((a, b) =>
+  //       a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+  //     ),
+  //     preview: preview || false,
+  //   },
+  // };
 }
 
 export default AdminPontozoFelulet;
