@@ -54,7 +54,7 @@ const Archivum = ({ archivData }: { archivData: SanityArchiv }) => {
                         <td>
                           <span
                             key={winnerPerson.name}
-                            className="text-gray whitespace-pre-wrap text-lg md:text-xl"
+                            className="whitespace-pre-wrap text-lg text-slate-600 md:text-xl"
                           >
                             {winnerPerson.name.split(",").join(",\n")}
                           </span>
@@ -62,7 +62,7 @@ const Archivum = ({ archivData }: { archivData: SanityArchiv }) => {
                         <td>
                           <span
                             key={winnerPerson.name}
-                            className="text-gray text-lg md:text-xl"
+                            className="text-lg text-slate-600 md:text-xl"
                           >
                             {winnerPerson.result}
                           </span>

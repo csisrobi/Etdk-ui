@@ -6,6 +6,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import RichText from "@utils/RichText";
 import { isAfter, parseISO } from "date-fns";
+import { XMarkIcon } from "@heroicons/react/20/solid";
 
 const NewsArchiv = ({
   news,
@@ -17,7 +18,7 @@ const NewsArchiv = ({
   const [openNewsDialog, setOpenNewsDialog] = useState(false);
   const [activeNews, setActiveNews] = useState<SanityNews>();
   return (
-    <div className="bg-grayCustom relative flex min-h-[100vh] flex-col justify-center gap-24 py-8 lg:pb-24">
+    <div className="relative flex min-h-[100vh] flex-col justify-center gap-24 bg-grayCustom py-8 lg:pb-24">
       <div>
         <div id="hirek" className="absolute -top-[70px]" />
         <div className="flex flex-col items-center justify-center gap-8">
@@ -105,7 +106,7 @@ const NewsArchiv = ({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="bg-gray-500 fixed inset-0 bg-opacity-75 transition-opacity" />
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
           </Transition.Child>
 
           <div className="fixed inset-0 z-10 overflow-y-auto">
@@ -122,10 +123,13 @@ const NewsArchiv = ({
                 <Dialog.Panel className="relative max-h-[500px] transform overflow-x-hidden overflow-y-scroll break-words rounded-lg bg-white p-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                   {activeNews && (
                     <>
-                      <Dialog.Title className="mb-4 text-darkcherry">
-                        <p className="text-center text-2xl">
-                          {activeNews?.name}
-                        </p>
+                      <Dialog.Title className="mb-4 flex justify-end">
+                        <button className="cursor-pointer text-slate-700">
+                          <XMarkIcon
+                            className="h-7 w-7"
+                            onClick={() => setOpenNewsDialog(false)}
+                          />
+                        </button>
                       </Dialog.Title>
                       <div className="prose max-w-none">
                         <RichText blocks={activeNews.description} />
