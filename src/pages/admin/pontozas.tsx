@@ -93,7 +93,8 @@ const AdminPontozoFelulet = ({ sections }: { sections: Section[] }) => {
                 <Typography className="self-center" sx={{ flex: 1 }}>
                   {participant.name}
                 </Typography>
-                <Button
+                {/* DISABLED FOR NOW */}
+                {/* <Button
                   variant="contained"
                   endIcon={<Download />}
                   className="bg-darkcherry"
@@ -106,7 +107,7 @@ const AdminPontozoFelulet = ({ sections }: { sections: Section[] }) => {
                   >
                     {participant.title}
                   </a>
-                </Button>
+                </Button> */}
               </AccordionSummary>
               <AccordionDetails>
                 {sections && sections[tabValue] && (
