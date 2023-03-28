@@ -1,39 +1,44 @@
-import type { MRT_ColumnDef } from "material-react-table";
+import type { MRT_ColumnDef, MRT_Row } from "material-react-table";
 import MaterialReactTable from "material-react-table";
 import type { GetServerSidePropsContext } from "next";
 import { getSession } from "next-auth/react";
 import { useMemo } from "react";
-import type { SanityParticipant } from "types";
+import type {
+  SanityAdvisorData,
+  SanityParticipant,
+  SanityPersonData,
+} from "types";
 import { Switch } from "@headlessui/react";
 import useSWR from "swr";
 import { fetcher } from "@lib/queries";
+import { Button } from "@mui/material";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import { ExportToCsv } from "export-to-csv";
 
-const headers = {
+const headersParticipant = {
   name: "Név",
-  birthDate: "Születési dátum",
-  email: "Email",
-  mobileNumber: "Telefonszám",
-  socialNumber: "Személyi szám",
+  idNumber: "Ellenőrző szám",
   university: "Egyetem",
   subject: "Szak",
   faculty: "Kar",
   degree: "Képzési szint",
   class: "Évfolyam",
+  finishedSemester: "Elvégzett félévek száma",
+  email: "Email",
+  mobileNumber: "Telefonszám",
+};
 
-  advisorName: "Témavezető név",
-  advisorEmail: "Témavezető email",
-  advisorMobileNumber: "Témavezető telefonszám",
-  advisorCertificate: "Témavezető igazolás",
-  advisorUniversity: "Témavezető egyetem",
-  advisorSubject: "Témavezető szak",
-  advisorFaculty: "Témavezető kar",
-  advisorTitle: "Témavezető titulus",
+const headersAdvisor = {
+  name: "Témavezető név",
+  university: "Témavezető egyetem",
+  title: "Témavezető titulus",
+  email: "Témavezető email",
+  mobileNumber: "Témavezető telefonszám",
+};
 
+const headersProject = {
   title: "Dolgozat cím",
-  extract: "Dolgozat kivonat",
   section: "Szekció",
-
-  accepted: "Elfogadva",
 };
 
 const EllenorzoFelulet = () => {
@@ -43,48 +48,114 @@ const EllenorzoFelulet = () => {
       await fetcher(`/participants`).then((r) => (Array.isArray(r) ? r : []))
   );
 
-  const columns = useMemo<MRT_ColumnDef<SanityParticipant>[]>(
-    () =>
-      Object.keys(headers).map((key) => ({
-        accessorKey:
-          key === "advisorCertificate"
-            ? "advisorCertificate.originalFilename"
-            : key === "extract"
-            ? "extract.originalFilename"
-            : (key as keyof SanityParticipant),
-        header: headers[key as keyof typeof headers],
-        ...((key === "advisorCertificate" || key === "extract") && {
-          Cell: ({ row }) => (
-            <a href={row.original[key].url} target="_blank" rel="noreferrer">
-              {row.original[key].originalFilename}
-            </a>
-          ),
+  const columns = useMemo<MRT_ColumnDef<SanityParticipant>[]>(() => {
+    const participantHeaders = Object.keys(headersParticipant).map((key) => {
+      return {
+        accessorFn: (row: SanityParticipant) => {
+          const newKey =
+            key === "university" && !row.university
+              ? "universityOther"
+              : key === "faculty" && !row.faculty
+              ? "facultyOther"
+              : key === "subject" && !row.subject
+              ? "subjectOther"
+              : key;
+          return row[newKey as keyof SanityParticipant];
+        },
+        header: headersParticipant[key as keyof typeof headersParticipant],
+      };
+    });
+    const advisorHeaders: MRT_ColumnDef<SanityParticipant>[] = [
+      0, 1, 2, 3,
+    ].reduce((acc, i) => {
+      return [
+        ...acc,
+        ...Object.keys(headersAdvisor).map((key) => {
+          return {
+            accessorFn: (row: SanityParticipant) => {
+              const newKey =
+                key === "university" && !row.advisors?.[i]?.university
+                  ? "universityOther"
+                  : key;
+              return row.advisors?.[i]?.[newKey as keyof SanityAdvisorData]
+                ? row.advisors?.[i]?.[newKey as keyof SanityAdvisorData]
+                : null;
+            },
+            header: `${i + 1}. ${
+              headersAdvisor[key as keyof typeof headersAdvisor]
+            }`,
+          };
         }),
-        ...(key === "accepted" && {
-          Cell: ({ row }) => (
-            <Switch
-              checked={row.original.accepted}
-              onChange={async () =>
-                await fetcher(`/participants/accept`, {
-                  id: row.original._id,
-                  currentValue: row.original.accepted,
-                })
-              }
-              className={`${
-                row.original.accepted ? "bg-lightcherry" : "bg-lightBrown"
-              } relative inline-flex h-6 w-11 items-center rounded-full`}
-            >
-              <span
-                className={`${
-                  row.original.accepted ? "translate-x-6" : "translate-x-1"
-                } inline-block h-4 w-4 transform rounded-full bg-white transition`}
-              />
-            </Switch>
-          ),
+      ];
+    }, [] as MRT_ColumnDef<SanityParticipant>[]);
+
+    const companionsHeaders: MRT_ColumnDef<SanityParticipant>[] = [
+      0, 1, 2, 3,
+    ].reduce((acc, i) => {
+      return [
+        ...acc,
+        ...Object.keys(headersParticipant).map((key) => {
+          return {
+            accessorFn: (row: SanityParticipant) => {
+              const newKey =
+                key === "university" && !row.companions?.[i]?.university
+                  ? "universityOther"
+                  : key === "faculty" && !row.companions?.[i]?.faculty
+                  ? "facultyOther"
+                  : key === "subject" && !row.companions?.[i]?.subject
+                  ? "subjectOther"
+                  : key;
+              return row.companions?.[i]?.[newKey as keyof SanityPersonData]
+                ? row.companions?.[i]?.[newKey as keyof SanityPersonData]
+                : null;
+            },
+            header: `${i + 1}. Társszerző ${headersParticipant[
+              key as keyof typeof headersParticipant
+            ].toLowerCase()}`,
+          };
         }),
-      })),
-    []
-  );
+      ];
+    }, [] as MRT_ColumnDef<SanityParticipant>[]);
+
+    const projectHeaders = Object.keys(headersProject).map((key) => {
+      return {
+        accessorKey: key as keyof SanityParticipant,
+        header: headersProject[key as keyof typeof headersProject],
+      };
+    });
+
+    const acceptedHeader: MRT_ColumnDef<SanityParticipant> = {
+      accessorKey: "accepted",
+      header: "Elfogadva",
+      Cell: ({ row }) => (
+        <Switch
+          checked={row.original.accepted}
+          onChange={async () =>
+            await fetcher(`/participants/accept`, {
+              id: row.original._id,
+              currentValue: row.original.accepted,
+            })
+          }
+          className={`${
+            row.original.accepted ? "bg-lightcherry" : "bg-lightBrown"
+          } relative inline-flex h-6 w-11 items-center rounded-full`}
+        >
+          <span
+            className={`${
+              row.original.accepted ? "translate-x-6" : "translate-x-1"
+            } inline-block h-4 w-4 transform rounded-full bg-white transition`}
+          />
+        </Switch>
+      ),
+    };
+    return [
+      ...participantHeaders,
+      ...advisorHeaders,
+      ...companionsHeaders,
+      ...projectHeaders,
+      acceptedHeader,
+    ];
+  }, []);
 
   if (isLoading) {
     return (
@@ -110,40 +181,63 @@ const EllenorzoFelulet = () => {
     );
   }
 
+  const csvOptions = {
+    fieldSeparator: ",",
+    quoteStrings: '"',
+    decimalSeparator: ".",
+    showLabels: true,
+    useBom: true,
+    useKeysAsHeaders: true,
+  };
+
+  const csvExporter = new ExportToCsv(csvOptions);
+
+  const handleExportRows = (rows: MRT_Row<SanityParticipant>[]) => {
+    csvExporter.generateCsv(rows.map((row) => row._valuesCache));
+  };
+
   return (
-    <div className="min-h-[100vh] min-w-full pt-[100px] text-white">
+    <div className="ellenorzes min-h-[100vh] min-w-full pt-[100px] text-white">
       {!!allParticipantData && (
-        <MaterialReactTable columns={columns} data={allParticipantData} />
+        <MaterialReactTable
+          columns={columns}
+          data={allParticipantData}
+          renderTopToolbarCustomActions={({ table }) => (
+            <Button
+              disabled={table.getPrePaginationRowModel().rows.length === 0}
+              onClick={() => {
+                handleExportRows(table.getPrePaginationRowModel().rows);
+              }}
+              startIcon={<FileDownloadIcon />}
+              variant="contained"
+            >
+              Export
+            </Button>
+          )}
+        />
       )}
     </div>
   );
 };
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
-  //DISABLED FOR NOW
+  const { preview } = ctx;
+
+  const session = await getSession(ctx);
+  if (!session?.user || !session.user.email) {
+    return {
+      redirect: {
+        destination: "/admin",
+        permanent: false,
+      },
+    };
+  }
+
   return {
-    redirect: {
-      destination: "/",
-      permanent: false,
+    props: {
+      preview: preview || false,
     },
   };
-  // const { preview } = ctx;
-
-  // const session = await getSession(ctx);
-  // if (!session?.user || !session.user.email) {
-  //   return {
-  //     redirect: {
-  //       destination: "/admin",
-  //       permanent: false,
-  //     },
-  //   };
-  // }
-
-  // return {
-  //   props: {
-  //     preview: preview || false,
-  //   },
-  // };
 }
 
 export default EllenorzoFelulet;

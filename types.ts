@@ -103,43 +103,38 @@ export type SectionsSanity = {
   contributionNeeded: boolean;
 };
 
-export type SanityParticipant = {
-  _id: string;
-
+export type SanityPersonData = {
   name: string;
-  email: string;
-  mobileNumber: string;
-  birthDate: string;
-  socialNumber: string;
+  idNumber: string;
+  university: string;
+  universityOther: string;
+  faculty: string;
+  facultyOther: string;
+  subject: string;
+  subjectOther: string;
   degree: string;
   class: string;
+  finishedSemester: string;
+  email: string;
+  mobileNumber: string;
+};
+
+export type SanityAdvisorData = {
+  name: string;
   university: string;
-  faculty: string;
-  subject: string;
-
-  advisorName: string;
-  advisorEmail: string;
-  advisorMobileNumber: string;
-  advisorTitle: string;
-  advisorUniversity: string;
-  advisorFaculty: string;
-  advisorSubject: string;
-  advisorCertificate: {
-    originalFilename: string;
-    url: string;
-  };
-
+  universityOther: string;
   title: string;
-  extract: {
-    originalFilename: string;
-    url: string;
-  };
-  section: string;
+  email: string;
+  mobileNumber: string;
+};
 
-  score: {
-    criteria: { name: string; _id: string };
-    score: number;
-  }[];
+export type SanityParticipant = SanityPersonData & {
+  _id: string;
+
+  companions: SanityPersonData[];
+  advisors: SanityAdvisorData[];
+  title: string;
+  section: string;
 
   accepted: boolean;
 };

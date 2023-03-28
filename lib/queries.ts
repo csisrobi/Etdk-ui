@@ -187,32 +187,49 @@ export const getPersonDataForParticipant = (email: string) => groq`
 export const getAllParticipants = groq`
 *[_type == "participants"] {
   _id, 
-
-  birthDate,
-  class,
+  
+  name,
+  idNumber,
+  "university": university -> name,
+  universityOther,
+  "faculty":faculty -> name,
+  facultyOther,
+  "subject":subject -> name,
+  subjectOther,
   degree,
+  class,
+  finishedSemester,
   email,
   mobileNumber,
-  name,
-  socialNumber,
-  "university": university -> name,
-  "faculty":faculty -> name,
-  "subject":subject -> name,
-
-  advisorName,
-  advisorEmail,
-  advisorMobileNumber,
-  advisorTitle,
-  "advisorUniversity": advisorUniversity -> name,
-  "advisorFaculty":advisorFaculty -> name,
-  "advisorSubject":advisorSubject -> name,
-  "advisorCertificate": advisorCertificate.asset->{url, originalFilename},
 
   title,
-  "extract": extract.asset->{url, originalFilename},
   "section":section -> name,
-
   accepted,
+
+  companions[]{
+    name,
+    idNumber,
+    "university": university -> name,
+    universityOther,
+    "faculty":faculty -> name,
+    facultyOther,
+    "subject":subject -> name,
+    subjectOther,
+    degree,
+    class,
+    finishedSemester,
+    email,
+    mobileNumber,
+  },
+
+  advisors[]{
+    name,
+    "university": university -> name,
+    universityOther,
+    title,
+    email,
+    mobileNumber,
+  }
 }`;
 
 export const querySectionsForScoring = groq`
@@ -259,7 +276,6 @@ export const fetcher = async (url: string, data?: any, isFormData = false) => {
     })
     .then((r: Response) => {
       if (r.error) {
-        console.log(r);
         return r;
       } else {
         return r.body;
