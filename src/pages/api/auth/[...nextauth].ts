@@ -23,7 +23,6 @@ export const authOptions = (_req: NextApiRequest, res: NextApiResponse) => ({
         password: { type: "password", label: "Jelszó" },
       },
       authorize: async (credentials) => {
-        console.log(credentials);
         if (credentials) {
           const userData = await getClient().fetch(
             checkIfCredentialsOk(credentials.email, credentials.password)
@@ -49,7 +48,6 @@ export const authOptions = (_req: NextApiRequest, res: NextApiResponse) => ({
   },
   callbacks: {
     signIn: async ({ user }: { user: any }) => {
-      console.log("USER", user);
       const participant = await getClient().fetch(
         checkIfUniqueEmail(user.email)
       );
@@ -63,7 +61,6 @@ export const authOptions = (_req: NextApiRequest, res: NextApiResponse) => ({
       } else {
         user.role = admin[0].role;
       }
-      console.log(user);
       return true;
     },
     jwt: ({ token, user }: { token: any; user?: any }) => {
@@ -71,7 +68,6 @@ export const authOptions = (_req: NextApiRequest, res: NextApiResponse) => ({
         token.role = user.role;
         delete token.image;
       }
-      console.log(token);
       return token;
     },
     session: ({ session, token }: { token: any; session: any }) => {
