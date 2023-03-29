@@ -151,21 +151,39 @@ export const checkIfAdmin = (email: string) => groq`
 export const getProjectsDataForParticipant = (email: string) => groq`
 *[_type == "participants" && email == "${email}"]{
   _id,
-  "advisorUniversity": advisorUniversity -> _id,
-  "advisorFaculty":advisorFaculty -> _id,
-  "advisorSubject":advisorSubject -> _id,
-  advisorName,
-  advisorTitle,
-  advisorEmail,
-  advisorMobileNumber,
-  "advisorCertificate": advisorCertificate.asset->originalFilename,
-
   title,
-  "extract": extract.asset->originalFilename,
   "section":section -> _id,
-  "annex": annex.asset->originalFilename,
-  "declaration": declaration.asset->originalFilename,
-  "contribution": contribution.asset->originalFilename,
+  "extract": extract.asset-> originalFilename,
+
+  companions[]{
+    name,
+    idNumber,
+    "university": university -> _id,
+    universityOther,
+    "faculty":faculty -> _id,
+    facultyOther,
+    "subject":subject -> _id,
+    subjectOther,
+    degree,
+    class,
+    finishedSemester,
+    email,
+    mobileNumber,
+    "idPhoto": idPhoto.asset->originalFilename,
+  },
+
+  advisors[]{
+    name,
+    "university": university -> _id,
+    universityOther,
+    title,
+    email,
+    mobileNumber,
+    "certificate": certificate.asset->originalFilename,
+    "contribution": contribution.asset->originalFilename,
+    "declaration": declaration.asset->originalFilename,
+    "annex": annex.asset->originalFilename,
+  }
 }`;
 
 export const getPersonDataForParticipant = (email: string) => groq`
@@ -173,15 +191,18 @@ export const getPersonDataForParticipant = (email: string) => groq`
   name,
   idNumber,
   "university": university -> _id,
+  universityOther,
   "faculty":faculty -> _id,
+  facultyOther,
   "subject":subject -> _id,
+  subjectOther,
   degree,
   class,
   finishedSemester,
   email,
   mobileNumber,
-  "idPhoto": idPhoto.asset->originalFilename,
-  "voucher": voucher.asset->originalFilename,
+  "idPhoto": idPhoto.asset-> originalFilename,
+  "voucher": voucher.asset-> originalFilename,
 }`;
 
 export const getAllParticipants = groq`

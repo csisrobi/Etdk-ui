@@ -126,19 +126,12 @@ export async function getServerSideProps(ctx: GetSessionParams | undefined) {
         },
       };
     }
-    //FOR NOW NO LOGIN FOR USERS
     return {
       redirect: {
-        destination: "/admin",
+        destination: "/admin/jelentkezes",
         permanent: false,
       },
     };
-    // return {
-    //   redirect: {
-    //     destination: "/admin/jelentkezes",
-    //     permanent: false,
-    //   },
-    // };
   }
   return {
     props: { providers },
