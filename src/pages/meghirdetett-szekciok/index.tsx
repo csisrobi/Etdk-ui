@@ -6,6 +6,7 @@ import Image from "next/image";
 import { SanityImage } from "types";
 
 type SanitySectionPart = {
+  _id: string;
   image?: SanityImage;
   name: string;
 };
@@ -31,14 +32,16 @@ const MeghirdetettSzekciok = ({
                 {section.name}
               </span>
               {imageSettings && (
-                <div className="relative h-[80vw] w-[80vw] md:h-72 md:w-72">
+                <div
+                  className={`relative h-[70vw] w-[75vw] md:h-72 md:w-[310px]`}
+                >
                   <Image
                     loader={imageSettings.loader}
                     src={imageSettings.src}
-                    fill
                     alt={`${section.name} kep`}
                     className="object-cover"
                     priority
+                    fill
                   />
                 </div>
               )}
@@ -58,9 +61,11 @@ export const getServerSideProps: GetServerSideProps = async ({
   );
   return {
     props: {
-      sections: sections.sort((a, b) =>
-        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-      ),
+      sections: sections
+        .filter((section) => !section._id.includes("drafts"))
+        .sort((a, b) =>
+          a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+        ),
       preview,
     },
   };

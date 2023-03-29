@@ -680,7 +680,7 @@ const ApplicationForm = ({
                     error ? "ring ring-red-700" : "",
                     "bg-application1 text-darkcherry placeholder:text-darkcherry"
                   )}
-                  placeholder="Ellenőrző száma"
+                  placeholder="Hallgatói azonosító (nr. matricol)"
                 />
               )}
             />
@@ -882,7 +882,7 @@ const ApplicationForm = ({
                             ? value.name
                             : typeof value === "string"
                             ? value
-                            : "Ellenőrző kép"}
+                            : "Kép az ellenőrző első két oldaláról"}
                         </div>
                       </div>
                       <input
@@ -1524,7 +1524,7 @@ const ApplicationForm = ({
                                               error ? "ring ring-red-700" : "",
                                               "bg-application1 text-darkcherry placeholder:text-darkcherry"
                                             )}
-                                            placeholder="Ellenőrző száma"
+                                            placeholder="Hallgatói azonosító (nr. matricol)"
                                           />
                                         )}
                                       />
@@ -1764,7 +1764,7 @@ const ApplicationForm = ({
                                                       : typeof value ===
                                                         "string"
                                                       ? value
-                                                      : "Ellenőrző kép"}
+                                                      : "Kép az ellenőrző első két oldaláról"}
                                                   </div>
                                                 </div>
                                                 <input
