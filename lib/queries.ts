@@ -201,10 +201,12 @@ export const getAllParticipants = groq`
   finishedSemester,
   email,
   mobileNumber,
+  "idPhoto": idPhoto.asset->{url, originalFilename},
 
   title,
   "section":section -> name,
   accepted,
+  "extract": extract.asset->{url, originalFilename},
 
   companions[]{
     name,
@@ -220,6 +222,7 @@ export const getAllParticipants = groq`
     finishedSemester,
     email,
     mobileNumber,
+    "idPhoto": idPhoto.asset->{url, originalFilename},
   },
 
   advisors[]{
@@ -229,6 +232,7 @@ export const getAllParticipants = groq`
     title,
     email,
     mobileNumber,
+    "certificate": certificate.asset->{url, originalFilename},
   }
 }`;
 

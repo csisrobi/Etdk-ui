@@ -19,13 +19,14 @@ const headersParticipant = {
   name: "Név",
   idNumber: "Ellenőrző szám",
   university: "Egyetem",
-  subject: "Szak",
   faculty: "Kar",
+  subject: "Szak",
   degree: "Képzési szint",
   class: "Évfolyam",
   finishedSemester: "Elvégzett félévek száma",
   email: "Email",
   mobileNumber: "Telefonszám",
+  idPhoto: "Ellenőrző kép",
 };
 
 const headersAdvisor = {
@@ -34,11 +35,13 @@ const headersAdvisor = {
   title: "Témavezető titulus",
   email: "Témavezető email",
   mobileNumber: "Témavezető telefonszám",
+  certificate: "Témavezető igazolás",
 };
 
 const headersProject = {
   title: "Dolgozat cím",
   section: "Szekció",
+  extract: "Kivonat",
 };
 
 const EllenorzoFelulet = () => {
@@ -49,7 +52,9 @@ const EllenorzoFelulet = () => {
   );
 
   const columns = useMemo<MRT_ColumnDef<SanityParticipant>[]>(() => {
-    const participantHeaders = Object.keys(headersParticipant).map((key) => {
+    const participantHeaders: MRT_ColumnDef<SanityParticipant>[] = Object.keys(
+      headersParticipant
+    ).map((key) => {
       return {
         accessorFn: (row: SanityParticipant) => {
           const newKey =
@@ -59,10 +64,28 @@ const EllenorzoFelulet = () => {
               ? "facultyOther"
               : key === "subject" && !row.subject
               ? "subjectOther"
+              : key === "idPhoto"
+              ? "idPhoto.originalFilename"
               : key;
           return row[newKey as keyof SanityParticipant];
         },
         header: headersParticipant[key as keyof typeof headersParticipant],
+        ...(key === "idPhoto" && {
+          Cell: ({ row }) => (
+            <>
+              {row.original.idPhoto?.url &&
+              row.original.idPhoto?.originalFilename ? (
+                <a
+                  href={row.original.idPhoto.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {row.original.idPhoto.originalFilename}
+                </a>
+              ) : null}
+            </>
+          ),
+        }),
       };
     });
     const advisorHeaders: MRT_ColumnDef<SanityParticipant>[] = [
@@ -76,6 +99,8 @@ const EllenorzoFelulet = () => {
               const newKey =
                 key === "university" && !row.advisors?.[i]?.university
                   ? "universityOther"
+                  : key === "certificate"
+                  ? "certificate.originalFilename"
                   : key;
               return row.advisors?.[i]?.[newKey as keyof SanityAdvisorData]
                 ? row.advisors?.[i]?.[newKey as keyof SanityAdvisorData]
@@ -84,6 +109,22 @@ const EllenorzoFelulet = () => {
             header: `${i + 1}. ${
               headersAdvisor[key as keyof typeof headersAdvisor]
             }`,
+            ...(key === "certificate" && {
+              Cell: ({ row }: { row: { original: SanityParticipant } }) => (
+                <>
+                  {row.original.advisors?.[i]?.certificate?.url &&
+                  row.original.advisors?.[i]?.certificate?.originalFilename ? (
+                    <a
+                      href={row.original.advisors?.[i]?.certificate.url}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {row.original.advisors?.[i]?.certificate.originalFilename}
+                    </a>
+                  ) : null}
+                </>
+              ),
+            }),
           };
         }),
       ];
@@ -104,6 +145,8 @@ const EllenorzoFelulet = () => {
                   ? "facultyOther"
                   : key === "subject" && !row.companions?.[i]?.subject
                   ? "subjectOther"
+                  : key === "idPhoto"
+                  ? "idPhoto.originalFilename"
                   : key;
               return row.companions?.[i]?.[newKey as keyof SanityPersonData]
                 ? row.companions?.[i]?.[newKey as keyof SanityPersonData]
@@ -112,6 +155,22 @@ const EllenorzoFelulet = () => {
             header: `${i + 1}. Társszerző ${headersParticipant[
               key as keyof typeof headersParticipant
             ].toLowerCase()}`,
+            ...(key === "idPhoto" && {
+              Cell: ({ row }: { row: { original: SanityParticipant } }) => (
+                <>
+                  {row.original.companions?.[i]?.idPhoto?.url &&
+                  row.original.companions?.[i]?.idPhoto?.originalFilename ? (
+                    <a
+                      href={row.original.companions?.[i]?.idPhoto.url}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {row.original.companions?.[i]?.idPhoto.originalFilename}
+                    </a>
+                  ) : null}
+                </>
+              ),
+            }),
           };
         }),
       ];
@@ -119,8 +178,29 @@ const EllenorzoFelulet = () => {
 
     const projectHeaders = Object.keys(headersProject).map((key) => {
       return {
-        accessorKey: key as keyof SanityParticipant,
+        accessorFn: (row: SanityParticipant) =>
+          row[
+            key === "extract"
+              ? ("extract.originalFilename" as keyof SanityParticipant)
+              : (key as keyof SanityParticipant)
+          ],
         header: headersProject[key as keyof typeof headersProject],
+        ...(key === "extract" && {
+          Cell: ({ row }: { row: { original: SanityParticipant } }) => (
+            <>
+              {row.original?.extract?.url &&
+              row.original?.extract?.originalFilename ? (
+                <a
+                  href={row.original.extract.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {row.original.extract.originalFilename}
+                </a>
+              ) : null}
+            </>
+          ),
+        }),
       };
     });
 
@@ -131,10 +211,13 @@ const EllenorzoFelulet = () => {
         <Switch
           checked={row.original.accepted}
           onChange={async () =>
-            await fetcher(`/participants/accept`, {
-              id: row.original._id,
-              currentValue: row.original.accepted,
-            })
+            await fetcher(
+              `/participants/accept`,
+              JSON.stringify({
+                id: row.original._id,
+                currentValue: row.original.accepted,
+              })
+            )
           }
           className={`${
             row.original.accepted ? "bg-lightcherry" : "bg-lightBrown"
@@ -193,7 +276,44 @@ const EllenorzoFelulet = () => {
   const csvExporter = new ExportToCsv(csvOptions);
 
   const handleExportRows = (rows: MRT_Row<SanityParticipant>[]) => {
-    csvExporter.generateCsv(rows.map((row) => row._valuesCache));
+    const generateNewRows = rows.map((row) =>
+      Object.entries(row._valuesCache)
+        .map((cachedRow) => {
+          const cachedRowKey = cachedRow[0];
+          if (cachedRowKey.includes("Kivonat")) {
+            return {
+              [cachedRowKey]: row.original.extract?.originalFilename || null,
+            };
+          }
+          if (cachedRowKey.includes("Ellenőrző kép")) {
+            const index = cachedRowKey[0];
+            if (index && parseInt(index)) {
+              return {
+                [cachedRowKey]:
+                  row.original.companions[parseInt(index)]?.idPhoto
+                    ?.originalFilename || null,
+              };
+            } else {
+              return {
+                [cachedRowKey]: row.original.idPhoto?.originalFilename || null,
+              };
+            }
+          }
+          if (cachedRowKey.includes("Témavezető igazolás")) {
+            const index = cachedRowKey[0];
+            if (index && parseInt(index)) {
+              return {
+                [cachedRowKey]:
+                  row.original.advisors[parseInt(index)]?.certificate
+                    ?.originalFilename || null,
+              };
+            }
+          }
+          return { [cachedRowKey]: cachedRow[1] };
+        })
+        .reduce((acc, cur) => ({ ...acc, ...cur }), {})
+    );
+    csvExporter.generateCsv(generateNewRows);
   };
 
   return (
