@@ -153,7 +153,11 @@ export const getProjectsDataForParticipant = (email: string) => groq`
   _id,
   title,
   "section":section -> _id,
-  "extract": extract.asset-> originalFilename,
+  "extract": extract.asset->originalFilename,
+  "essay":essay.asset->originalFilename,
+  "contribution": contribution.asset->originalFilename,
+  "declaration": declaration.asset->originalFilename,
+  "annex": annex.asset->originalFilename,
 
   companions[]{
     name,
@@ -180,9 +184,6 @@ export const getProjectsDataForParticipant = (email: string) => groq`
     email,
     mobileNumber,
     "certificate": certificate.asset->originalFilename,
-    "contribution": contribution.asset->originalFilename,
-    "declaration": declaration.asset->originalFilename,
-    "annex": annex.asset->originalFilename,
   }
 }`;
 

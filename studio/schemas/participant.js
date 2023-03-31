@@ -268,7 +268,11 @@ export default {
         disableNew: true,
       },
     },
-
+    {
+      title: "Dolgozat",
+      name: "essay",
+      type: "file",
+    },
     {
       title: "Melléklet",
       name: "annex",
