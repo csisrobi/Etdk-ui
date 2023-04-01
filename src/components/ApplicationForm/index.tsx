@@ -9,9 +9,8 @@ import { fetcher } from "@lib/queries";
 import { getClient } from "@lib/sanity";
 import RichText from "@utils/RichText";
 import classNames from "classnames";
-import { nanoid } from "nanoid";
 import { useRouter } from "next/router";
-import React, { Fragment, useCallback, useState } from "react";
+import React, { Fragment, useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import Select from "src/components/FormComponents/Select";
 import Snackbar from "src/components/UtilityComponents/Snackbar";
@@ -21,171 +20,22 @@ import type {
   SectionsSanity,
   UniversitiesSanity,
 } from "types";
+import {
+  classOptions,
+  degreeOptions,
+  inputClasses,
+  Inputs,
+  PersonInputs,
+  ProjectInputs,
+  semesterOptions,
+  titleOptions,
+} from "./constants";
 import { ContributionField } from "./ContributionField";
+import { mapAdvisorData, mapCompanionsData } from "./data";
 import { FacultyField } from "./FacultyField";
 import { OtherField } from "./OtherField";
 import { SubjectField } from "./SubjectField";
 import { UniversityField } from "./UniversityField";
-
-const degreeOptions = [
-  {
-    name: "BA (alapképzés)",
-    value: "BA",
-  },
-  {
-    name: "MA (mesterképzés)",
-    value: "MA",
-  },
-  {
-    name: "BSc (alapképzés)",
-    value: "BSc",
-  },
-];
-
-const classOptions = [
-  {
-    name: "1",
-    value: "1",
-  },
-  {
-    name: "2",
-    value: "2",
-  },
-  {
-    name: "3",
-    value: "3",
-  },
-  {
-    name: "4",
-    value: "4",
-  },
-  {
-    name: "5",
-    value: "5",
-  },
-  {
-    name: "6",
-    value: "6",
-  },
-];
-
-const semesterOptions = [
-  {
-    name: "1",
-    value: "1",
-  },
-  {
-    name: "2",
-    value: "2",
-  },
-  {
-    name: "3",
-    value: "3",
-  },
-  {
-    name: "4",
-    value: "4",
-  },
-  {
-    name: "5",
-    value: "5",
-  },
-  {
-    name: "6",
-    value: "6",
-  },
-  {
-    name: "7",
-    value: "7",
-  },
-  {
-    name: "8",
-    value: "8",
-  },
-  {
-    name: "9",
-    value: "9",
-  },
-  {
-    name: "10",
-    value: "10",
-  },
-  {
-    name: "11",
-    value: "11",
-  },
-  {
-    name: "12",
-    value: "12",
-  },
-];
-
-const titleOptions = [
-  {
-    name: "Adjunktus",
-    value: "adjunktus",
-  },
-  {
-    name: "Docens",
-    value: "Ddocens",
-  },
-  {
-    name: "Doktorandusz",
-    value: "doktorandusz",
-  },
-  {
-    name: "Professzor",
-    value: "professzor",
-  },
-];
-
-export type AdvisorInputs = {
-  name: string;
-  email: string;
-  mobileNumber: string;
-  title: string;
-  university: string;
-  universityOther?: string;
-  certificate: File | null | string;
-};
-export type PersonInputs = {
-  name: string;
-  idNumber: string;
-  finishedSemester: string;
-  degree: string;
-  class: string;
-  university: string;
-  faculty: string;
-  subject: string;
-  universityOther?: string;
-  facultyOther?: string;
-  subjectOther?: string;
-  email: string;
-  mobileNumber: string;
-  idPhoto: File | null | string;
-  voucher?: File | null | string;
-};
-
-export type ProjectInputs = {
-  _id?: string;
-
-  title: string;
-  extract: File | null | string;
-  section: string;
-  annex: File | null | string;
-  declaration: File | null | string;
-  contribution: File | null | string;
-  advisors: AdvisorInputs[];
-  companions?: PersonInputs[];
-  essay: File | null | string;
-};
-
-export type Inputs = {
-  projects: ProjectInputs[];
-};
-
-const inputClasses =
-  "pl-3 border-none block h-11 w-full rounded-xl text-lg font-semibold placeholder:opacity-80 focus:border-darkcherry focus:ring-darkcherry";
 
 const ApplicationForm = ({
   universities,
@@ -280,104 +130,6 @@ const ApplicationForm = ({
     control: projectsControl,
     name: "projects",
   });
-
-  const mapAdvisorData = useCallback(
-    async (advisorData: AdvisorInputs, uploadImage: boolean) => {
-      const certificateData =
-        uploadImage &&
-        advisorData.certificate &&
-        typeof advisorData.certificate === "object"
-          ? await getClient().assets.upload("file", advisorData.certificate, {
-              filename: advisorData.certificate.name,
-            })
-          : null;
-      return {
-        _key: nanoid(),
-        name: advisorData.name,
-        ...(advisorData.universityOther
-          ? {
-              universityOther: advisorData.universityOther,
-            }
-          : {
-              university: {
-                _type: "reference",
-                _ref: advisorData.university,
-              },
-            }),
-        title: advisorData.title,
-        email: advisorData.email,
-        mobileNumber: advisorData.mobileNumber,
-        ...(certificateData && {
-          certificate: {
-            _type: "file",
-            asset: {
-              _ref: certificateData._id,
-              _type: "reference",
-            },
-          },
-        }),
-      };
-    },
-    []
-  );
-
-  const mapCompanionsData = useCallback(
-    async (participantData: PersonInputs, uploadImage: boolean) => {
-      const idPhotoData =
-        uploadImage &&
-        participantData.idPhoto &&
-        typeof participantData.idPhoto === "object"
-          ? await getClient().assets.upload("file", participantData.idPhoto, {
-              filename: participantData.idPhoto.name,
-            })
-          : null;
-      return {
-        _key: nanoid(),
-        name: participantData.name,
-        idNumber: participantData.idNumber,
-        ...(participantData.universityOther
-          ? { universityOther: participantData.universityOther }
-          : {
-              university: {
-                _type: "reference",
-                _ref: participantData.university,
-              },
-            }),
-
-        ...(participantData.facultyOther
-          ? { facultyOther: participantData.facultyOther }
-          : {
-              faculty: {
-                _type: "reference",
-                _ref: participantData.faculty,
-              },
-            }),
-        ...(participantData.subjectOther
-          ? { subjectOther: participantData.subjectOther }
-          : {
-              subject: {
-                _type: "reference",
-                _ref: participantData.subject,
-              },
-            }),
-        degree: participantData.degree,
-        class: participantData.class,
-        finishedSemester: participantData.finishedSemester,
-        email: participantData.email,
-        mobileNumber: participantData.mobileNumber,
-        ...(idPhotoData && {
-          idPhoto: {
-            _type: "file",
-            asset: {
-              _ref: idPhotoData._id,
-              _type: "reference",
-            },
-          },
-        }),
-      };
-    },
-    []
-  );
 
   const patchSubmit = React.useCallback(
     async (data: Inputs) => {
@@ -582,23 +334,25 @@ const ApplicationForm = ({
             }
           });
         })
-      );
+      )
+        .then(() => {
+          setLoading(false);
+        })
+        .catch((e) => {
+          setNotiMessage(e.message);
+          setLoading(false);
+          setTimeout(() => setNotiMessage(""), 3000);
+        });
     },
-    [
-      mapAdvisorData,
-      mapCompanionsData,
-      personDirtyFields,
-      personGetValues,
-      projectDirtyFields,
-    ]
+    [personDirtyFields, personGetValues, projectDirtyFields]
   );
 
   const onSubmit = React.useMemo(() => {
     return handleSubmit(async (data) => {
+      setLoading(true);
       if (defaultValues) {
         await patchSubmit(data);
       } else {
-        setLoading(true);
         const participantData = personGetValues();
         const checkEmail = await fetcher(
           `/participants/check`,
@@ -737,14 +491,7 @@ const ApplicationForm = ({
         }
       }
     });
-  }, [
-    handleSubmit,
-    defaultValues,
-    patchSubmit,
-    personGetValues,
-    mapAdvisorData,
-    mapCompanionsData,
-  ]);
+  }, [handleSubmit, defaultValues, patchSubmit, personGetValues]);
 
   const submitData = () => {
     const participantData = personGetValues();
@@ -881,21 +628,24 @@ const ApplicationForm = ({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <input
-                  value={value}
-                  onChange={(e) => {
-                    personClearErrors("name");
-                    onChange(e.target.value);
-                  }}
-                  autoComplete="off"
-                  type="text"
-                  className={classNames(
-                    inputClasses,
-                    error ? "ring ring-red-700" : "",
-                    "bg-application1 text-darkcherry placeholder:text-darkcherry"
-                  )}
-                  placeholder="Név"
-                />
+                <div className="flex flex-col">
+                  <span className="pl-3">Név</span>
+                  <input
+                    value={value}
+                    onChange={(e) => {
+                      personClearErrors("name");
+                      onChange(e.target.value);
+                    }}
+                    autoComplete="off"
+                    type="text"
+                    className={classNames(
+                      inputClasses,
+                      error ? "ring ring-red-700" : "",
+                      "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                    )}
+                    placeholder="Név"
+                  />
+                </div>
               )}
             />
             <Controller
@@ -905,21 +655,24 @@ const ApplicationForm = ({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <input
-                  value={value}
-                  onChange={(e) => {
-                    personClearErrors("idNumber");
-                    onChange(e.target.value);
-                  }}
-                  autoComplete="off"
-                  type="text"
-                  className={classNames(
-                    inputClasses,
-                    error ? "ring ring-red-700" : "",
-                    "bg-application1 text-darkcherry placeholder:text-darkcherry"
-                  )}
-                  placeholder="Ellenőrző száma"
-                />
+                <div className="flex flex-col">
+                  <span className="pl-3">Ellenőrző száma</span>
+                  <input
+                    value={value}
+                    onChange={(e) => {
+                      personClearErrors("idNumber");
+                      onChange(e.target.value);
+                    }}
+                    autoComplete="off"
+                    type="text"
+                    className={classNames(
+                      inputClasses,
+                      error ? "ring ring-red-700" : "",
+                      "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                    )}
+                    placeholder="Ellenőrző száma"
+                  />
+                </div>
               )}
             />
             <UniversityField
@@ -1056,22 +809,25 @@ const ApplicationForm = ({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <input
-                  value={value}
-                  onChange={(e) => {
-                    personClearErrors("email");
-                    onChange(e.target.value);
-                  }}
-                  autoComplete="off"
-                  disabled={!!defaultValues}
-                  type="text"
-                  className={classNames(
-                    inputClasses,
-                    error ? "ring ring-red-700" : "",
-                    "bg-application1 text-darkcherry placeholder:text-darkcherry"
-                  )}
-                  placeholder="E-mail cím"
-                />
+                <div className="flex flex-col">
+                  <span className="pl-3">E-mail cím</span>
+                  <input
+                    value={value}
+                    onChange={(e) => {
+                      personClearErrors("email");
+                      onChange(e.target.value);
+                    }}
+                    autoComplete="off"
+                    disabled={!!defaultValues}
+                    type="text"
+                    className={classNames(
+                      inputClasses,
+                      error ? "ring ring-red-700" : "",
+                      "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                    )}
+                    placeholder="E-mail cím"
+                  />
+                </div>
               )}
             />
             <Controller
@@ -1081,21 +837,24 @@ const ApplicationForm = ({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <input
-                  value={value}
-                  onChange={(e) => {
-                    personClearErrors("mobileNumber");
-                    onChange(e.target.value);
-                  }}
-                  autoComplete="off"
-                  type="text"
-                  className={classNames(
-                    inputClasses,
-                    error ? "ring ring-red-700" : "",
-                    "bg-application1 text-darkcherry placeholder:text-darkcherry"
-                  )}
-                  placeholder="Telefonszám"
-                />
+                <div className="flex flex-col">
+                  <span className="pl-3">Telefonszám</span>
+                  <input
+                    value={value}
+                    onChange={(e) => {
+                      personClearErrors("mobileNumber");
+                      onChange(e.target.value);
+                    }}
+                    autoComplete="off"
+                    type="text"
+                    className={classNames(
+                      inputClasses,
+                      error ? "ring ring-red-700" : "",
+                      "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                    )}
+                    placeholder="Telefonszám"
+                  />
+                </div>
               )}
             />
             <Controller
@@ -1107,6 +866,7 @@ const ApplicationForm = ({
               }) => {
                 return (
                   <div className="flex flex-col">
+                    <span className="pl-3">Ellenőrző kép</span>
                     <label>
                       <div
                         className={classNames(
@@ -1160,30 +920,34 @@ const ApplicationForm = ({
                 control={personFormControl}
                 render={({ field: { onChange, value } }) => {
                   return (
-                    <label>
-                      <div
-                        className={classNames(
-                          inputClasses,
-                          "flex cursor-pointer items-center bg-application1 pl-4 text-darkcherry  placeholder:text-darkcherry "
-                        )}
-                      >
-                        <div className="overflow-hidden truncate opacity-80">
-                          {value && typeof value === "object"
-                            ? value.name
-                            : typeof value === "string"
-                            ? value
-                            : "Kifizetési bizonylat"}
+                    <div className="flex flex-col">
+                      <span className="pl-3">Kifizetési bizonylat</span>
+
+                      <label>
+                        <div
+                          className={classNames(
+                            inputClasses,
+                            "flex cursor-pointer items-center bg-application1 pl-4 text-darkcherry  placeholder:text-darkcherry "
+                          )}
+                        >
+                          <div className="overflow-hidden truncate opacity-80">
+                            {value && typeof value === "object"
+                              ? value.name
+                              : typeof value === "string"
+                              ? value
+                              : "Kifizetési bizonylat"}
+                          </div>
                         </div>
-                      </div>
-                      <input
-                        type="file"
-                        autoComplete="off"
-                        className="hidden"
-                        onChange={(e) =>
-                          onChange(e.target.files ? e.target.files[0] : null)
-                        }
-                      />
-                    </label>
+                        <input
+                          type="file"
+                          autoComplete="off"
+                          className="hidden"
+                          onChange={(e) =>
+                            onChange(e.target.files ? e.target.files[0] : null)
+                          }
+                        />
+                      </label>
+                    </div>
                   );
                 }}
               />
@@ -1243,17 +1007,20 @@ const ApplicationForm = ({
                           control={projectsControl}
                           rules={{ required: true }}
                           render={({ field, fieldState: { error } }) => (
-                            <input
-                              {...field}
-                              type="text"
-                              autoComplete="off"
-                              className={classNames(
-                                inputClasses,
-                                error ? "ring ring-red-700" : "",
-                                "bg-application3 text-darkcherry placeholder:text-darkcherry"
-                              )}
-                              placeholder="Cím"
-                            />
+                            <div className="flex flex-col">
+                              <span className="pl-3">Cím</span>
+                              <input
+                                {...field}
+                                type="text"
+                                autoComplete="off"
+                                className={classNames(
+                                  inputClasses,
+                                  error ? "ring ring-red-700" : "",
+                                  "bg-application3 text-darkcherry placeholder:text-darkcherry"
+                                )}
+                                placeholder="Cím"
+                              />
+                            </div>
                           )}
                         />
                         <Controller
@@ -1273,34 +1040,39 @@ const ApplicationForm = ({
                             fieldState: { error },
                           }) => {
                             return (
-                              <label>
-                                <div
-                                  className={classNames(
-                                    inputClasses,
-                                    error ? "ring ring-red-700" : "",
-                                    "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
-                                  )}
-                                >
-                                  <div className="overflow-hidden truncate opacity-80">
-                                    {value && typeof value === "object"
-                                      ? value.name
-                                      : typeof value === "string"
-                                      ? value
-                                      : "Kivonat"}
+                              <div className="flex flex-col">
+                                <span className="pl-3">Kivonat</span>
+                                <label>
+                                  <div
+                                    className={classNames(
+                                      inputClasses,
+                                      error ? "ring ring-red-700" : "",
+                                      "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
+                                    )}
+                                  >
+                                    <div className="overflow-hidden truncate opacity-80">
+                                      {value && typeof value === "object"
+                                        ? value.name
+                                        : typeof value === "string"
+                                        ? value
+                                        : "Kivonat"}
+                                    </div>
                                   </div>
-                                </div>
-                                <input
-                                  type="file"
-                                  autoComplete="off"
-                                  className="hidden"
-                                  accept="application/pdf"
-                                  onChange={(e) =>
-                                    onChange(
-                                      e.target.files ? e.target.files[0] : null
-                                    )
-                                  }
-                                />
-                              </label>
+                                  <input
+                                    type="file"
+                                    autoComplete="off"
+                                    className="hidden"
+                                    accept="application/pdf"
+                                    onChange={(e) =>
+                                      onChange(
+                                        e.target.files
+                                          ? e.target.files[0]
+                                          : null
+                                      )
+                                    }
+                                  />
+                                </label>
+                              </div>
                             );
                           }}
                         />
@@ -1342,34 +1114,37 @@ const ApplicationForm = ({
                             control={projectsControl}
                             render={({ field: { onChange, value } }) => {
                               return (
-                                <label>
-                                  <div
-                                    className={classNames(
-                                      inputClasses,
-                                      "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
-                                    )}
-                                  >
-                                    <div className="overflow-hidden truncate opacity-80">
-                                      {value && typeof value === "object"
-                                        ? value.name
-                                        : typeof value === "string"
-                                        ? value
-                                        : "Dolgozat"}
+                                <div className="flex flex-col">
+                                  <span className="pl-3">Dolgozat</span>
+                                  <label>
+                                    <div
+                                      className={classNames(
+                                        inputClasses,
+                                        "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
+                                      )}
+                                    >
+                                      <div className="overflow-hidden truncate opacity-80">
+                                        {value && typeof value === "object"
+                                          ? value.name
+                                          : typeof value === "string"
+                                          ? value
+                                          : "Dolgozat"}
+                                      </div>
                                     </div>
-                                  </div>
-                                  <input
-                                    type="file"
-                                    autoComplete="off"
-                                    className="hidden"
-                                    onChange={(e) =>
-                                      onChange(
-                                        e.target.files
-                                          ? e.target.files[0]
-                                          : null
-                                      )
-                                    }
-                                  />
-                                </label>
+                                    <input
+                                      type="file"
+                                      autoComplete="off"
+                                      className="hidden"
+                                      onChange={(e) =>
+                                        onChange(
+                                          e.target.files
+                                            ? e.target.files[0]
+                                            : null
+                                        )
+                                      }
+                                    />
+                                  </label>
+                                </div>
                               );
                             }}
                           />
@@ -1380,34 +1155,37 @@ const ApplicationForm = ({
                             control={projectsControl}
                             render={({ field: { onChange, value } }) => {
                               return (
-                                <label>
-                                  <div
-                                    className={classNames(
-                                      inputClasses,
-                                      "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
-                                    )}
-                                  >
-                                    <div className="overflow-hidden truncate opacity-80">
-                                      {value && typeof value === "object"
-                                        ? value.name
-                                        : typeof value === "string"
-                                        ? value
-                                        : "Melléklet"}
+                                <div className="flex flex-col">
+                                  <span className="pl-3">Melléklet</span>
+                                  <label>
+                                    <div
+                                      className={classNames(
+                                        inputClasses,
+                                        "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
+                                      )}
+                                    >
+                                      <div className="overflow-hidden truncate opacity-80">
+                                        {value && typeof value === "object"
+                                          ? value.name
+                                          : typeof value === "string"
+                                          ? value
+                                          : "Melléklet"}
+                                      </div>
                                     </div>
-                                  </div>
-                                  <input
-                                    type="file"
-                                    autoComplete="off"
-                                    className="hidden"
-                                    onChange={(e) =>
-                                      onChange(
-                                        e.target.files
-                                          ? e.target.files[0]
-                                          : null
-                                      )
-                                    }
-                                  />
-                                </label>
+                                    <input
+                                      type="file"
+                                      autoComplete="off"
+                                      className="hidden"
+                                      onChange={(e) =>
+                                        onChange(
+                                          e.target.files
+                                            ? e.target.files[0]
+                                            : null
+                                        )
+                                      }
+                                    />
+                                  </label>
+                                </div>
                               );
                             }}
                           />
@@ -1418,34 +1196,39 @@ const ApplicationForm = ({
                             control={projectsControl}
                             render={({ field: { onChange, value } }) => {
                               return (
-                                <label>
-                                  <div
-                                    className={classNames(
-                                      inputClasses,
-                                      "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
-                                    )}
-                                  >
-                                    <div className="overflow-hidden truncate opacity-80">
-                                      {value && typeof value === "object"
-                                        ? value.name
-                                        : typeof value === "string"
-                                        ? value
-                                        : "Adatbankos nyilatkozat"}
+                                <div className="flex flex-col">
+                                  <span className="pl-3">
+                                    Adatbankos nyilatkozat
+                                  </span>
+                                  <label>
+                                    <div
+                                      className={classNames(
+                                        inputClasses,
+                                        "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
+                                      )}
+                                    >
+                                      <div className="overflow-hidden truncate opacity-80">
+                                        {value && typeof value === "object"
+                                          ? value.name
+                                          : typeof value === "string"
+                                          ? value
+                                          : "Adatbankos nyilatkozat"}
+                                      </div>
                                     </div>
-                                  </div>
-                                  <input
-                                    type="file"
-                                    autoComplete="off"
-                                    className="hidden"
-                                    onChange={(e) =>
-                                      onChange(
-                                        e.target.files
-                                          ? e.target.files[0]
-                                          : null
-                                      )
-                                    }
-                                  />
-                                </label>
+                                    <input
+                                      type="file"
+                                      autoComplete="off"
+                                      className="hidden"
+                                      onChange={(e) =>
+                                        onChange(
+                                          e.target.files
+                                            ? e.target.files[0]
+                                            : null
+                                        )
+                                      }
+                                    />
+                                  </label>
+                                </div>
                               );
                             }}
                           />
@@ -1528,17 +1311,22 @@ const ApplicationForm = ({
                                           field,
                                           fieldState: { error },
                                         }) => (
-                                          <input
-                                            {...field}
-                                            autoComplete="off"
-                                            type="text"
-                                            className={classNames(
-                                              inputClasses,
-                                              error ? "ring ring-red-700" : "",
-                                              "bg-application2 text-white placeholder:text-white"
-                                            )}
-                                            placeholder="Név"
-                                          />
+                                          <div className="flex flex-col">
+                                            <span className="pl-3">Név</span>
+                                            <input
+                                              {...field}
+                                              autoComplete="off"
+                                              type="text"
+                                              className={classNames(
+                                                inputClasses,
+                                                error
+                                                  ? "ring ring-red-700"
+                                                  : "",
+                                                "bg-application2 text-white placeholder:text-white"
+                                              )}
+                                              placeholder="Név"
+                                            />
+                                          </div>
                                         )}
                                       />
                                       <UniversityField
@@ -1606,17 +1394,24 @@ const ApplicationForm = ({
                                           field,
                                           fieldState: { error },
                                         }) => (
-                                          <input
-                                            {...field}
-                                            autoComplete="off"
-                                            type="text"
-                                            className={classNames(
-                                              inputClasses,
-                                              error ? "ring ring-red-700" : "",
-                                              "bg-application2 text-white placeholder:text-white"
-                                            )}
-                                            placeholder="E-mail cím"
-                                          />
+                                          <div className="flex flex-col">
+                                            <span className="pl-3">
+                                              E-mail cím
+                                            </span>
+                                            <input
+                                              {...field}
+                                              autoComplete="off"
+                                              type="text"
+                                              className={classNames(
+                                                inputClasses,
+                                                error
+                                                  ? "ring ring-red-700"
+                                                  : "",
+                                                "bg-application2 text-white placeholder:text-white"
+                                              )}
+                                              placeholder="E-mail cím"
+                                            />
+                                          </div>
                                         )}
                                       />
                                       <Controller
@@ -1634,18 +1429,25 @@ const ApplicationForm = ({
                                           field,
                                           fieldState: { error },
                                         }) => (
-                                          <input
-                                            {...field}
-                                            autoComplete="off"
-                                            type="text"
-                                            className={classNames(
-                                              inputClasses,
-                                              error ? "ring ring-red-700" : "",
+                                          <div className="flex flex-col">
+                                            <span className="pl-3">
+                                              Telefonszám
+                                            </span>
+                                            <input
+                                              {...field}
+                                              autoComplete="off"
+                                              type="text"
+                                              className={classNames(
+                                                inputClasses,
+                                                error
+                                                  ? "ring ring-red-700"
+                                                  : "",
 
-                                              "bg-application2 text-white placeholder:text-white"
-                                            )}
-                                            placeholder="Telefonszám"
-                                          />
+                                                "bg-application2 text-white placeholder:text-white"
+                                              )}
+                                              placeholder="Telefonszám"
+                                            />
+                                          </div>
                                         )}
                                       />
                                       <Controller
@@ -1671,39 +1473,45 @@ const ApplicationForm = ({
                                           fieldState: { error },
                                         }) => {
                                           return (
-                                            <label>
-                                              <div
-                                                className={classNames(
-                                                  inputClasses,
-                                                  error
-                                                    ? "ring ring-red-700"
-                                                    : "",
-                                                  "flex cursor-pointer items-center bg-application2 pl-4 text-white"
-                                                )}
-                                              >
-                                                <div className="overflow-hidden truncate opacity-80">
-                                                  {value &&
-                                                  typeof value === "object"
-                                                    ? value.name
-                                                    : typeof value === "string"
-                                                    ? value
-                                                    : "Témavezetői igazolás"}
+                                            <div className="flex flex-col">
+                                              <span className="pl-3">
+                                                Témavezetői igazolás
+                                              </span>
+                                              <label>
+                                                <div
+                                                  className={classNames(
+                                                    inputClasses,
+                                                    error
+                                                      ? "ring ring-red-700"
+                                                      : "",
+                                                    "flex cursor-pointer items-center bg-application2 pl-4 text-white"
+                                                  )}
+                                                >
+                                                  <div className="overflow-hidden truncate opacity-80">
+                                                    {value &&
+                                                    typeof value === "object"
+                                                      ? value.name
+                                                      : typeof value ===
+                                                        "string"
+                                                      ? value
+                                                      : "Témavezetői igazolás"}
+                                                  </div>
                                                 </div>
-                                              </div>
-                                              <input
-                                                type="file"
-                                                autoComplete="off"
-                                                className="hidden"
-                                                accept="application/pdf"
-                                                onChange={(e) =>
-                                                  onChange(
-                                                    e.target.files
-                                                      ? e.target.files[0]
-                                                      : null
-                                                  )
-                                                }
-                                              />
-                                            </label>
+                                                <input
+                                                  type="file"
+                                                  autoComplete="off"
+                                                  className="hidden"
+                                                  accept="application/pdf"
+                                                  onChange={(e) =>
+                                                    onChange(
+                                                      e.target.files
+                                                        ? e.target.files[0]
+                                                        : null
+                                                    )
+                                                  }
+                                                />
+                                              </label>
+                                            </div>
                                           );
                                         }}
                                       />
@@ -1783,17 +1591,22 @@ const ApplicationForm = ({
                                           field,
                                           fieldState: { error },
                                         }) => (
-                                          <input
-                                            {...field}
-                                            autoComplete="off"
-                                            type="text"
-                                            className={classNames(
-                                              inputClasses,
-                                              error ? "ring ring-red-700" : "",
-                                              "bg-application1 text-darkcherry placeholder:text-darkcherry"
-                                            )}
-                                            placeholder="Név"
-                                          />
+                                          <div className="flex flex-col">
+                                            <span className="pl-3">Név</span>
+                                            <input
+                                              {...field}
+                                              autoComplete="off"
+                                              type="text"
+                                              className={classNames(
+                                                inputClasses,
+                                                error
+                                                  ? "ring ring-red-700"
+                                                  : "",
+                                                "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                                              )}
+                                              placeholder="Név"
+                                            />
+                                          </div>
                                         )}
                                       />
                                       <Controller
@@ -1804,17 +1617,24 @@ const ApplicationForm = ({
                                           field,
                                           fieldState: { error },
                                         }) => (
-                                          <input
-                                            {...field}
-                                            autoComplete="off"
-                                            type="text"
-                                            className={classNames(
-                                              inputClasses,
-                                              error ? "ring ring-red-700" : "",
-                                              "bg-application1 text-darkcherry placeholder:text-darkcherry"
-                                            )}
-                                            placeholder="Ellenőrző száma"
-                                          />
+                                          <div className="flex flex-col">
+                                            <span className="pl-3">
+                                              Ellenőrző száma
+                                            </span>
+                                            <input
+                                              {...field}
+                                              autoComplete="off"
+                                              type="text"
+                                              className={classNames(
+                                                inputClasses,
+                                                error
+                                                  ? "ring ring-red-700"
+                                                  : "",
+                                                "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                                              )}
+                                              placeholder="Ellenőrző száma"
+                                            />
+                                          </div>
                                         )}
                                       />
                                       <UniversityField
@@ -1984,18 +1804,25 @@ const ApplicationForm = ({
                                           field,
                                           fieldState: { error },
                                         }) => (
-                                          <input
-                                            {...field}
-                                            autoComplete="off"
-                                            disabled={!!defaultValues}
-                                            type="text"
-                                            className={classNames(
-                                              inputClasses,
-                                              error ? "ring ring-red-700" : "",
-                                              "bg-application1 text-darkcherry placeholder:text-darkcherry"
-                                            )}
-                                            placeholder="E-mail cím"
-                                          />
+                                          <div className="flex flex-col">
+                                            <span className="pl-3">
+                                              E-mail cím
+                                            </span>
+                                            <input
+                                              {...field}
+                                              autoComplete="off"
+                                              disabled={!!defaultValues}
+                                              type="text"
+                                              className={classNames(
+                                                inputClasses,
+                                                error
+                                                  ? "ring ring-red-700"
+                                                  : "",
+                                                "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                                              )}
+                                              placeholder="E-mail cím"
+                                            />
+                                          </div>
                                         )}
                                       />
                                       <Controller
@@ -2013,17 +1840,24 @@ const ApplicationForm = ({
                                           field,
                                           fieldState: { error },
                                         }) => (
-                                          <input
-                                            {...field}
-                                            autoComplete="off"
-                                            type="text"
-                                            className={classNames(
-                                              inputClasses,
-                                              error ? "ring ring-red-700" : "",
-                                              "bg-application1 text-darkcherry placeholder:text-darkcherry"
-                                            )}
-                                            placeholder="Telefonszám"
-                                          />
+                                          <div className="flex flex-col">
+                                            <span className="pl-3">
+                                              Telefonszám
+                                            </span>
+                                            <input
+                                              {...field}
+                                              autoComplete="off"
+                                              type="text"
+                                              className={classNames(
+                                                inputClasses,
+                                                error
+                                                  ? "ring ring-red-700"
+                                                  : "",
+                                                "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                                              )}
+                                              placeholder="Telefonszám"
+                                            />
+                                          </div>
                                         )}
                                       />
                                       <Controller
@@ -2036,6 +1870,10 @@ const ApplicationForm = ({
                                         }) => {
                                           return (
                                             <div className="flex flex-col">
+                                              <span className="pl-3">
+                                                Ellenőrző kép
+                                              </span>
+
                                               <label>
                                                 <div
                                                   className={classNames(

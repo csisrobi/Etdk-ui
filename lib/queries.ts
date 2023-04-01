@@ -160,6 +160,7 @@ export const getProjectsDataForParticipant = (email: string) => groq`
   "annex": annex.asset->originalFilename,
 
   companions[]{
+    _key,
     name,
     idNumber,
     "university": university -> _id,
@@ -174,9 +175,12 @@ export const getProjectsDataForParticipant = (email: string) => groq`
     email,
     mobileNumber,
     "idPhoto": idPhoto.asset->originalFilename,
+    "idPhotoId": idPhoto.asset->_id,
+
   },
 
   advisors[]{
+    _key,
     name,
     "university": university -> _id,
     universityOther,
@@ -184,6 +188,8 @@ export const getProjectsDataForParticipant = (email: string) => groq`
     email,
     mobileNumber,
     "certificate": certificate.asset->originalFilename,
+    "certificateId": certificate.asset->_id,
+
   }
 }`;
 

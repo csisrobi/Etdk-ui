@@ -31,23 +31,26 @@ export const OtherField = ({
         control={control}
         rules={{ required: true }}
         render={({ field: { value, onChange }, fieldState: { error } }) => (
-          <input
-            onChange={(e) => {
-              onChange(e.target.value);
-              if (clearError) {
-                clearError();
-              }
-            }}
-            value={value || ""}
-            autoComplete="off"
-            type="text"
-            className={classNames(
-              "block h-11 w-full rounded-xl border-none pl-3 text-lg font-semibold placeholder:opacity-80 focus:border-darkcherry focus:ring-darkcherry",
-              error ? "ring ring-red-700" : "",
-              `${text} ${bg} placeholder:${text}`
-            )}
-            placeholder={placeholder}
-          />
+          <div className="flex flex-col">
+            <span className="pl-3">{placeholder}</span>
+            <input
+              onChange={(e) => {
+                onChange(e.target.value);
+                if (clearError) {
+                  clearError();
+                }
+              }}
+              value={value || ""}
+              autoComplete="off"
+              type="text"
+              className={classNames(
+                "block h-11 w-full rounded-xl border-none pl-3 text-lg font-semibold placeholder:opacity-80 focus:border-darkcherry focus:ring-darkcherry",
+                error ? "ring ring-red-700" : "",
+                `${text} ${bg} placeholder:${text}`
+              )}
+              placeholder={placeholder}
+            />
+          </div>
         )}
       />
     );
