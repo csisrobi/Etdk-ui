@@ -9,11 +9,12 @@ import {
 import { getClient } from "@lib/sanity";
 import type { GetServerSidePropsContext } from "next";
 import { getSession } from "next-auth/react";
-import type {
-  ProjectInputs,
-  PersonInputs,
-} from "src/components/ApplicationForm";
+
 import ApplicationForm from "src/components/ApplicationForm";
+import {
+  PersonInputs,
+  ProjectInputs,
+} from "src/components/ApplicationForm/constants";
 import type { FacultySanity, SectionsSanity, UniversitiesSanity } from "types";
 
 const AdminJelentkezes = ({
