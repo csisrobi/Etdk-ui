@@ -33,7 +33,7 @@ const Jelentkezes = ({
         <p>
           Amennyiben beregisztráltál, itt tudod az adataid modosítani:
           <Link className="underline" href="/admin">
-            Admin
+            Bejelentkezés
           </Link>
         </p>
       </div>
