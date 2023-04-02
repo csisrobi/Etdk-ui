@@ -344,7 +344,7 @@ const ApplicationForm = ({
             });
             router.reload();
             setSaving(false);
-          }, 5000);
+          }, 7000);
         })
         .catch((e) => {
           toast.error(e.message, {
