@@ -14,6 +14,6 @@ export const config = {
    * data always (potentially slightly slower and a bit more expensive).
    * Authenticated request (like preview) will always bypass the CDN
    **/
-  useCdn: false,
+  useCdn: process.env.NODE_ENV === "production",
   token: process.env.NEXT_PUBLIC_BEARER_ID,
 };

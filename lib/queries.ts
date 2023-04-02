@@ -216,7 +216,7 @@ export const getPersonDataForParticipant = (email: string) => groq`
 export const getAllParticipants = groq`
 *[_type == "participants"] {
   _id, 
-  
+  "registrationDate": _createdAt,
   name,
   idNumber,
   "university": university -> name,
@@ -231,11 +231,17 @@ export const getAllParticipants = groq`
   email,
   mobileNumber,
   "idPhoto": idPhoto.asset->{url, originalFilename},
+  "voucher": voucher.asset->{url, originalFilename},
 
   title,
   "section":section -> name,
   accepted,
   "extract": extract.asset->{url, originalFilename},
+  "annex": annex.asset->{url, originalFilename},
+  "declaration": declaration.asset->{url, originalFilename},
+  "contribution": contribution.asset->{url, originalFilename},
+  "essay": essay.asset->{url, originalFilename},
+
 
   companions[]{
     name,

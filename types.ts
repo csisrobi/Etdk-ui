@@ -117,7 +117,12 @@ export type SanityPersonData = {
   finishedSemester: string;
   email: string;
   mobileNumber: string;
+  registrationDate?: string;
   idPhoto: {
+    originalFilename: string;
+    url: string;
+  };
+  voucher: {
     originalFilename: string;
     url: string;
   };
@@ -144,6 +149,22 @@ export type SanityParticipant = SanityPersonData & {
   title: string;
   section: string;
   extract: {
+    originalFilename: string;
+    url: string;
+  };
+  essay: {
+    originalFilename: string;
+    url: string;
+  };
+  annex: {
+    originalFilename: string;
+    url: string;
+  };
+  declaration: {
+    originalFilename: string;
+    url: string;
+  };
+  contribution: {
     originalFilename: string;
     url: string;
   };

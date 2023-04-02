@@ -78,7 +78,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     };
   }
   const defaultParticipantPersonData: PersonInputs[] = await getClient(
-    preview || false
+    true
   ).fetch(getPersonDataForParticipant(session.user.email));
   const personDataIfAdditional = {
     ...defaultParticipantPersonData[0],
@@ -93,7 +93,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     }),
   };
   const defaultParticipantProjectsData: ProjectInputs[] = await getClient(
-    preview || false
+    true
   ).fetch(getProjectsDataForParticipant(session.user.email));
   const projectsData = defaultParticipantProjectsData.map((project) => {
     const projectCompanionsAdditional = project.companions

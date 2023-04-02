@@ -118,6 +118,7 @@ export type AdvisorInputs = {
   title: string;
   university: string;
   universityOther?: string;
+
   certificate: File | null | string;
   certificateId?: string;
 };
@@ -136,6 +137,7 @@ export type PersonInputs = {
   subjectOther?: string;
   email: string;
   mobileNumber: string;
+
   idPhoto: File | null | string;
   idPhotoId?: string;
   voucher?: File | null | string;
@@ -146,14 +148,16 @@ export type ProjectInputs = {
   _id?: string;
 
   title: string;
-  extract: File | null | string;
   section: string;
+
+  extract: File | null | string;
   annex: File | null | string;
   declaration: File | null | string;
   contribution: File | null | string;
+  essay: File | null | string;
+
   advisors: AdvisorInputs[];
   companions?: PersonInputs[];
-  essay: File | null | string;
 };
 
 export type Inputs = {

@@ -5,6 +5,8 @@ import {
   queryUniversities,
 } from "@lib/queries";
 import { getClient } from "@lib/sanity";
+import { isAfter, parseISO } from "date-fns";
+import Link from "next/link";
 import ApplicationForm from "src/components/ApplicationForm";
 import type {
   FacultySanity,
@@ -24,6 +26,19 @@ const Jelentkezes = ({
   sections: SectionsSanity[];
   gdpr: SanityRichText[];
 }) => {
+  if (isAfter(new Date(), parseISO("2023-04-02T23:59:59"))) {
+    return (
+      <div className="flex min-h-[100vh] min-w-full flex-col items-center justify-center space-y-4 bg-white p-2 pb-40 pt-[71px] text-center">
+        <p className="text-5xl">A regisztráció lezárult.</p>
+        <p>
+          Amennyiben beregisztráltál, itt tudod az adataid modosítani:
+          <Link className="underline" href="/admin">
+            Admin
+          </Link>
+        </p>
+      </div>
+    );
+  }
   return (
     <ApplicationForm
       universities={universities}
