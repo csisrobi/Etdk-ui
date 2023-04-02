@@ -313,7 +313,7 @@ const EllenorzoFelulet = () => {
               [cachedRowKey]: row.original.extract?.originalFilename || null,
             };
           }
-          if (cachedRowKey.includes("Dolgozat")) {
+          if (cachedRowKey === "Dolgozat") {
             return {
               [cachedRowKey]: row.original.essay?.originalFilename || null,
             };
