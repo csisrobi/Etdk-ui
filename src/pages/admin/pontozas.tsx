@@ -1,4 +1,6 @@
-import { Download, ExpandMore } from "@mui/icons-material";
+import Download from "@mui/icons-material/Download";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+
 import {
   Accordion,
   AccordionDetails,
@@ -125,25 +127,31 @@ const AdminPontozoFelulet = ({ sections }: { sections: Section[] }) => {
 };
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
-  //DISABLED FOR NOW
+  const { preview } = ctx;
+
+  const session = await getSession(ctx);
+  if (!session?.user || !session.user.email) {
+    return {
+      redirect: {
+        destination: "/admin",
+        permanent: false,
+      },
+    };
+  }
+  if (session.user.role === "participant") {
+    return {
+      redirect: {
+        destination: "/admin/jelentkezes",
+        permanent: false,
+      },
+    };
+  }
   return {
     redirect: {
-      destination: "/",
+      destination: "/admin",
       permanent: false,
     },
   };
-  // const { preview } = ctx;
-
-  // const session = await getSession(ctx);
-  // if (!session?.user || !session.user.email) {
-  //   return {
-  //     redirect: {
-  //       destination: "/admin",
-  //       permanent: false,
-  //     },
-  //   };
-  // }
-
   // //TODO: FILTER AFTER LOGGED IN USER RESPONSABILITY
   // const sections = (await getClient(preview || false).fetch(
   //   querySectionsForScoring
