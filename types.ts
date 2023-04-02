@@ -103,43 +103,71 @@ export type SectionsSanity = {
   contributionNeeded: boolean;
 };
 
-export type SanityParticipant = {
-  _id: string;
-
+export type SanityPersonData = {
   name: string;
-  email: string;
-  mobileNumber: string;
-  birthDate: string;
-  socialNumber: string;
+  idNumber: string;
+  university: string;
+  universityOther: string;
+  faculty: string;
+  facultyOther: string;
+  subject: string;
+  subjectOther: string;
   degree: string;
   class: string;
-  university: string;
-  faculty: string;
-  subject: string;
-
-  advisorName: string;
-  advisorEmail: string;
-  advisorMobileNumber: string;
-  advisorTitle: string;
-  advisorUniversity: string;
-  advisorFaculty: string;
-  advisorSubject: string;
-  advisorCertificate: {
+  finishedSemester: string;
+  email: string;
+  mobileNumber: string;
+  registrationDate?: string;
+  idPhoto: {
     originalFilename: string;
     url: string;
   };
+  voucher: {
+    originalFilename: string;
+    url: string;
+  };
+};
 
+export type SanityAdvisorData = {
+  name: string;
+  university: string;
+  universityOther: string;
   title: string;
+  email: string;
+  mobileNumber: string;
+  certificate: {
+    originalFilename: string;
+    url: string;
+  };
+};
+
+export type SanityParticipant = SanityPersonData & {
+  _id: string;
+
+  companions: SanityPersonData[];
+  advisors: SanityAdvisorData[];
+  title: string;
+  section: string;
   extract: {
     originalFilename: string;
     url: string;
   };
-  section: string;
-
-  score: {
-    criteria: { name: string; _id: string };
-    score: number;
-  }[];
+  essay: {
+    originalFilename: string;
+    url: string;
+  };
+  annex: {
+    originalFilename: string;
+    url: string;
+  };
+  declaration: {
+    originalFilename: string;
+    url: string;
+  };
+  contribution: {
+    originalFilename: string;
+    url: string;
+  };
 
   accepted: boolean;
 };

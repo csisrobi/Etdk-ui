@@ -1,5 +1,6 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { isAfter, parseISO } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useState } from "react";
@@ -39,6 +40,10 @@ const Header = () => {
     },
   ];
 
+  const application = isAfter(new Date(), parseISO("2023-04-02T23:59:59"))
+    ? { label: "BEJELENTKEZÉS", href: "/admin" }
+    : { label: "JELENTKEZÉS", href: "/jelentkezes" };
+
   return (
     <div className="fixed top-0 z-20 h-fit w-full bg-lightcherry">
       <div className="flex w-full items-center p-2">
@@ -76,8 +81,8 @@ const Header = () => {
               type="button"
               className="w-48 rounded-3xl bg-white py-2 px-1 text-center text-3xl tracking-wide  text-darkcherry xl:w-52"
             >
-              <Link href="/jelentkezes">
-                <span>JELENTKEZÉS</span>
+              <Link href={application.href}>
+                <span>{application.label}</span>
               </Link>
             </button>
           </div>

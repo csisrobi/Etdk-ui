@@ -1,17 +1,22 @@
-//TODO:
-import { getProviders, getSession, signIn } from "next-auth/react";
-import type { GetSessionParams } from "next-auth/react";
 import { LockClosedIcon } from "@heroicons/react/24/outline";
-import React, { useState } from "react";
-import { InferGetServerSidePropsType } from "next";
-import Snackbar from "src/components/UtilityComponents/Snackbar";
+import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import { getProviders, getSession, signIn } from "next-auth/react";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const AdminLogin = ({
   providers,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [notiMessage, setNotiMessage] = useState("");
+
+  useEffect(() => {
+    if (router.query.error) {
+      setTimeout(() => toast.error("Ez a felhasználó nem létezik"), 1000);
+    }
+  }, [router]);
 
   return (
     <div className="flex min-h-[100vh] min-w-full flex-col items-center justify-center space-y-4 bg-white p-4">
@@ -69,8 +74,7 @@ const AdminLogin = ({
                               password,
                             });
                           } else {
-                            setNotiMessage("Minden mező kötelező");
-                            setTimeout(() => setNotiMessage(""), 3000);
+                            toast.error("Minden mező kötelező");
                           }
                         }}
                         className="group relative flex w-full justify-center rounded-md bg-lightcherry py-2 px-3 text-sm font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
@@ -100,46 +104,40 @@ const AdminLogin = ({
             ))}
         </div>
       </div>
-      <Snackbar message={notiMessage} open={notiMessage !== ""} />
     </div>
   );
 };
 
-export async function getServerSideProps(ctx: GetSessionParams | undefined) {
+export async function getServerSideProps(
+  ctx: GetServerSidePropsContext | undefined
+) {
   const providers = await getProviders();
   const session = await getSession(ctx);
 
-  return {
-    redirect: {
-      destination: "/",
-      permanent: false,
-    },
-  };
-
-  // if (session?.user) {
-  //   if (session.user.role === "superadmin") {
-  //     return {
-  //       redirect: {
-  //         destination: "/admin/ellenorzes",
-  //         permanent: false,
-  //       },
-  //     };
-  //   }
-  //   if (session.user.role !== "participant") {
-  //     return {
-  //       redirect: {
-  //         destination: "/admin/pontozas",
-  //         permanent: false,
-  //       },
-  //     };
-  //   }
-  //   return {
-  //     redirect: {
-  //       destination: "/admin/jelentkezes",
-  //       permanent: false,
-  //     },
-  //   };
-  // }
+  if (session?.user) {
+    if (session.user.role === "superadmin") {
+      return {
+        redirect: {
+          destination: "/admin/ellenorzes",
+          permanent: false,
+        },
+      };
+    }
+    if (session.user.role !== "participant") {
+      return {
+        redirect: {
+          destination: "/admin/pontozas",
+          permanent: false,
+        },
+      };
+    }
+    return {
+      redirect: {
+        destination: "/admin/jelentkezes",
+        permanent: false,
+      },
+    };
+  }
   return {
     props: { providers },
   };
