@@ -176,7 +176,8 @@ export const getProjectsDataForParticipant = (email: string) => groq`
     mobileNumber,
     "idPhoto": idPhoto.asset->originalFilename,
     "idPhotoId": idPhoto.asset->_id,
-
+    "voucher": voucher.asset-> originalFilename,
+    "voucherId": voucher.asset->_id,
   },
 
   advisors[]{
@@ -251,6 +252,7 @@ export const getAllParticipants = groq`
     email,
     mobileNumber,
     "idPhoto": idPhoto.asset->{url, originalFilename},
+    "voucher": voucher.asset->{url, originalFilename},
   },
 
   advisors[]{

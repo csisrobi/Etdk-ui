@@ -46,10 +46,11 @@ export const mapAdvisorData = async (
 
 export const mapCompanionsData = async (
   participantData: PersonInputs,
-  uploadImage: boolean
+  uploadIdPhoto?: boolean,
+  uploadVoucher?: boolean
 ) => {
   const idPhotoData =
-    uploadImage &&
+    uploadIdPhoto &&
     participantData.idPhoto &&
     typeof participantData.idPhoto === "object"
       ? await getClient()
@@ -58,6 +59,16 @@ export const mapCompanionsData = async (
           })
           .then((r) => r._id)
       : participantData.idPhotoId || null;
+  const voucherData =
+    uploadVoucher &&
+    participantData.voucher &&
+    typeof participantData.voucher === "object"
+      ? await getClient()
+          .assets.upload("file", participantData.voucher, {
+            filename: participantData.voucher.name,
+          })
+          .then((r) => r._id)
+      : participantData.voucherId || null;
   return {
     _key: nanoid(),
     name: participantData.name,
@@ -97,6 +108,15 @@ export const mapCompanionsData = async (
         _type: "file",
         asset: {
           _ref: idPhotoData,
+          _type: "reference",
+        },
+      },
+    }),
+    ...(voucherData && {
+      voucher: {
+        _type: "file",
+        asset: {
+          _ref: voucherData,
           _type: "reference",
         },
       },

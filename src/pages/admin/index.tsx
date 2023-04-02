@@ -4,14 +4,13 @@ import type { GetSessionParams } from "next-auth/react";
 import { LockClosedIcon } from "@heroicons/react/24/outline";
 import React, { useState } from "react";
 import { InferGetServerSidePropsType } from "next";
-import Snackbar from "src/components/UtilityComponents/Snackbar";
+import toast from "react-hot-toast";
 
 const AdminLogin = ({
   providers,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [notiMessage, setNotiMessage] = useState("");
 
   return (
     <div className="flex min-h-[100vh] min-w-full flex-col items-center justify-center space-y-4 bg-white p-4">
@@ -69,8 +68,7 @@ const AdminLogin = ({
                               password,
                             });
                           } else {
-                            setNotiMessage("Minden mező kötelező");
-                            setTimeout(() => setNotiMessage(""), 3000);
+                            toast.error("Minden mező kötelező");
                           }
                         }}
                         className="group relative flex w-full justify-center rounded-md bg-lightcherry py-2 px-3 text-sm font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
@@ -100,7 +98,6 @@ const AdminLogin = ({
             ))}
         </div>
       </div>
-      <Snackbar message={notiMessage} open={notiMessage !== ""} />
     </div>
   );
 };

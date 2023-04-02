@@ -12,8 +12,8 @@ import classNames from "classnames";
 import { useRouter } from "next/router";
 import React, { Fragment, useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
+import { toast } from "react-hot-toast";
 import Select from "src/components/FormComponents/Select";
-import Snackbar from "src/components/UtilityComponents/Snackbar";
 import type {
   FacultySanity,
   SanityRichText,
@@ -54,9 +54,8 @@ const ApplicationForm = ({
   gdpr?: SanityRichText[];
 }) => {
   const router = useRouter();
-  const [notiMessage, setNotiMessage] = useState("");
   const [confirmationMessage, setConfirmationMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState(false);
   const [gdprDialog, setGdprDialog] = useState(false);
   const [gdprApproved, setGdprApproved] = useState(!!defaultValues);
@@ -133,6 +132,7 @@ const ApplicationForm = ({
 
   const patchSubmit = React.useCallback(
     async (data: Inputs) => {
+      const toastId = toast.loading("Mentés folyamatban");
       const participantData = personGetValues();
       const idPhotoData =
         personDirtyFields.idPhoto &&
@@ -208,7 +208,9 @@ const ApplicationForm = ({
                 await mapCompanionsData(
                   companion,
                   !!projectDirtyFields.projects?.[index]?.companions?.[ci]
-                    ?.idPhoto
+                    ?.idPhoto,
+                  !!projectDirtyFields.projects?.[index]?.companions?.[ci]
+                    ?.voucher
                 )
             )
           ).then((companions) => companions);
@@ -336,23 +338,34 @@ const ApplicationForm = ({
         })
       )
         .then(() => {
-          setLoading(false);
+          toast.success("Változtatások sikeresen elmentve", {
+            id: toastId,
+          });
+          // setLoading(false);
+          setTimeout(() => router.reload(), 500);
         })
         .catch((e) => {
-          setNotiMessage(e.message);
-          setLoading(false);
-          setTimeout(() => setNotiMessage(""), 3000);
+          toast.error(e.message, {
+            id: toastId,
+          });
         });
     },
-    [personDirtyFields, personGetValues, projectDirtyFields]
+    [
+      personDirtyFields.idPhoto,
+      personDirtyFields.voucher,
+      personGetValues,
+      projectDirtyFields.projects,
+      router,
+    ]
   );
 
   const onSubmit = React.useMemo(() => {
     return handleSubmit(async (data) => {
-      setLoading(true);
+      setSaving(true);
       if (defaultValues) {
         await patchSubmit(data);
       } else {
+        const toastId = toast.loading("Mentés folyamatban");
         const participantData = personGetValues();
         const checkEmail = await fetcher(
           `/participants/check`,
@@ -476,18 +489,20 @@ const ApplicationForm = ({
             })
           )
             .then(() => {
-              setLoading(false);
+              setSaving(false);
               setConfirmationMessage(password);
             })
             .catch((e) => {
-              setNotiMessage(e.message);
-              setLoading(false);
-              setTimeout(() => setNotiMessage(""), 3000);
+              toast.error(e.message, {
+                id: toastId,
+              });
+              setSaving(false);
             });
         } else {
-          setNotiMessage("Ezen az emailen már regisztrálva van");
-          setLoading(false);
-          setTimeout(() => setNotiMessage(""), 3000);
+          toast.error("Ezen az emailen már regisztrálva van", {
+            id: toastId,
+          });
+          setSaving(false);
         }
       }
     });
@@ -1943,6 +1958,54 @@ const ApplicationForm = ({
                                           );
                                         }}
                                       />
+                                      {defaultValues && (
+                                        <Controller
+                                          name={`projects.${index}.companions.${ci}.voucher`}
+                                          control={projectsControl}
+                                          render={({
+                                            field: { onChange, value },
+                                          }) => {
+                                            return (
+                                              <div className="flex flex-col">
+                                                <span className="pl-3">
+                                                  Kifizetési bizonylat
+                                                </span>
+
+                                                <label>
+                                                  <div
+                                                    className={classNames(
+                                                      inputClasses,
+                                                      "flex cursor-pointer items-center bg-application1 pl-4 text-darkcherry  placeholder:text-darkcherry "
+                                                    )}
+                                                  >
+                                                    <div className="overflow-hidden truncate opacity-80">
+                                                      {value &&
+                                                      typeof value === "object"
+                                                        ? value.name
+                                                        : typeof value ===
+                                                          "string"
+                                                        ? value
+                                                        : "Kifizetési bizonylat"}
+                                                    </div>
+                                                  </div>
+                                                  <input
+                                                    type="file"
+                                                    autoComplete="off"
+                                                    className="hidden"
+                                                    onChange={(e) =>
+                                                      onChange(
+                                                        e.target.files
+                                                          ? e.target.files[0]
+                                                          : null
+                                                      )
+                                                    }
+                                                  />
+                                                </label>
+                                              </div>
+                                            );
+                                          }}
+                                        />
+                                      )}
                                     </div>
                                   </div>
                                 </Disclosure.Panel>
@@ -2024,31 +2087,10 @@ const ApplicationForm = ({
         disabled={
           !!Object.keys(projectErrors).length ||
           !!Object.keys(personErrors).length ||
-          !gdprApproved
+          !gdprApproved ||
+          saving
         }
       >
-        {loading && (
-          <svg
-            className="mr-2 h-5 w-5 animate-spin text-white"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
-        )}
         <p>Mentés</p>
       </button>
       {(!!Object.keys(projectErrors).length ||
@@ -2060,7 +2102,6 @@ const ApplicationForm = ({
         </div>
       )}
 
-      <Snackbar message={notiMessage} open={notiMessage !== ""} />
       <Transition.Root show={confirmDialog} as={Fragment}>
         <Dialog
           as="div"

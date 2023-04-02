@@ -182,6 +182,11 @@ export default {
               name: "idPhoto",
               type: "file",
             },
+            {
+              title: "Kifizetési bizonylat",
+              name: "voucher",
+              type: "file",
+            },
           ],
           preview: {
             select: {

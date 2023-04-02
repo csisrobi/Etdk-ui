@@ -139,6 +139,7 @@ export type PersonInputs = {
   idPhoto: File | null | string;
   idPhotoId?: string;
   voucher?: File | null | string;
+  voucherId?: string;
 };
 
 export type ProjectInputs = {

@@ -352,6 +352,14 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       },
     };
   }
+  if (session.user.role === "participant") {
+    return {
+      redirect: {
+        destination: "/admin/jelentkezes",
+        permanent: false,
+      },
+    };
+  }
 
   return {
     props: {
