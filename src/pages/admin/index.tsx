@@ -1,16 +1,22 @@
-//TODO:
-import { getProviders, getSession, signIn } from "next-auth/react";
-import type { GetSessionParams } from "next-auth/react";
 import { LockClosedIcon } from "@heroicons/react/24/outline";
-import React, { useState } from "react";
-import { InferGetServerSidePropsType } from "next";
+import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import { getProviders, getSession, signIn } from "next-auth/react";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const AdminLogin = ({
   providers,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    if (router.query.error) {
+      setTimeout(() => toast.error("Ez a felhasználó nem létezik"), 1000);
+    }
+  }, [router]);
 
   return (
     <div className="flex min-h-[100vh] min-w-full flex-col items-center justify-center space-y-4 bg-white p-4">
@@ -102,7 +108,9 @@ const AdminLogin = ({
   );
 };
 
-export async function getServerSideProps(ctx: GetSessionParams | undefined) {
+export async function getServerSideProps(
+  ctx: GetServerSidePropsContext | undefined
+) {
   const providers = await getProviders();
   const session = await getSession(ctx);
 
