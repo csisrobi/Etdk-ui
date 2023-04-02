@@ -76,15 +76,11 @@ const NewsArchiv = ({
         <div className="flex flex-col gap-12 md:flex-row">
           {archivs.map((archivEl) => (
             <Link key={archivEl.year} href={`archivum/${archivEl.year}`}>
-              <button
-                type="button"
-                className="relative h-11 w-40 cursor-pointer rounded-3xl bg-lightBrown py-2 px-2 text-center text-3xl tracking-wide text-yellow-400"
-                disabled
-              >
+              <div className="relative h-11 w-40 cursor-pointer rounded-3xl bg-lightBrown py-2 px-2 text-center text-3xl tracking-wide text-yellow-400">
                 <span className="absolute -top-3 right-0 left-0 mx-auto text-7xl">
                   {archivEl.year}
                 </span>
-              </button>
+              </div>
             </Link>
           ))}
         </div>

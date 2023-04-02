@@ -673,7 +673,9 @@ const ApplicationForm = ({
                 fieldState: { error },
               }) => (
                 <div className="flex flex-col">
-                  <span className="pl-3">Ellenőrző száma</span>
+                  <span className="pl-3">
+                    Hallgatói azonosító (nr. matricol)
+                  </span>
                   <input
                     value={value}
                     onChange={(e) => {
@@ -687,7 +689,7 @@ const ApplicationForm = ({
                       error ? "ring ring-red-700" : "",
                       "bg-application1 text-darkcherry placeholder:text-darkcherry"
                     )}
-                    placeholder="Ellenőrző száma"
+                    placeholder="Hallgatói azonosító (nr. matricol)"
                   />
                 </div>
               )}
@@ -897,7 +899,7 @@ const ApplicationForm = ({
                             ? value.name
                             : typeof value === "string"
                             ? value
-                            : "Ellenőrző kép"}
+                            : "Kép az ellenőrző első két oldaláról"}
                         </div>
                       </div>
                       <input
@@ -1636,7 +1638,7 @@ const ApplicationForm = ({
                                         }) => (
                                           <div className="flex flex-col">
                                             <span className="pl-3">
-                                              Ellenőrző száma
+                                              Hallgatói azonosító (nr. matricol)
                                             </span>
                                             <input
                                               {...field}
@@ -1649,7 +1651,7 @@ const ApplicationForm = ({
                                                   : "",
                                                 "bg-application1 text-darkcherry placeholder:text-darkcherry"
                                               )}
-                                              placeholder="Ellenőrző száma"
+                                              placeholder="Hallgatói azonosító (nr. matricol)"
                                             />
                                           </div>
                                         )}
@@ -1908,7 +1910,7 @@ const ApplicationForm = ({
                                                       : typeof value ===
                                                         "string"
                                                       ? value
-                                                      : "Ellenőrző kép"}
+                                                      : "Kép az ellenőrző első két oldaláról"}
                                                   </div>
                                                 </div>
                                                 <input
