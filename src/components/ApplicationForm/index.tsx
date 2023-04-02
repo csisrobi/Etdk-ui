@@ -493,6 +493,9 @@ const ApplicationForm = ({
             .then(() => {
               setSaving(false);
               setConfirmationMessage(password);
+              toast.success("Jelentkezés sikeres", {
+                id: toastId,
+              });
             })
             .catch((e) => {
               toast.error(e.message, {
