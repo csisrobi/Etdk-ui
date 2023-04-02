@@ -182,6 +182,11 @@ export default {
               name: "idPhoto",
               type: "file",
             },
+            {
+              title: "Kifizetési bizonylat",
+              name: "voucher",
+              type: "file",
+            },
           ],
           preview: {
             select: {
@@ -268,7 +273,11 @@ export default {
         disableNew: true,
       },
     },
-
+    {
+      title: "Dolgozat",
+      name: "essay",
+      type: "file",
+    },
     {
       title: "Melléklet",
       name: "annex",

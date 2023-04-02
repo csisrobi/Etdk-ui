@@ -151,21 +151,47 @@ export const checkIfAdmin = (email: string) => groq`
 export const getProjectsDataForParticipant = (email: string) => groq`
 *[_type == "participants" && email == "${email}"]{
   _id,
-  "advisorUniversity": advisorUniversity -> _id,
-  "advisorFaculty":advisorFaculty -> _id,
-  "advisorSubject":advisorSubject -> _id,
-  advisorName,
-  advisorTitle,
-  advisorEmail,
-  advisorMobileNumber,
-  "advisorCertificate": advisorCertificate.asset->originalFilename,
-
   title,
-  "extract": extract.asset->originalFilename,
   "section":section -> _id,
-  "annex": annex.asset->originalFilename,
-  "declaration": declaration.asset->originalFilename,
+  "extract": extract.asset->originalFilename,
+  "essay":essay.asset->originalFilename,
   "contribution": contribution.asset->originalFilename,
+  "declaration": declaration.asset->originalFilename,
+  "annex": annex.asset->originalFilename,
+
+  companions[]{
+    _key,
+    name,
+    idNumber,
+    "university": university -> _id,
+    universityOther,
+    "faculty":faculty -> _id,
+    facultyOther,
+    "subject":subject -> _id,
+    subjectOther,
+    degree,
+    class,
+    finishedSemester,
+    email,
+    mobileNumber,
+    "idPhoto": idPhoto.asset->originalFilename,
+    "idPhotoId": idPhoto.asset->_id,
+    "voucher": voucher.asset-> originalFilename,
+    "voucherId": voucher.asset->_id,
+  },
+
+  advisors[]{
+    _key,
+    name,
+    "university": university -> _id,
+    universityOther,
+    title,
+    email,
+    mobileNumber,
+    "certificate": certificate.asset->originalFilename,
+    "certificateId": certificate.asset->_id,
+
+  }
 }`;
 
 export const getPersonDataForParticipant = (email: string) => groq`
@@ -173,21 +199,24 @@ export const getPersonDataForParticipant = (email: string) => groq`
   name,
   idNumber,
   "university": university -> _id,
+  universityOther,
   "faculty":faculty -> _id,
+  facultyOther,
   "subject":subject -> _id,
+  subjectOther,
   degree,
   class,
   finishedSemester,
   email,
   mobileNumber,
-  "idPhoto": idPhoto.asset->originalFilename,
-  "voucher": voucher.asset->originalFilename,
+  "idPhoto": idPhoto.asset-> originalFilename,
+  "voucher": voucher.asset-> originalFilename,
 }`;
 
 export const getAllParticipants = groq`
 *[_type == "participants"] {
   _id, 
-  
+  "registrationDate": _createdAt,
   name,
   idNumber,
   "university": university -> name,
@@ -202,11 +231,17 @@ export const getAllParticipants = groq`
   email,
   mobileNumber,
   "idPhoto": idPhoto.asset->{url, originalFilename},
+  "voucher": voucher.asset->{url, originalFilename},
 
   title,
   "section":section -> name,
   accepted,
   "extract": extract.asset->{url, originalFilename},
+  "annex": annex.asset->{url, originalFilename},
+  "declaration": declaration.asset->{url, originalFilename},
+  "contribution": contribution.asset->{url, originalFilename},
+  "essay": essay.asset->{url, originalFilename},
+
 
   companions[]{
     name,
@@ -223,6 +258,7 @@ export const getAllParticipants = groq`
     email,
     mobileNumber,
     "idPhoto": idPhoto.asset->{url, originalFilename},
+    "voucher": voucher.asset->{url, originalFilename},
   },
 
   advisors[]{

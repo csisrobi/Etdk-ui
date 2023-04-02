@@ -9,182 +9,33 @@ import { fetcher } from "@lib/queries";
 import { getClient } from "@lib/sanity";
 import RichText from "@utils/RichText";
 import classNames from "classnames";
-import { nanoid } from "nanoid";
 import { useRouter } from "next/router";
-import React, { Fragment, useCallback, useState } from "react";
+import React, { Fragment, useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
+import { toast } from "react-hot-toast";
 import Select from "src/components/FormComponents/Select";
-import Snackbar from "src/components/UtilityComponents/Snackbar";
 import type {
   FacultySanity,
   SanityRichText,
   SectionsSanity,
   UniversitiesSanity,
 } from "types";
+import {
+  classOptions,
+  degreeOptions,
+  inputClasses,
+  Inputs,
+  PersonInputs,
+  ProjectInputs,
+  semesterOptions,
+  titleOptions,
+} from "./constants";
 import { ContributionField } from "./ContributionField";
+import { mapAdvisorData, mapCompanionsData } from "./data";
 import { FacultyField } from "./FacultyField";
 import { OtherField } from "./OtherField";
 import { SubjectField } from "./SubjectField";
 import { UniversityField } from "./UniversityField";
-
-const degreeOptions = [
-  {
-    name: "BA (alapképzés)",
-    value: "BA",
-  },
-  {
-    name: "MA (mesterképzés)",
-    value: "MA",
-  },
-  {
-    name: "BSc (alapképzés)",
-    value: "BSc",
-  },
-];
-
-const classOptions = [
-  {
-    name: "1",
-    value: "1",
-  },
-  {
-    name: "2",
-    value: "2",
-  },
-  {
-    name: "3",
-    value: "3",
-  },
-  {
-    name: "4",
-    value: "4",
-  },
-  {
-    name: "5",
-    value: "5",
-  },
-  {
-    name: "6",
-    value: "6",
-  },
-];
-
-const semesterOptions = [
-  {
-    name: "1",
-    value: "1",
-  },
-  {
-    name: "2",
-    value: "2",
-  },
-  {
-    name: "3",
-    value: "3",
-  },
-  {
-    name: "4",
-    value: "4",
-  },
-  {
-    name: "5",
-    value: "5",
-  },
-  {
-    name: "6",
-    value: "6",
-  },
-  {
-    name: "7",
-    value: "7",
-  },
-  {
-    name: "8",
-    value: "8",
-  },
-  {
-    name: "9",
-    value: "9",
-  },
-  {
-    name: "10",
-    value: "10",
-  },
-  {
-    name: "11",
-    value: "11",
-  },
-  {
-    name: "12",
-    value: "12",
-  },
-];
-
-const titleOptions = [
-  {
-    name: "Adjunktus",
-    value: "adjunktus",
-  },
-  {
-    name: "Docens",
-    value: "Ddocens",
-  },
-  {
-    name: "Doktorandusz",
-    value: "doktorandusz",
-  },
-  {
-    name: "Professzor",
-    value: "professzor",
-  },
-];
-
-export type AdvisorInputs = {
-  name: string;
-  email: string;
-  mobileNumber: string;
-  title: string;
-  university: string;
-  universityOther?: string;
-  certificate: File | null | string;
-};
-export type PersonInputs = {
-  name: string;
-  idNumber: string;
-  finishedSemester: string;
-  degree: string;
-  class: string;
-  university: string;
-  faculty: string;
-  subject: string;
-  universityOther?: string;
-  facultyOther?: string;
-  subjectOther?: string;
-  email: string;
-  mobileNumber: string;
-  idPhoto: File | null | string;
-  voucher?: File | null | string;
-};
-
-export type ProjectInputs = {
-  _id?: string;
-
-  title: string;
-  extract: File | null | string;
-  section: string;
-  annex: File | null | string;
-  declaration: File | null | string;
-  contribution: File | null | string;
-  advisors: AdvisorInputs[];
-  companions?: PersonInputs[];
-};
-
-export type Inputs = {
-  projects: ProjectInputs[];
-};
-
-const inputClasses =
-  "pl-3 border-none block h-11 w-full rounded-xl text-lg font-semibold placeholder:opacity-80 focus:border-darkcherry focus:ring-darkcherry";
 
 const ApplicationForm = ({
   universities,
@@ -203,20 +54,18 @@ const ApplicationForm = ({
   gdpr?: SanityRichText[];
 }) => {
   const router = useRouter();
-  const [notiMessage, setNotiMessage] = useState("");
   const [confirmationMessage, setConfirmationMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState(false);
   const [gdprDialog, setGdprDialog] = useState(false);
-  const [gdprApproved, setGdprApproved] = useState(false);
-
+  const [gdprApproved, setGdprApproved] = useState(!!defaultValues);
   const {
     control: personFormControl,
     getValues: personGetValues,
     setValue: personSetValue,
     setError: personSetError,
     clearErrors: personClearErrors,
-    formState: { errors: personErrors },
+    formState: { errors: personErrors, dirtyFields: personDirtyFields },
   } = useForm<PersonInputs>({
     defaultValues: !defaultValues
       ? {
@@ -244,7 +93,7 @@ const ApplicationForm = ({
     handleSubmit,
     setValue: projectSetValue,
     getValues: projectGetValues,
-    formState: { errors: projectErrors },
+    formState: { errors: projectErrors, dirtyFields: projectDirtyFields },
     clearErrors: projectCleanErrors,
     setError: projectSetErrors,
   } = useForm<Inputs>({
@@ -281,232 +130,385 @@ const ApplicationForm = ({
     name: "projects",
   });
 
-  const mapAdvisorData = useCallback(async (advisorData: AdvisorInputs) => {
-    const certificateData =
-      advisorData.certificate && typeof advisorData.certificate === "object"
-        ? await getClient().assets.upload("file", advisorData.certificate, {
-            filename: advisorData.certificate.name,
-          })
-        : null;
-    return {
-      _key: nanoid(),
-      name: advisorData.name,
-      ...(advisorData.universityOther
-        ? {
-            universityOther: advisorData.universityOther,
-          }
-        : {
-            university: {
-              _type: "reference",
-              _ref: advisorData.university,
-            },
-          }),
-      title: advisorData.title,
-      email: advisorData.email,
-      mobileNumber: advisorData.mobileNumber,
-      ...(certificateData && {
-        certificate: {
-          _type: "file",
-          asset: {
-            _ref: certificateData._id,
-            _type: "reference",
-          },
-        },
-      }),
-    };
-  }, []);
-
-  const mapCompanionsData = useCallback(
-    async (participantData: PersonInputs) => {
+  const patchSubmit = React.useCallback(
+    async (data: Inputs) => {
+      const toastId = toast.loading("Mentés folyamatban");
+      const participantData = personGetValues();
       const idPhotoData =
-        participantData.idPhoto && typeof participantData.idPhoto === "object"
+        personDirtyFields.idPhoto &&
+        participantData.idPhoto &&
+        typeof participantData.idPhoto === "object"
           ? await getClient().assets.upload("file", participantData.idPhoto, {
               filename: participantData.idPhoto.name,
             })
           : null;
-      return {
-        _key: nanoid(),
-        name: participantData.name,
-        idNumber: participantData.idNumber,
-        ...(participantData.universityOther
-          ? { universityOther: participantData.universityOther }
-          : {
-              university: {
-                _type: "reference",
-                _ref: participantData.university,
+      const voucherData =
+        personDirtyFields.voucher &&
+        participantData.voucher &&
+        typeof participantData.voucher === "object"
+          ? await getClient().assets.upload("file", participantData.voucher, {
+              filename: participantData.voucher.name,
+            })
+          : null;
+      Promise.all(
+        data.projects.map(async (project, index) => {
+          const extractData =
+            projectDirtyFields.projects?.[index]?.extract &&
+            project.extract &&
+            typeof project.extract === "object"
+              ? await getClient().assets.upload("file", project.extract, {
+                  filename: project.extract.name,
+                })
+              : null;
+          const annexData =
+            projectDirtyFields.projects?.[index]?.annex &&
+            project.annex &&
+            typeof project.annex === "object"
+              ? await getClient().assets.upload("file", project.annex, {
+                  filename: project.annex.name,
+                })
+              : null;
+          const declarationData =
+            projectDirtyFields.projects?.[index]?.declaration &&
+            project.declaration &&
+            typeof project.declaration === "object"
+              ? await getClient().assets.upload("file", project.declaration, {
+                  filename: project.declaration.name,
+                })
+              : null;
+          const essayData =
+            projectDirtyFields.projects?.[index]?.essay &&
+            project.essay &&
+            typeof project.essay === "object"
+              ? await getClient().assets.upload("file", project.essay, {
+                  filename: project.essay.name,
+                })
+              : null;
+          const contributionData =
+            projectDirtyFields.projects?.[index]?.contribution &&
+            project.contribution &&
+            typeof project.contribution === "object"
+              ? await getClient().assets.upload("file", project.contribution, {
+                  filename: project.contribution.name,
+                })
+              : null;
+          const advisors = await Promise.all(
+            project.advisors.map(
+              async (advisor, ai) =>
+                await mapAdvisorData(
+                  advisor,
+                  !!projectDirtyFields.projects?.[index]?.advisors?.[ai]
+                    ?.certificate
+                )
+            )
+          ).then((advisors) => advisors);
+          const companions = await Promise.all(
+            (project.companions || []).map(
+              async (companion, ci) =>
+                await mapCompanionsData(
+                  companion,
+                  !!projectDirtyFields.projects?.[index]?.companions?.[ci]
+                    ?.idPhoto,
+                  !!projectDirtyFields.projects?.[index]?.companions?.[ci]
+                    ?.voucher
+                )
+            )
+          ).then((companions) => companions);
+          const mutations = [
+            {
+              patch: {
+                id: project._id,
+                set: {
+                  name: participantData.name,
+                  idNumber: participantData.idNumber,
+                  ...(participantData.universityOther
+                    ? {
+                        universityOther: participantData.universityOther,
+                      }
+                    : {
+                        university: {
+                          _type: "reference",
+                          _ref: participantData.university,
+                        },
+                      }),
+                  ...(participantData.facultyOther
+                    ? { facultyOther: participantData.facultyOther }
+                    : {
+                        faculty: {
+                          _type: "reference",
+                          _ref: participantData.faculty,
+                        },
+                      }),
+                  ...(participantData.subjectOther
+                    ? { subjectOther: participantData.subjectOther }
+                    : {
+                        subject: {
+                          _type: "reference",
+                          _ref: participantData.subject,
+                        },
+                      }),
+                  degree: participantData.degree,
+                  class: participantData.class,
+                  finishedSemester: participantData.finishedSemester,
+                  email: participantData.email,
+                  mobileNumber: participantData.mobileNumber,
+                  ...(idPhotoData && {
+                    idPhoto: {
+                      _type: "file",
+                      asset: {
+                        _ref: idPhotoData._id,
+                        _type: "reference",
+                      },
+                    },
+                  }),
+                  ...(contributionData && {
+                    contribution: {
+                      _type: "file",
+                      asset: {
+                        _ref: contributionData._id,
+                        _type: "reference",
+                      },
+                    },
+                  }),
+                  ...(declarationData && {
+                    declaration: {
+                      _type: "file",
+                      asset: {
+                        _ref: declarationData._id,
+                        _type: "reference",
+                      },
+                    },
+                  }),
+                  ...(essayData && {
+                    essay: {
+                      _type: "file",
+                      asset: {
+                        _ref: essayData._id,
+                        _type: "reference",
+                      },
+                    },
+                  }),
+                  ...(annexData && {
+                    annex: {
+                      _type: "file",
+                      asset: {
+                        _ref: annexData._id,
+                        _type: "reference",
+                      },
+                    },
+                  }),
+                  ...(voucherData && {
+                    voucher: {
+                      _type: "file",
+                      asset: {
+                        _ref: voucherData._id,
+                        _type: "reference",
+                      },
+                    },
+                  }),
+                  advisors: advisors,
+                  companions: companions,
+                  title: project.title,
+                  ...(extractData && {
+                    extract: {
+                      _type: "file",
+                      asset: {
+                        _ref: extractData._id,
+                        _type: "reference",
+                      },
+                    },
+                  }),
+                  section: {
+                    _type: "reference",
+                    _ref: project.section,
+                  },
+                },
               },
-            }),
-
-        ...(participantData.facultyOther
-          ? { facultyOther: participantData.facultyOther }
-          : {
-              faculty: {
-                _type: "reference",
-                _ref: participantData.faculty,
-              },
-            }),
-        ...(participantData.subjectOther
-          ? { subjectOther: participantData.subjectOther }
-          : {
-              subject: {
-                _type: "reference",
-                _ref: participantData.subject,
-              },
-            }),
-        degree: participantData.degree,
-        class: participantData.class,
-        finishedSemester: participantData.finishedSemester,
-        email: participantData.email,
-        mobileNumber: participantData.mobileNumber,
-        ...(idPhotoData && {
-          idPhoto: {
-            _type: "file",
-            asset: {
-              _ref: idPhotoData._id,
-              _type: "reference",
             },
-          },
-        }),
-      };
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ] as any;
+          return await fetcher(
+            `/participants/upload/mutations`,
+            JSON.stringify(mutations)
+          ).then((r) => {
+            if (r.hasOwnProperty("error")) {
+              throw Error(`${index + 1} projekt javitása közben hiba történt`);
+            }
+          });
+        })
+      )
+        .then(() => {
+          setTimeout(() => {
+            toast.success("Változtatások sikeresen elmentve", {
+              id: toastId,
+            });
+            router.reload();
+            setSaving(false);
+          }, 3000);
+        })
+        .catch((e) => {
+          toast.error(e.message, {
+            id: toastId,
+          });
+        });
     },
-    []
+    [
+      personDirtyFields.idPhoto,
+      personDirtyFields.voucher,
+      personGetValues,
+      projectDirtyFields.projects,
+      router,
+    ]
   );
 
   const onSubmit = React.useMemo(() => {
     return handleSubmit(async (data) => {
-      setLoading(true);
-      const participantData = personGetValues();
-      const checkEmail = await fetcher(
-        `/participants/check`,
-        JSON.stringify({
-          email: participantData.email,
-        })
-      );
-      if (Array.isArray(checkEmail) && !checkEmail.length) {
-        const password = Math.random().toString(36).slice(-8);
-        const idPhotoData =
-          participantData.idPhoto && typeof participantData.idPhoto === "object"
-            ? await getClient().assets.upload("file", participantData.idPhoto, {
-                filename: participantData.idPhoto.name,
-              })
-            : null;
-        Promise.all(
-          data.projects.map(async (project, index) => {
-            if (project.extract && typeof project.extract === "object") {
-              const extractData =
-                project.extract && typeof project.extract === "object"
-                  ? await getClient().assets.upload("file", project.extract, {
-                      filename: project.extract.name,
-                    })
-                  : null;
-              const advisors = await Promise.all(
-                project.advisors.map(
-                  async (advisor) => await mapAdvisorData(advisor)
-                )
-              ).then((advisors) => advisors);
-              const companions = await Promise.all(
-                (project.companions || []).map(
-                  async (companion) => await mapCompanionsData(companion)
-                )
-              ).then((companions) => companions);
-              const mutations = [
-                {
-                  create: {
-                    _type: "participants",
-                    name: participantData.name,
-                    idNumber: participantData.idNumber,
-                    ...(participantData.universityOther
-                      ? {
-                          universityOther: participantData.universityOther,
-                        }
-                      : {
-                          university: {
-                            _type: "reference",
-                            _ref: participantData.university,
-                          },
-                        }),
-                    ...(participantData.facultyOther
-                      ? { facultyOther: participantData.facultyOther }
-                      : {
-                          faculty: {
-                            _type: "reference",
-                            _ref: participantData.faculty,
-                          },
-                        }),
-                    ...(participantData.subjectOther
-                      ? { subjectOther: participantData.subjectOther }
-                      : {
-                          subject: {
-                            _type: "reference",
-                            _ref: participantData.subject,
-                          },
-                        }),
-                    degree: participantData.degree,
-                    class: participantData.class,
-                    finishedSemester: participantData.finishedSemester,
-                    email: participantData.email,
-                    mobileNumber: participantData.mobileNumber,
-                    ...(idPhotoData && {
-                      idPhoto: {
-                        _type: "file",
-                        asset: {
-                          _ref: idPhotoData._id,
-                          _type: "reference",
-                        },
-                      },
-                    }),
-                    advisors: advisors,
-                    companions: companions,
-                    title: project.title,
-                    ...(extractData && {
-                      extract: {
-                        _type: "file",
-                        asset: {
-                          _ref: extractData._id,
-                          _type: "reference",
-                        },
-                      },
-                    }),
-                    section: {
-                      _type: "reference",
-                      _ref: project.section,
-                    },
-                    accepted: false,
-                    password: password,
-                    gdpr: true,
-                  },
-                },
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              ] as any;
-              return await fetcher(
-                `/participants/upload/mutations`,
-                JSON.stringify(mutations)
-              ).then((r) => {
-                if (r.hasOwnProperty("error")) {
-                  throw Error(
-                    `${index + 1} projekt feltöltése közben hiba történt`
-                  );
-                }
-              });
-            }
-          })
-        )
-          .then(() => {
-            setLoading(false);
-            setConfirmationMessage(password);
-          })
-          .catch((e) => {
-            setNotiMessage(e.message);
-            setLoading(false);
-            setTimeout(() => setNotiMessage(""), 3000);
-          });
+      setSaving(true);
+      if (defaultValues) {
+        await patchSubmit(data);
       } else {
-        setNotiMessage("Ezen az emailen már regisztrálva van");
-        setLoading(false);
-        setTimeout(() => setNotiMessage(""), 3000);
+        const toastId = toast.loading("Mentés folyamatban");
+        const participantData = personGetValues();
+        const checkEmail = await fetcher(
+          `/participants/check`,
+          JSON.stringify({
+            email: participantData.email,
+          })
+        );
+        if (Array.isArray(checkEmail) && !checkEmail.length) {
+          const password = Math.random().toString(36).slice(-8);
+          const idPhotoData =
+            participantData.idPhoto &&
+            typeof participantData.idPhoto === "object"
+              ? await getClient().assets.upload(
+                  "file",
+                  participantData.idPhoto,
+                  {
+                    filename: participantData.idPhoto.name,
+                  }
+                )
+              : null;
+          Promise.all(
+            data.projects.map(async (project, index) => {
+              if (project.extract && typeof project.extract === "object") {
+                const extractData =
+                  project.extract && typeof project.extract === "object"
+                    ? await getClient().assets.upload("file", project.extract, {
+                        filename: project.extract.name,
+                      })
+                    : null;
+                const advisors = await Promise.all(
+                  project.advisors.map(
+                    async (advisor) => await mapAdvisorData(advisor, true)
+                  )
+                ).then((advisors) => advisors);
+                const companions = await Promise.all(
+                  (project.companions || []).map(
+                    async (companion) =>
+                      await mapCompanionsData(companion, true)
+                  )
+                ).then((companions) => companions);
+                const mutations = [
+                  {
+                    create: {
+                      _type: "participants",
+                      name: participantData.name,
+                      idNumber: participantData.idNumber,
+                      ...(participantData.universityOther
+                        ? {
+                            universityOther: participantData.universityOther,
+                          }
+                        : {
+                            university: {
+                              _type: "reference",
+                              _ref: participantData.university,
+                            },
+                          }),
+                      ...(participantData.facultyOther
+                        ? { facultyOther: participantData.facultyOther }
+                        : {
+                            faculty: {
+                              _type: "reference",
+                              _ref: participantData.faculty,
+                            },
+                          }),
+                      ...(participantData.subjectOther
+                        ? { subjectOther: participantData.subjectOther }
+                        : {
+                            subject: {
+                              _type: "reference",
+                              _ref: participantData.subject,
+                            },
+                          }),
+                      degree: participantData.degree,
+                      class: participantData.class,
+                      finishedSemester: participantData.finishedSemester,
+                      email: participantData.email,
+                      mobileNumber: participantData.mobileNumber,
+                      ...(idPhotoData && {
+                        idPhoto: {
+                          _type: "file",
+                          asset: {
+                            _ref: idPhotoData._id,
+                            _type: "reference",
+                          },
+                        },
+                      }),
+                      advisors: advisors,
+                      companions: companions,
+                      title: project.title,
+                      ...(extractData && {
+                        extract: {
+                          _type: "file",
+                          asset: {
+                            _ref: extractData._id,
+                            _type: "reference",
+                          },
+                        },
+                      }),
+                      section: {
+                        _type: "reference",
+                        _ref: project.section,
+                      },
+                      accepted: false,
+                      password: password,
+                      gdpr: true,
+                    },
+                  },
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                ] as any;
+                return await fetcher(
+                  `/participants/upload/mutations`,
+                  JSON.stringify(mutations)
+                ).then((r) => {
+                  if (r.hasOwnProperty("error")) {
+                    throw Error(
+                      `${index + 1} projekt feltöltése közben hiba történt`
+                    );
+                  }
+                });
+              }
+            })
+          )
+            .then(() => {
+              setSaving(false);
+              setConfirmationMessage(password);
+            })
+            .catch((e) => {
+              toast.error(e.message, {
+                id: toastId,
+              });
+              setSaving(false);
+            });
+        } else {
+          toast.error("Ezen az emailen már regisztrálva van", {
+            id: toastId,
+          });
+          setSaving(false);
+        }
       }
     });
-  }, [handleSubmit, personGetValues, mapAdvisorData, mapCompanionsData]);
+  }, [handleSubmit, defaultValues, patchSubmit, personGetValues]);
 
   const submitData = () => {
     const participantData = personGetValues();
@@ -632,7 +634,7 @@ const ApplicationForm = ({
 
   return (
     <div className="flex min-h-[100vh] min-w-full flex-col items-center bg-white pb-40 pt-[66px]">
-      <div className="w-full space-y-4 md:w-fit">
+      <div className="w-full space-y-4 md:w-[720px]">
         <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:p-6 ">
           <p className="text-3xl text-darkcherry">Személyes adatok:</p>
           <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:pl-2">
@@ -643,21 +645,24 @@ const ApplicationForm = ({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <input
-                  value={value}
-                  onChange={(e) => {
-                    personClearErrors("name");
-                    onChange(e.target.value);
-                  }}
-                  autoComplete="off"
-                  type="text"
-                  className={classNames(
-                    inputClasses,
-                    error ? "ring ring-red-700" : "",
-                    "bg-application1 text-darkcherry placeholder:text-darkcherry"
-                  )}
-                  placeholder="Név"
-                />
+                <div className="flex flex-col">
+                  <span className="pl-3">Név</span>
+                  <input
+                    value={value}
+                    onChange={(e) => {
+                      personClearErrors("name");
+                      onChange(e.target.value);
+                    }}
+                    autoComplete="off"
+                    type="text"
+                    className={classNames(
+                      inputClasses,
+                      error ? "ring ring-red-700" : "",
+                      "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                    )}
+                    placeholder="Név"
+                  />
+                </div>
               )}
             />
             <Controller
@@ -667,21 +672,24 @@ const ApplicationForm = ({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <input
-                  value={value}
-                  onChange={(e) => {
-                    personClearErrors("idNumber");
-                    onChange(e.target.value);
-                  }}
-                  autoComplete="off"
-                  type="text"
-                  className={classNames(
-                    inputClasses,
-                    error ? "ring ring-red-700" : "",
-                    "bg-application1 text-darkcherry placeholder:text-darkcherry"
-                  )}
-                  placeholder="Ellenőrző száma"
-                />
+                <div className="flex flex-col">
+                  <span className="pl-3">Ellenőrző száma</span>
+                  <input
+                    value={value}
+                    onChange={(e) => {
+                      personClearErrors("idNumber");
+                      onChange(e.target.value);
+                    }}
+                    autoComplete="off"
+                    type="text"
+                    className={classNames(
+                      inputClasses,
+                      error ? "ring ring-red-700" : "",
+                      "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                    )}
+                    placeholder="Ellenőrző száma"
+                  />
+                </div>
               )}
             />
             <UniversityField
@@ -818,22 +826,25 @@ const ApplicationForm = ({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <input
-                  value={value}
-                  onChange={(e) => {
-                    personClearErrors("email");
-                    onChange(e.target.value);
-                  }}
-                  autoComplete="off"
-                  disabled={!!defaultValues}
-                  type="text"
-                  className={classNames(
-                    inputClasses,
-                    error ? "ring ring-red-700" : "",
-                    "bg-application1 text-darkcherry placeholder:text-darkcherry"
-                  )}
-                  placeholder="E-mail cím"
-                />
+                <div className="flex flex-col">
+                  <span className="pl-3">E-mail cím</span>
+                  <input
+                    value={value}
+                    onChange={(e) => {
+                      personClearErrors("email");
+                      onChange(e.target.value);
+                    }}
+                    autoComplete="off"
+                    disabled={!!defaultValues}
+                    type="text"
+                    className={classNames(
+                      inputClasses,
+                      error ? "ring ring-red-700" : "",
+                      "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                    )}
+                    placeholder="E-mail cím"
+                  />
+                </div>
               )}
             />
             <Controller
@@ -843,21 +854,24 @@ const ApplicationForm = ({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <input
-                  value={value}
-                  onChange={(e) => {
-                    personClearErrors("mobileNumber");
-                    onChange(e.target.value);
-                  }}
-                  autoComplete="off"
-                  type="text"
-                  className={classNames(
-                    inputClasses,
-                    error ? "ring ring-red-700" : "",
-                    "bg-application1 text-darkcherry placeholder:text-darkcherry"
-                  )}
-                  placeholder="Telefonszám"
-                />
+                <div className="flex flex-col">
+                  <span className="pl-3">Telefonszám</span>
+                  <input
+                    value={value}
+                    onChange={(e) => {
+                      personClearErrors("mobileNumber");
+                      onChange(e.target.value);
+                    }}
+                    autoComplete="off"
+                    type="text"
+                    className={classNames(
+                      inputClasses,
+                      error ? "ring ring-red-700" : "",
+                      "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                    )}
+                    placeholder="Telefonszám"
+                  />
+                </div>
               )}
             />
             <Controller
@@ -869,6 +883,7 @@ const ApplicationForm = ({
               }) => {
                 return (
                   <div className="flex flex-col">
+                    <span className="pl-3">Ellenőrző kép</span>
                     <label>
                       <div
                         className={classNames(
@@ -922,30 +937,34 @@ const ApplicationForm = ({
                 control={personFormControl}
                 render={({ field: { onChange, value } }) => {
                   return (
-                    <label>
-                      <div
-                        className={classNames(
-                          inputClasses,
-                          "flex cursor-pointer items-center bg-application1 pl-4 text-darkcherry  placeholder:text-darkcherry "
-                        )}
-                      >
-                        <div className="overflow-hidden truncate opacity-80">
-                          {value && typeof value === "object"
-                            ? value.name
-                            : typeof value === "string"
-                            ? value
-                            : "Kifizetési bizonylat"}
+                    <div className="flex flex-col">
+                      <span className="pl-3">Kifizetési bizonylat</span>
+
+                      <label>
+                        <div
+                          className={classNames(
+                            inputClasses,
+                            "flex cursor-pointer items-center bg-application1 pl-4 text-darkcherry  placeholder:text-darkcherry "
+                          )}
+                        >
+                          <div className="overflow-hidden truncate opacity-80">
+                            {value && typeof value === "object"
+                              ? value.name
+                              : typeof value === "string"
+                              ? value
+                              : "Kifizetési bizonylat"}
+                          </div>
                         </div>
-                      </div>
-                      <input
-                        type="file"
-                        autoComplete="off"
-                        className="hidden"
-                        onChange={(e) =>
-                          onChange(e.target.files ? e.target.files[0] : null)
-                        }
-                      />
-                    </label>
+                        <input
+                          type="file"
+                          autoComplete="off"
+                          className="hidden"
+                          onChange={(e) =>
+                            onChange(e.target.files ? e.target.files[0] : null)
+                          }
+                        />
+                      </label>
+                    </div>
                   );
                 }}
               />
@@ -960,7 +979,7 @@ const ApplicationForm = ({
                   <p className="flex-1 text-start text-lg text-darkcherry">
                     {index + 1}. Dolgozat adatai
                   </p>
-                  {fields.length > 1 && (
+                  {fields.length > 1 && !defaultValues && (
                     <TrashIcon
                       className="mr-6 h-7 w-7 text-darkcherry"
                       onClick={(e) => {
@@ -1005,17 +1024,20 @@ const ApplicationForm = ({
                           control={projectsControl}
                           rules={{ required: true }}
                           render={({ field, fieldState: { error } }) => (
-                            <input
-                              {...field}
-                              type="text"
-                              autoComplete="off"
-                              className={classNames(
-                                inputClasses,
-                                error ? "ring ring-red-700" : "",
-                                "bg-application3 text-darkcherry placeholder:text-darkcherry"
-                              )}
-                              placeholder="Cím"
-                            />
+                            <div className="flex flex-col">
+                              <span className="pl-3">Cím</span>
+                              <input
+                                {...field}
+                                type="text"
+                                autoComplete="off"
+                                className={classNames(
+                                  inputClasses,
+                                  error ? "ring ring-red-700" : "",
+                                  "bg-application3 text-darkcherry placeholder:text-darkcherry"
+                                )}
+                                placeholder="Cím"
+                              />
+                            </div>
                           )}
                         />
                         <Controller
@@ -1035,34 +1057,39 @@ const ApplicationForm = ({
                             fieldState: { error },
                           }) => {
                             return (
-                              <label>
-                                <div
-                                  className={classNames(
-                                    inputClasses,
-                                    error ? "ring ring-red-700" : "",
-                                    "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
-                                  )}
-                                >
-                                  <div className="overflow-hidden truncate opacity-80">
-                                    {value && typeof value === "object"
-                                      ? value.name
-                                      : typeof value === "string"
-                                      ? value
-                                      : "Kivonat"}
+                              <div className="flex flex-col">
+                                <span className="pl-3">Kivonat</span>
+                                <label>
+                                  <div
+                                    className={classNames(
+                                      inputClasses,
+                                      error ? "ring ring-red-700" : "",
+                                      "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
+                                    )}
+                                  >
+                                    <div className="overflow-hidden truncate opacity-80">
+                                      {value && typeof value === "object"
+                                        ? value.name
+                                        : typeof value === "string"
+                                        ? value
+                                        : "Kivonat"}
+                                    </div>
                                   </div>
-                                </div>
-                                <input
-                                  type="file"
-                                  autoComplete="off"
-                                  className="hidden"
-                                  accept="application/pdf"
-                                  onChange={(e) =>
-                                    onChange(
-                                      e.target.files ? e.target.files[0] : null
-                                    )
-                                  }
-                                />
-                              </label>
+                                  <input
+                                    type="file"
+                                    autoComplete="off"
+                                    className="hidden"
+                                    accept="application/pdf"
+                                    onChange={(e) =>
+                                      onChange(
+                                        e.target.files
+                                          ? e.target.files[0]
+                                          : null
+                                      )
+                                    }
+                                  />
+                                </label>
+                              </div>
                             );
                           }}
                         />
@@ -1080,6 +1107,7 @@ const ApplicationForm = ({
                             }));
                             return (
                               <Select
+                                disabled={!!defaultValues}
                                 onChange={(value: string | number) => {
                                   onChange(value as string);
                                 }}
@@ -1099,38 +1127,82 @@ const ApplicationForm = ({
                         />
                         {defaultValues && (
                           <Controller
+                            name={`projects.${index}.essay`}
+                            control={projectsControl}
+                            render={({ field: { onChange, value } }) => {
+                              return (
+                                <div className="flex flex-col">
+                                  <span className="pl-3">Dolgozat</span>
+                                  <label>
+                                    <div
+                                      className={classNames(
+                                        inputClasses,
+                                        "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
+                                      )}
+                                    >
+                                      <div className="overflow-hidden truncate opacity-80">
+                                        {value && typeof value === "object"
+                                          ? value.name
+                                          : typeof value === "string"
+                                          ? value
+                                          : "Dolgozat"}
+                                      </div>
+                                    </div>
+                                    <input
+                                      type="file"
+                                      autoComplete="off"
+                                      className="hidden"
+                                      onChange={(e) =>
+                                        onChange(
+                                          e.target.files
+                                            ? e.target.files[0]
+                                            : null
+                                        )
+                                      }
+                                    />
+                                  </label>
+                                </div>
+                              );
+                            }}
+                          />
+                        )}
+                        {defaultValues && (
+                          <Controller
                             name={`projects.${index}.annex`}
                             control={projectsControl}
                             render={({ field: { onChange, value } }) => {
                               return (
-                                <label>
-                                  <div
-                                    className={classNames(
-                                      inputClasses,
-                                      "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
-                                    )}
-                                  >
-                                    <div className="overflow-hidden truncate opacity-80">
-                                      {value && typeof value === "object"
-                                        ? value.name
-                                        : typeof value === "string"
-                                        ? value
-                                        : "Melléklet"}
+                                <div className="flex flex-col">
+                                  <span className="pl-3">Melléklet</span>
+                                  <label>
+                                    <div
+                                      className={classNames(
+                                        inputClasses,
+                                        "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
+                                      )}
+                                    >
+                                      <div className="overflow-hidden truncate opacity-80">
+                                        {value && typeof value === "object"
+                                          ? value.name
+                                          : typeof value === "string"
+                                          ? value
+                                          : "Melléklet"}
+                                      </div>
                                     </div>
-                                  </div>
-                                  <input
-                                    type="file"
-                                    autoComplete="off"
-                                    className="hidden"
-                                    onChange={(e) =>
-                                      onChange(
-                                        e.target.files
-                                          ? e.target.files[0]
-                                          : null
-                                      )
-                                    }
-                                  />
-                                </label>
+                                    <input
+                                      type="file"
+                                      autoComplete="off"
+                                      className="hidden"
+                                      onChange={(e) =>
+                                        onChange(
+                                          e.target.files
+                                            ? e.target.files[0]
+                                            : null
+                                        )
+                                      }
+                                    />
+                                  </label>
+                                </div>
                               );
                             }}
                           />
@@ -1141,34 +1213,39 @@ const ApplicationForm = ({
                             control={projectsControl}
                             render={({ field: { onChange, value } }) => {
                               return (
-                                <label>
-                                  <div
-                                    className={classNames(
-                                      inputClasses,
-                                      "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
-                                    )}
-                                  >
-                                    <div className="overflow-hidden truncate opacity-80">
-                                      {value && typeof value === "object"
-                                        ? value.name
-                                        : typeof value === "string"
-                                        ? value
-                                        : "Adatbankos nyilatkozat"}
+                                <div className="flex flex-col">
+                                  <span className="pl-3">
+                                    Adatbankos nyilatkozat
+                                  </span>
+                                  <label>
+                                    <div
+                                      className={classNames(
+                                        inputClasses,
+                                        "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
+                                      )}
+                                    >
+                                      <div className="overflow-hidden truncate opacity-80">
+                                        {value && typeof value === "object"
+                                          ? value.name
+                                          : typeof value === "string"
+                                          ? value
+                                          : "Adatbankos nyilatkozat"}
+                                      </div>
                                     </div>
-                                  </div>
-                                  <input
-                                    type="file"
-                                    autoComplete="off"
-                                    className="hidden"
-                                    onChange={(e) =>
-                                      onChange(
-                                        e.target.files
-                                          ? e.target.files[0]
-                                          : null
-                                      )
-                                    }
-                                  />
-                                </label>
+                                    <input
+                                      type="file"
+                                      autoComplete="off"
+                                      className="hidden"
+                                      onChange={(e) =>
+                                        onChange(
+                                          e.target.files
+                                            ? e.target.files[0]
+                                            : null
+                                        )
+                                      }
+                                    />
+                                  </label>
+                                </div>
                               );
                             }}
                           />
@@ -1196,19 +1273,25 @@ const ApplicationForm = ({
                                     className="mr-6 h-7 w-7 text-darkcherry"
                                     onClick={(e) => {
                                       e.preventDefault();
-                                      const projectValues = projectGetValues(
-                                        `projects.${index}`
-                                      );
-                                      const projectAdvisors =
-                                        projectValues.advisors || [];
-                                      projectAdvisors.splice(ai, 1);
-                                      update(index, {
-                                        ...projectValues,
-                                        advisors: projectAdvisors,
-                                      });
-                                      projectCleanErrors(
-                                        `projects.${index}.advisors.${ai}`
-                                      );
+                                      if (
+                                        window.confirm(
+                                          "Biztos törölni szeretnéd?"
+                                        )
+                                      ) {
+                                        const projectValues = projectGetValues(
+                                          `projects.${index}`
+                                        );
+                                        const projectAdvisors =
+                                          projectValues.advisors || [];
+                                        projectAdvisors.splice(ai, 1);
+                                        update(index, {
+                                          ...projectValues,
+                                          advisors: projectAdvisors,
+                                        });
+                                        projectCleanErrors(
+                                          `projects.${index}.advisors.${ai}`
+                                        );
+                                      }
                                     }}
                                   />
                                 )}
@@ -1245,17 +1328,22 @@ const ApplicationForm = ({
                                           field,
                                           fieldState: { error },
                                         }) => (
-                                          <input
-                                            {...field}
-                                            autoComplete="off"
-                                            type="text"
-                                            className={classNames(
-                                              inputClasses,
-                                              error ? "ring ring-red-700" : "",
-                                              "bg-application2 text-white placeholder:text-white"
-                                            )}
-                                            placeholder="Név"
-                                          />
+                                          <div className="flex flex-col">
+                                            <span className="pl-3">Név</span>
+                                            <input
+                                              {...field}
+                                              autoComplete="off"
+                                              type="text"
+                                              className={classNames(
+                                                inputClasses,
+                                                error
+                                                  ? "ring ring-red-700"
+                                                  : "",
+                                                "bg-application2 text-white placeholder:text-white"
+                                              )}
+                                              placeholder="Név"
+                                            />
+                                          </div>
                                         )}
                                       />
                                       <UniversityField
@@ -1323,17 +1411,24 @@ const ApplicationForm = ({
                                           field,
                                           fieldState: { error },
                                         }) => (
-                                          <input
-                                            {...field}
-                                            autoComplete="off"
-                                            type="text"
-                                            className={classNames(
-                                              inputClasses,
-                                              error ? "ring ring-red-700" : "",
-                                              "bg-application2 text-white placeholder:text-white"
-                                            )}
-                                            placeholder="E-mail cím"
-                                          />
+                                          <div className="flex flex-col">
+                                            <span className="pl-3">
+                                              E-mail cím
+                                            </span>
+                                            <input
+                                              {...field}
+                                              autoComplete="off"
+                                              type="text"
+                                              className={classNames(
+                                                inputClasses,
+                                                error
+                                                  ? "ring ring-red-700"
+                                                  : "",
+                                                "bg-application2 text-white placeholder:text-white"
+                                              )}
+                                              placeholder="E-mail cím"
+                                            />
+                                          </div>
                                         )}
                                       />
                                       <Controller
@@ -1351,18 +1446,25 @@ const ApplicationForm = ({
                                           field,
                                           fieldState: { error },
                                         }) => (
-                                          <input
-                                            {...field}
-                                            autoComplete="off"
-                                            type="text"
-                                            className={classNames(
-                                              inputClasses,
-                                              error ? "ring ring-red-700" : "",
+                                          <div className="flex flex-col">
+                                            <span className="pl-3">
+                                              Telefonszám
+                                            </span>
+                                            <input
+                                              {...field}
+                                              autoComplete="off"
+                                              type="text"
+                                              className={classNames(
+                                                inputClasses,
+                                                error
+                                                  ? "ring ring-red-700"
+                                                  : "",
 
-                                              "bg-application2 text-white placeholder:text-white"
-                                            )}
-                                            placeholder="Telefonszám"
-                                          />
+                                                "bg-application2 text-white placeholder:text-white"
+                                              )}
+                                              placeholder="Telefonszám"
+                                            />
+                                          </div>
                                         )}
                                       />
                                       <Controller
@@ -1388,39 +1490,45 @@ const ApplicationForm = ({
                                           fieldState: { error },
                                         }) => {
                                           return (
-                                            <label>
-                                              <div
-                                                className={classNames(
-                                                  inputClasses,
-                                                  error
-                                                    ? "ring ring-red-700"
-                                                    : "",
-                                                  "flex cursor-pointer items-center bg-application2 pl-4 text-white"
-                                                )}
-                                              >
-                                                <div className="overflow-hidden truncate opacity-80">
-                                                  {value &&
-                                                  typeof value === "object"
-                                                    ? value.name
-                                                    : typeof value === "string"
-                                                    ? value
-                                                    : "Témavezetői igazolás"}
+                                            <div className="flex flex-col">
+                                              <span className="pl-3">
+                                                Témavezetői igazolás
+                                              </span>
+                                              <label>
+                                                <div
+                                                  className={classNames(
+                                                    inputClasses,
+                                                    error
+                                                      ? "ring ring-red-700"
+                                                      : "",
+                                                    "flex cursor-pointer items-center bg-application2 pl-4 text-white"
+                                                  )}
+                                                >
+                                                  <div className="overflow-hidden truncate opacity-80">
+                                                    {value &&
+                                                    typeof value === "object"
+                                                      ? value.name
+                                                      : typeof value ===
+                                                        "string"
+                                                      ? value
+                                                      : "Témavezetői igazolás"}
+                                                  </div>
                                                 </div>
-                                              </div>
-                                              <input
-                                                type="file"
-                                                autoComplete="off"
-                                                className="hidden"
-                                                accept="application/pdf"
-                                                onChange={(e) =>
-                                                  onChange(
-                                                    e.target.files
-                                                      ? e.target.files[0]
-                                                      : null
-                                                  )
-                                                }
-                                              />
-                                            </label>
+                                                <input
+                                                  type="file"
+                                                  autoComplete="off"
+                                                  className="hidden"
+                                                  accept="application/pdf"
+                                                  onChange={(e) =>
+                                                    onChange(
+                                                      e.target.files
+                                                        ? e.target.files[0]
+                                                        : null
+                                                    )
+                                                  }
+                                                />
+                                              </label>
+                                            </div>
                                           );
                                         }}
                                       />
@@ -1446,19 +1554,25 @@ const ApplicationForm = ({
                                   className="mr-6 h-7 w-7 text-darkcherry"
                                   onClick={(e) => {
                                     e.preventDefault();
-                                    const projectValues = projectGetValues(
-                                      `projects.${index}`
-                                    );
-                                    const projectCompanions =
-                                      projectValues.companions || [];
-                                    projectCompanions.splice(ci, 1);
-                                    update(index, {
-                                      ...projectValues,
-                                      companions: projectCompanions,
-                                    });
-                                    projectCleanErrors(
-                                      `projects.${index}.companions.${ci}`
-                                    );
+                                    if (
+                                      window.confirm(
+                                        "Biztos törölni szeretnéd?"
+                                      )
+                                    ) {
+                                      const projectValues = projectGetValues(
+                                        `projects.${index}`
+                                      );
+                                      const projectCompanions =
+                                        projectValues.companions || [];
+                                      projectCompanions.splice(ci, 1);
+                                      update(index, {
+                                        ...projectValues,
+                                        companions: projectCompanions,
+                                      });
+                                      projectCleanErrors(
+                                        `projects.${index}.companions.${ci}`
+                                      );
+                                    }
                                   }}
                                 />
 
@@ -1494,17 +1608,22 @@ const ApplicationForm = ({
                                           field,
                                           fieldState: { error },
                                         }) => (
-                                          <input
-                                            {...field}
-                                            autoComplete="off"
-                                            type="text"
-                                            className={classNames(
-                                              inputClasses,
-                                              error ? "ring ring-red-700" : "",
-                                              "bg-application1 text-darkcherry placeholder:text-darkcherry"
-                                            )}
-                                            placeholder="Név"
-                                          />
+                                          <div className="flex flex-col">
+                                            <span className="pl-3">Név</span>
+                                            <input
+                                              {...field}
+                                              autoComplete="off"
+                                              type="text"
+                                              className={classNames(
+                                                inputClasses,
+                                                error
+                                                  ? "ring ring-red-700"
+                                                  : "",
+                                                "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                                              )}
+                                              placeholder="Név"
+                                            />
+                                          </div>
                                         )}
                                       />
                                       <Controller
@@ -1515,17 +1634,24 @@ const ApplicationForm = ({
                                           field,
                                           fieldState: { error },
                                         }) => (
-                                          <input
-                                            {...field}
-                                            autoComplete="off"
-                                            type="text"
-                                            className={classNames(
-                                              inputClasses,
-                                              error ? "ring ring-red-700" : "",
-                                              "bg-application1 text-darkcherry placeholder:text-darkcherry"
-                                            )}
-                                            placeholder="Ellenőrző száma"
-                                          />
+                                          <div className="flex flex-col">
+                                            <span className="pl-3">
+                                              Ellenőrző száma
+                                            </span>
+                                            <input
+                                              {...field}
+                                              autoComplete="off"
+                                              type="text"
+                                              className={classNames(
+                                                inputClasses,
+                                                error
+                                                  ? "ring ring-red-700"
+                                                  : "",
+                                                "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                                              )}
+                                              placeholder="Ellenőrző száma"
+                                            />
+                                          </div>
                                         )}
                                       />
                                       <UniversityField
@@ -1695,18 +1821,25 @@ const ApplicationForm = ({
                                           field,
                                           fieldState: { error },
                                         }) => (
-                                          <input
-                                            {...field}
-                                            autoComplete="off"
-                                            disabled={!!defaultValues}
-                                            type="text"
-                                            className={classNames(
-                                              inputClasses,
-                                              error ? "ring ring-red-700" : "",
-                                              "bg-application1 text-darkcherry placeholder:text-darkcherry"
-                                            )}
-                                            placeholder="E-mail cím"
-                                          />
+                                          <div className="flex flex-col">
+                                            <span className="pl-3">
+                                              E-mail cím
+                                            </span>
+                                            <input
+                                              {...field}
+                                              autoComplete="off"
+                                              disabled={!!defaultValues}
+                                              type="text"
+                                              className={classNames(
+                                                inputClasses,
+                                                error
+                                                  ? "ring ring-red-700"
+                                                  : "",
+                                                "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                                              )}
+                                              placeholder="E-mail cím"
+                                            />
+                                          </div>
                                         )}
                                       />
                                       <Controller
@@ -1724,17 +1857,24 @@ const ApplicationForm = ({
                                           field,
                                           fieldState: { error },
                                         }) => (
-                                          <input
-                                            {...field}
-                                            autoComplete="off"
-                                            type="text"
-                                            className={classNames(
-                                              inputClasses,
-                                              error ? "ring ring-red-700" : "",
-                                              "bg-application1 text-darkcherry placeholder:text-darkcherry"
-                                            )}
-                                            placeholder="Telefonszám"
-                                          />
+                                          <div className="flex flex-col">
+                                            <span className="pl-3">
+                                              Telefonszám
+                                            </span>
+                                            <input
+                                              {...field}
+                                              autoComplete="off"
+                                              type="text"
+                                              className={classNames(
+                                                inputClasses,
+                                                error
+                                                  ? "ring ring-red-700"
+                                                  : "",
+                                                "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                                              )}
+                                              placeholder="Telefonszám"
+                                            />
+                                          </div>
                                         )}
                                       />
                                       <Controller
@@ -1747,6 +1887,10 @@ const ApplicationForm = ({
                                         }) => {
                                           return (
                                             <div className="flex flex-col">
+                                              <span className="pl-3">
+                                                Ellenőrző kép
+                                              </span>
+
                                               <label>
                                                 <div
                                                   className={classNames(
@@ -1816,6 +1960,54 @@ const ApplicationForm = ({
                                           );
                                         }}
                                       />
+                                      {defaultValues && (
+                                        <Controller
+                                          name={`projects.${index}.companions.${ci}.voucher`}
+                                          control={projectsControl}
+                                          render={({
+                                            field: { onChange, value },
+                                          }) => {
+                                            return (
+                                              <div className="flex flex-col">
+                                                <span className="pl-3">
+                                                  Kifizetési bizonylat
+                                                </span>
+
+                                                <label>
+                                                  <div
+                                                    className={classNames(
+                                                      inputClasses,
+                                                      "flex cursor-pointer items-center bg-application1 pl-4 text-darkcherry  placeholder:text-darkcherry "
+                                                    )}
+                                                  >
+                                                    <div className="overflow-hidden truncate opacity-80">
+                                                      {value &&
+                                                      typeof value === "object"
+                                                        ? value.name
+                                                        : typeof value ===
+                                                          "string"
+                                                        ? value
+                                                        : "Kifizetési bizonylat"}
+                                                    </div>
+                                                  </div>
+                                                  <input
+                                                    type="file"
+                                                    autoComplete="off"
+                                                    className="hidden"
+                                                    onChange={(e) =>
+                                                      onChange(
+                                                        e.target.files
+                                                          ? e.target.files[0]
+                                                          : null
+                                                      )
+                                                    }
+                                                  />
+                                                </label>
+                                              </div>
+                                            );
+                                          }}
+                                        />
+                                      )}
                                     </div>
                                   </div>
                                 </Disclosure.Panel>
@@ -1825,10 +2017,12 @@ const ApplicationForm = ({
                         </Disclosure>
                       </React.Fragment>
                     ))}
-                    <div className="mt-4 flex space-x-2">
-                      <AddCompanionButton index={index} />
-                      <AddAdvisorButton index={index} />
-                    </div>
+                    {!defaultValues && (
+                      <div className="mt-4 flex space-x-2">
+                        <AddCompanionButton index={index} />
+                        <AddAdvisorButton index={index} />
+                      </div>
+                    )}
                   </Disclosure.Panel>
                 </Transition>
               </>
@@ -1836,82 +2030,69 @@ const ApplicationForm = ({
           </Disclosure>
         ))}
 
-        <button
-          className="ml-3 rounded-xl bg-gray-900 py-2 px-4 text-white md:mr-6"
-          onClick={() =>
-            append({
-              advisors: [
-                {
-                  name: "",
-                  email: "",
-                  mobileNumber: "",
-                  title: "",
-                  university: "",
-                  universityOther: undefined,
-                  certificate: null,
-                },
-              ],
-              title: "",
-              extract: null,
-              section: "",
-              contribution: null,
-              annex: null,
-              declaration: null,
-            })
-          }
-        >
-          <p>Új dolgozat hozzáadása</p>
-        </button>
-      </div>
-      <div className="mt-16 mb-4 flex space-x-4 p-4 md:p-0">
-        <input
-          type="checkbox"
-          value={`${gdprApproved}`}
-          onChange={(e) => setGdprApproved(e.target.checked)}
-          className="cursor-pointer"
-        />
-        <p>
-          A <b>Mentés</b> gombra való kattintáshoz el kell fogadd a{" "}
-          <b
-            className="cursor-pointer text-blue-600"
-            onClick={() => setGdprDialog(true)}
+        {!defaultValues && (
+          <button
+            className="ml-3 rounded-xl bg-gray-900 py-2 px-4 text-white md:mr-6"
+            onClick={() =>
+              append({
+                advisors: [
+                  {
+                    name: "",
+                    email: "",
+                    mobileNumber: "",
+                    title: "",
+                    university: "",
+                    universityOther: undefined,
+                    certificate: null,
+                  },
+                ],
+                title: "",
+                extract: null,
+                section: "",
+                contribution: null,
+                annex: null,
+                declaration: null,
+                essay: null,
+              })
+            }
           >
-            <u>feltételeket</u>
-          </b>
-          .
-        </p>
+            <p>Új dolgozat hozzáadása</p>
+          </button>
+        )}
       </div>
+      {!defaultValues && (
+        <div className="mt-16 mb-4 flex space-x-4 p-4 md:p-0">
+          <input
+            type="checkbox"
+            value={`${gdprApproved}`}
+            onChange={(e) => setGdprApproved(e.target.checked)}
+            className="cursor-pointer"
+          />
+          <p>
+            A <b>Mentés</b> gombra való kattintáshoz el kell fogadd a
+            <b
+              className="cursor-pointer text-blue-600"
+              onClick={() => setGdprDialog(true)}
+            >
+              <u>feltételeket</u>
+            </b>
+            .
+          </p>
+        </div>
+      )}
       <button
-        className="flex h-10 w-40 items-center justify-center rounded-xl bg-lightcherry py-2 px-4 font-bold text-white disabled:cursor-not-allowed disabled:bg-gray-200"
+        className={classNames(
+          !!defaultValues ? "mt-10" : "",
+          "flex h-10 w-40 items-center justify-center rounded-xl bg-lightcherry py-2 px-4 font-bold text-white disabled:cursor-not-allowed disabled:bg-gray-200"
+        )}
         onClick={() => submitData()}
         disabled={
           !!Object.keys(projectErrors).length ||
           !!Object.keys(personErrors).length ||
-          !gdprApproved
+          !gdprApproved ||
+          saving
         }
       >
-        {loading && (
-          <svg
-            className="mr-2 h-5 w-5 animate-spin text-white"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
-        )}
         <p>Mentés</p>
       </button>
       {(!!Object.keys(projectErrors).length ||
@@ -1923,7 +2104,6 @@ const ApplicationForm = ({
         </div>
       )}
 
-      <Snackbar message={notiMessage} open={notiMessage !== ""} />
       <Transition.Root show={confirmDialog} as={Fragment}>
         <Dialog
           as="div"

@@ -27,6 +27,8 @@ const headersParticipant = {
   email: "Email",
   mobileNumber: "Telefonszám",
   idPhoto: "Ellenőrző kép",
+  voucher: "Kifizetési bizonylat",
+  registrationDate: "Regisztráció dátuma",
 };
 
 const headersAdvisor = {
@@ -42,6 +44,10 @@ const headersProject = {
   title: "Dolgozat cím",
   section: "Szekció",
   extract: "Kivonat",
+  essay: "Dolgozat",
+  annex: "Melléklet",
+  declaration: "Adatbankos nyilatkozat",
+  contribution: "Hozzájárulási nyilatkozat",
 };
 
 const EllenorzoFelulet = () => {
@@ -66,21 +72,25 @@ const EllenorzoFelulet = () => {
               ? "subjectOther"
               : key === "idPhoto"
               ? "idPhoto.originalFilename"
+              : key === "voucher"
+              ? "voucher.originalFilename"
               : key;
-          return row[newKey as keyof SanityParticipant];
+          const data = row[newKey as keyof SanityParticipant];
+          return key === "registrationDate"
+            ? (data as string).split("T")[0]
+            : data;
         },
         header: headersParticipant[key as keyof typeof headersParticipant],
-        ...(key === "idPhoto" && {
+        ...((key === "idPhoto" || key === "voucher") && {
           Cell: ({ row }) => (
             <>
-              {row.original.idPhoto?.url &&
-              row.original.idPhoto?.originalFilename ? (
+              {row.original[key]?.url && row.original[key]?.originalFilename ? (
                 <a
-                  href={row.original.idPhoto.url}
+                  href={row.original[key].url}
                   target="_blank"
                   rel="noreferrer"
                 >
-                  {row.original.idPhoto.originalFilename}
+                  {row.original[key].originalFilename}
                 </a>
               ) : null}
             </>
@@ -147,6 +157,8 @@ const EllenorzoFelulet = () => {
                   ? "subjectOther"
                   : key === "idPhoto"
                   ? "idPhoto.originalFilename"
+                  : key === "idPhoto"
+                  ? "voucher.originalFilename"
                   : key;
               return row.companions?.[i]?.[newKey as keyof SanityPersonData]
                 ? row.companions?.[i]?.[newKey as keyof SanityPersonData]
@@ -155,17 +167,17 @@ const EllenorzoFelulet = () => {
             header: `${i + 1}. Társszerző ${headersParticipant[
               key as keyof typeof headersParticipant
             ].toLowerCase()}`,
-            ...(key === "idPhoto" && {
+            ...((key === "idPhoto" || key === "voucher") && {
               Cell: ({ row }: { row: { original: SanityParticipant } }) => (
                 <>
-                  {row.original.companions?.[i]?.idPhoto?.url &&
-                  row.original.companions?.[i]?.idPhoto?.originalFilename ? (
+                  {row.original.companions?.[i]?.[key]?.url &&
+                  row.original.companions?.[i]?.[key]?.originalFilename ? (
                     <a
-                      href={row.original.companions?.[i]?.idPhoto.url}
+                      href={row.original.companions?.[i]?.[key].url}
                       target="_blank"
                       rel="noreferrer"
                     >
-                      {row.original.companions?.[i]?.idPhoto.originalFilename}
+                      {row.original.companions?.[i]?.[key].originalFilename}
                     </a>
                   ) : null}
                 </>
@@ -176,26 +188,40 @@ const EllenorzoFelulet = () => {
       ];
     }, [] as MRT_ColumnDef<SanityParticipant>[]);
 
-    const projectHeaders = Object.keys(headersProject).map((key) => {
+    const projectHeaders: MRT_ColumnDef<SanityParticipant>[] = Object.keys(
+      headersProject
+    ).map((key) => {
       return {
-        accessorFn: (row: SanityParticipant) =>
+        accessorFn: (row) =>
           row[
             key === "extract"
               ? ("extract.originalFilename" as keyof SanityParticipant)
+              : key === "annex"
+              ? ("annex.originalFilename" as keyof SanityParticipant)
+              : key === "declaration"
+              ? ("declaration.originalFilename" as keyof SanityParticipant)
+              : key === "contribution"
+              ? ("contribution.originalFilename" as keyof SanityParticipant)
+              : key === "essay"
+              ? ("essay.originalFilename" as keyof SanityParticipant)
               : (key as keyof SanityParticipant)
           ],
         header: headersProject[key as keyof typeof headersProject],
-        ...(key === "extract" && {
+        ...((key === "extract" ||
+          key === "annex" ||
+          key === "declaration" ||
+          key === "contribution" ||
+          key === "essay") && {
           Cell: ({ row }: { row: { original: SanityParticipant } }) => (
             <>
-              {row.original?.extract?.url &&
-              row.original?.extract?.originalFilename ? (
+              {row.original?.[key]?.url &&
+              row.original?.[key]?.originalFilename ? (
                 <a
-                  href={row.original.extract.url}
+                  href={row.original[key].url}
                   target="_blank"
                   rel="noreferrer"
                 >
-                  {row.original.extract.originalFilename}
+                  {row.original[key].originalFilename}
                 </a>
               ) : null}
             </>
@@ -271,11 +297,13 @@ const EllenorzoFelulet = () => {
     showLabels: true,
     useBom: true,
     useKeysAsHeaders: true,
+    filename: "ETDK_resztvevok",
   };
 
   const csvExporter = new ExportToCsv(csvOptions);
 
   const handleExportRows = (rows: MRT_Row<SanityParticipant>[]) => {
+    console.log(rows);
     const generateNewRows = rows.map((row) =>
       Object.entries(row._valuesCache)
         .map((cachedRow) => {
@@ -285,6 +313,29 @@ const EllenorzoFelulet = () => {
               [cachedRowKey]: row.original.extract?.originalFilename || null,
             };
           }
+          if (cachedRowKey.includes("Dolgozat")) {
+            return {
+              [cachedRowKey]: row.original.essay?.originalFilename || null,
+            };
+          }
+          if (cachedRowKey.includes("Melléklet")) {
+            return {
+              [cachedRowKey]: row.original.annex?.originalFilename || null,
+            };
+          }
+          if (cachedRowKey.includes("Adatbankos nyilatkozat")) {
+            return {
+              [cachedRowKey]:
+                row.original.declaration?.originalFilename || null,
+            };
+          }
+          if (cachedRowKey.includes("Hozzájárulási nyilatkozat")) {
+            return {
+              [cachedRowKey]:
+                row.original.contribution?.originalFilename || null,
+            };
+          }
+
           if (cachedRowKey.includes("Ellenőrző kép")) {
             const index = cachedRowKey[0];
             if (index && parseInt(index)) {
@@ -296,6 +347,20 @@ const EllenorzoFelulet = () => {
             } else {
               return {
                 [cachedRowKey]: row.original.idPhoto?.originalFilename || null,
+              };
+            }
+          }
+          if (cachedRowKey.includes("Kifizetési bizonylat")) {
+            const index = cachedRowKey[0];
+            if (index && parseInt(index)) {
+              return {
+                [cachedRowKey]:
+                  row.original.companions[parseInt(index)]?.voucher
+                    ?.originalFilename || null,
+              };
+            } else {
+              return {
+                [cachedRowKey]: row.original.voucher?.originalFilename || null,
               };
             }
           }
@@ -348,6 +413,14 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     return {
       redirect: {
         destination: "/admin",
+        permanent: false,
+      },
+    };
+  }
+  if (session.user.role === "participant") {
+    return {
+      redirect: {
+        destination: "/admin/jelentkezes",
         permanent: false,
       },
     };

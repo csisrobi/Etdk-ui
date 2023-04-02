@@ -5,6 +5,7 @@ import "../styles/globals.css";
 import Layout from "../components/Layout";
 import { SessionProvider } from "next-auth/react";
 import { SWRConfig } from "swr";
+import { Toaster } from "react-hot-toast";
 
 const MyApp: AppType = ({
   Component,
@@ -19,6 +20,7 @@ const MyApp: AppType = ({
       <SessionProvider session={session}>
         <Layout>
           <Component {...pageProps} />
+          <Toaster position="bottom-center" />
           <Analytics />
         </Layout>
       </SessionProvider>

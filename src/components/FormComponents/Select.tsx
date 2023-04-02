@@ -55,7 +55,8 @@ export default function Select({
     >
       {({ open }) => (
         <>
-          <div className="relative">
+          <div className="relative flex flex-col">
+            <span className="pl-3">{placeholder}</span>
             <div
               className={classNames(
                 error ? "ring ring-red-700" : "",
