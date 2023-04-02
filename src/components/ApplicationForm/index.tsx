@@ -338,11 +338,13 @@ const ApplicationForm = ({
         })
       )
         .then(() => {
-          toast.success("Változtatások sikeresen elmentve", {
-            id: toastId,
-          });
-          // setLoading(false);
-          setTimeout(() => router.reload(), 500);
+          setTimeout(() => {
+            toast.success("Változtatások sikeresen elmentve", {
+              id: toastId,
+            });
+            router.reload();
+            setSaving(false);
+          }, 5000);
         })
         .catch((e) => {
           toast.error(e.message, {
