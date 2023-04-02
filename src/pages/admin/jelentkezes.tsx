@@ -122,6 +122,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       advisors: projectAdvisors,
     };
   });
+  console.log(personDataIfAdditional);
   return {
     props: {
       universities,
