@@ -24,30 +24,33 @@ export const ContributionField = ({
         control={control}
         render={({ field: { onChange, value } }) => {
           return (
-            <label>
-              <div
-                className={classNames(
-                  "block h-11 w-full rounded-xl border-none pl-3 text-lg font-semibold placeholder:opacity-80 focus:border-darkcherry focus:ring-darkcherry",
-                  "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
-                )}
-              >
-                <div className="overflow-hidden truncate opacity-80">
-                  {value && typeof value === "object"
-                    ? value.name
-                    : typeof value === "string"
-                    ? value
-                    : "Hozzájárulási nyilatkozat"}
+            <div className="flex flex-col">
+              <span className="pl-3">Hozzájárulási nyilatkozat</span>
+              <label>
+                <div
+                  className={classNames(
+                    "block h-11 w-full rounded-xl border-none pl-3 text-lg font-semibold placeholder:opacity-80 focus:border-darkcherry focus:ring-darkcherry",
+                    "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
+                  )}
+                >
+                  <div className="overflow-hidden truncate opacity-80">
+                    {value && typeof value === "object"
+                      ? value.name
+                      : typeof value === "string"
+                      ? value
+                      : "Hozzájárulási nyilatkozat"}
+                  </div>
                 </div>
-              </div>
-              <input
-                type="file"
-                autoComplete="off"
-                className="hidden"
-                onChange={(e) =>
-                  onChange(e.target.files ? e.target.files[0] : null)
-                }
-              />
-            </label>
+                <input
+                  type="file"
+                  autoComplete="off"
+                  className="hidden"
+                  onChange={(e) =>
+                    onChange(e.target.files ? e.target.files[0] : null)
+                  }
+                />
+              </label>
+            </div>
           );
         }}
       />

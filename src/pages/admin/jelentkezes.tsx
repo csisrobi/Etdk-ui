@@ -9,11 +9,12 @@ import {
 import { getClient } from "@lib/sanity";
 import type { GetServerSidePropsContext } from "next";
 import { getSession } from "next-auth/react";
-import type {
-  ProjectInputs,
-  PersonInputs,
-} from "src/components/ApplicationForm";
+
 import ApplicationForm from "src/components/ApplicationForm";
+import {
+  PersonInputs,
+  ProjectInputs,
+} from "src/components/ApplicationForm/constants";
 import type { FacultySanity, SectionsSanity, UniversitiesSanity } from "types";
 
 const AdminJelentkezes = ({
@@ -49,63 +50,95 @@ const AdminJelentkezes = ({
 };
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
-  //DISABLED FOR NOW
+  const { preview } = ctx;
+  const universities = await getClient(preview || false).fetch(
+    queryUniversities
+  );
+  const faculties = await getClient(preview || false).fetch(queryFaculties);
+  const subjects = await getClient(preview || false).fetch(querySubjects);
+  const sections = await getClient(preview).fetch(queryActiveSections);
+
+  const session = await getSession(ctx);
+
+  if (!session?.user || !session.user.email) {
+    return {
+      redirect: {
+        destination: "/admin",
+        permanent: false,
+      },
+    };
+  }
+
+  if (session.user.role !== "participant") {
+    return {
+      redirect: {
+        destination: "/admin/ellenorzes",
+        permanent: false,
+      },
+    };
+  }
+  const defaultParticipantPersonData: PersonInputs[] = await getClient(
+    true
+  ).fetch(getPersonDataForParticipant(session.user.email));
+  const personDataIfAdditional = {
+    ...defaultParticipantPersonData[0],
+    ...(!defaultParticipantPersonData?.[0]?.university && {
+      university: "additional",
+    }),
+    ...(!defaultParticipantPersonData?.[0]?.faculty && {
+      faculty: "additional",
+    }),
+    ...(!defaultParticipantPersonData?.[0]?.subject && {
+      subject: "additional",
+    }),
+  };
+  const defaultParticipantProjectsData: ProjectInputs[] = await getClient(
+    true
+  ).fetch(getProjectsDataForParticipant(session.user.email));
+  const projectsData = defaultParticipantProjectsData.map((project) => {
+    const projectCompanionsAdditional = project.companions
+      ? project.companions.map((companion) => ({
+          ...companion,
+          ...(!companion.university && {
+            university: "additional",
+          }),
+          ...(!companion.faculty && {
+            faculty: "additional",
+          }),
+          ...(!companion.subject && {
+            subject: "additional",
+          }),
+        }))
+      : [];
+    const projectAdvisors = project.advisors.map((advisor) => ({
+      ...advisor,
+      ...(!advisor.university && {
+        university: "additional",
+      }),
+    }));
+    return {
+      ...project,
+      companions: projectCompanionsAdditional,
+      advisors: projectAdvisors,
+    };
+  });
   return {
-    redirect: {
-      destination: "/",
-      permanent: false,
+    props: {
+      universities,
+      faculties,
+      subjects,
+      sections,
+      participantData:
+        !!defaultParticipantPersonData.length &&
+        !!defaultParticipantProjectsData.length
+          ? {
+              personData: personDataIfAdditional,
+              projectsData: projectsData,
+            }
+          : {},
+      preview: preview || false,
     },
   };
-  // const { preview } = ctx;
-  // const universities = await getClient(preview || false).fetch(
-  //   queryUniversities
-  // );
-  // const faculties = await getClient(preview || false).fetch(queryFaculties);
-  // const subjects = await getClient(preview || false).fetch(querySubjects);
-  // const sections = await getClient(preview).fetch(queryActiveSections);
-
-  // const session = await getSession(ctx);
-
-  // if (!session?.user || !session.user.email) {
-  //   return {
-  //     redirect: {
-  //       destination: "/admin",
-  //       permanent: false,
-  //     },
-  //   };
-  // }
-
-  // if (session.user.role !== "participant") {
-  //   return {
-  //     redirect: {
-  //       destination: "/admin/ellenorzes",
-  //       permanent: false,
-  //     },
-  //   };
-  // }
-  // const defaultParticipantPersonData = await getClient(preview || false).fetch(
-  //   getPersonDataForParticipant(session.user.email)
-  // );
-  // const defaultParticipantProjectsData = await getClient(
-  //   preview || false
-  // ).fetch(getProjectsDataForParticipant(session.user.email));
-  // return {
-  //   props: {
-  //     universities,
-  //     faculties,
-  //     subjects,
-  //     sections,
-  //     participantData:
-  //       !!defaultParticipantPersonData.length &&
-  //       !!defaultParticipantProjectsData.length
-  //         ? {
-  //             personData: defaultParticipantPersonData[0],
-  //             projectsData: defaultParticipantProjectsData,
-  //           }
-  //         : {},
-  //     preview: preview || false,
-  //   },
-  // };
 }
 
 export default AdminJelentkezes;

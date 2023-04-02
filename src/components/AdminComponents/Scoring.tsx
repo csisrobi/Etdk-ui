@@ -23,15 +23,17 @@ export const ParticipantScoring = ({
   participant: SanityParticipant;
 }) => {
   const [scores, setScores] = useState<ScoreType>(
-    participant.score
-      ? participant.score.reduce(
-          (acc, cur) => ({
-            ...acc,
-            [cur.criteria._id]: { score: cur.score, name: cur.criteria.name },
-          }),
-          {}
-        )
-      : {}
+    {}
+    // disabled for now
+    // participant.score
+    //   ? participant.score.reduce(
+    //       (acc, cur) => ({
+    //         ...acc,
+    //         [cur.criteria._id]: { score: cur.score, name: cur.criteria.name },
+    //       }),
+    //       {}
+    //     )
+    //   : {}
   );
   const [errors, setErrors] = useState<ErrorType>({});
   const scoreParticipant = async () =>
