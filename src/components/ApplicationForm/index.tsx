@@ -342,9 +342,9 @@ const ApplicationForm = ({
             toast.success("Változtatások sikeresen elmentve", {
               id: toastId,
             });
-            router.reload();
+            router.replace(router.asPath);
             setSaving(false);
-          }, 7000);
+          }, 3000);
         })
         .catch((e) => {
           toast.error(e.message, {
