@@ -1,4 +1,6 @@
-import { Download, ExpandMore } from "@mui/icons-material";
+import Download from "@mui/icons-material/Download";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+
 import {
   Accordion,
   AccordionDetails,
