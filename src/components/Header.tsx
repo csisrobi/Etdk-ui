@@ -175,11 +175,11 @@ const Header = () => {
                               type="button"
                               className="w-48 rounded-3xl bg-lightcherry py-2 px-1 text-center text-3xl tracking-wide  text-white hover:bg-opacity-75 xl:w-52"
                             >
-                              <Link href="/jelentkezes">
+                              <Link href={application.href}>
                                 <span
                                   onClick={() => setOpenMobileDialog(false)}
                                 >
-                                  JELENTKEZÉS
+                                  {application.label}
                                 </span>
                               </Link>
                             </button>
