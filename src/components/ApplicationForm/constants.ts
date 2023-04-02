@@ -108,6 +108,10 @@ export const titleOptions = [
     name: "Professzor",
     value: "professzor",
   },
+  {
+    name: "Tanársegéd",
+    value: "tanársegéd",
+  },
 ];
 
 export type AdvisorInputs = {
