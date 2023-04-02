@@ -342,7 +342,7 @@ const ApplicationForm = ({
             toast.success("Változtatások sikeresen elmentve", {
               id: toastId,
             });
-            router.replace(router.asPath);
+            router.push("/admin");
             setSaving(false);
           }, 3000);
         })
