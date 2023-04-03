@@ -303,7 +303,6 @@ const EllenorzoFelulet = () => {
   const csvExporter = new ExportToCsv(csvOptions);
 
   const handleExportRows = (rows: MRT_Row<SanityParticipant>[]) => {
-    console.log(rows);
     const generateNewRows = rows.map((row) =>
       Object.entries(row._valuesCache)
         .map((cachedRow) => {
@@ -341,7 +340,7 @@ const EllenorzoFelulet = () => {
             if (index && parseInt(index)) {
               return {
                 [cachedRowKey]:
-                  row.original.companions[parseInt(index)]?.idPhoto
+                  row.original.companions[parseInt(index) - 1]?.idPhoto
                     ?.originalFilename || null,
               };
             } else {
@@ -355,7 +354,7 @@ const EllenorzoFelulet = () => {
             if (index && parseInt(index)) {
               return {
                 [cachedRowKey]:
-                  row.original.companions[parseInt(index)]?.voucher
+                  row.original.companions[parseInt(index) - 1]?.voucher
                     ?.originalFilename || null,
               };
             } else {
@@ -366,10 +365,13 @@ const EllenorzoFelulet = () => {
           }
           if (cachedRowKey.includes("Témavezető igazolás")) {
             const index = cachedRowKey[0];
+            console.log(cachedRow);
             if (index && parseInt(index)) {
+              console.log(row.original.advisors[parseInt(index) - 1]);
+
               return {
                 [cachedRowKey]:
-                  row.original.advisors[parseInt(index)]?.certificate
+                  row.original.advisors[parseInt(index) - 1]?.certificate
                     ?.originalFilename || null,
               };
             }
