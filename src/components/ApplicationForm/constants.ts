@@ -98,7 +98,7 @@ export const titleOptions = [
   },
   {
     name: "Docens",
-    value: "Ddocens",
+    value: "docens",
   },
   {
     name: "Doktorandusz",
