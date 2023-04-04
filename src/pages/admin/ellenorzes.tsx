@@ -335,12 +335,15 @@ const EllenorzoFelulet = () => {
             };
           }
 
-          if (cachedRowKey.includes("Ellenőrző kép")) {
+          if (
+            cachedRowKey.includes("ellenőrző kép") ||
+            cachedRowKey.includes("Ellenőrző kép")
+          ) {
             const index = cachedRowKey[0];
             if (index && parseInt(index)) {
               return {
                 [cachedRowKey]:
-                  row.original.companions[parseInt(index) - 1]?.idPhoto
+                  row.original.companions?.[parseInt(index) - 1]?.idPhoto
                     ?.originalFilename || null,
               };
             } else {
@@ -365,10 +368,7 @@ const EllenorzoFelulet = () => {
           }
           if (cachedRowKey.includes("Témavezető igazolás")) {
             const index = cachedRowKey[0];
-            console.log(cachedRow);
             if (index && parseInt(index)) {
-              console.log(row.original.advisors[parseInt(index) - 1]);
-
               return {
                 [cachedRowKey]:
                   row.original.advisors[parseInt(index) - 1]?.certificate
