@@ -18,6 +18,7 @@ import type { SanityParticipant } from "types";
 import { ParticipantScoring } from "src/components/AdminComponents/Scoring";
 import { fetcher, querySectionsForScoring } from "@lib/queries";
 import { getClient } from "@lib/sanity";
+import JSZip from "jszip";
 
 export type Criteria = {
   _id: string;
@@ -31,6 +32,11 @@ type Section = {
   name: string;
 };
 
+const fileAttributes: (keyof Pick<
+  SanityParticipant,
+  "extract" | "annex" | "contribution" | "essay"
+>)[] = ["extract", "annex", "contribution", "essay"];
+
 const AdminPontozoFelulet = ({ sections }: { sections: Section[] }) => {
   const [tabValue, setTabValue] = useState<number>(0);
   const { data: sectionParticipantsData, isLoading } = useSWR<
@@ -38,9 +44,12 @@ const AdminPontozoFelulet = ({ sections }: { sections: Section[] }) => {
   >(
     ["/section_participants", tabValue],
     async () =>
-      await fetcher(`/sections/participants`, {
-        id: sections[tabValue]?._id || "",
-      }).then((r) => (Array.isArray(r) ? r : []))
+      await fetcher(
+        `/sections/participants`,
+        JSON.stringify({
+          id: sections[tabValue]?._id || "",
+        })
+      ).then((r) => (Array.isArray(r) ? r : []))
   );
 
   const sectionsOptions = useMemo(
@@ -51,9 +60,34 @@ const AdminPontozoFelulet = ({ sections }: { sections: Section[] }) => {
       })),
     [sections]
   );
+
+  const filesDownload = async (selectedUser: SanityParticipant) => {
+    try {
+      const zip = new JSZip();
+      const folder = zip.folder(`${selectedUser.name}`);
+      fileAttributes.forEach((attribute) => {
+        if (folder && selectedUser[attribute]) {
+          folder.file(
+            selectedUser[attribute].originalFilename,
+            fetch(selectedUser[attribute].url).then((res) => res.blob())
+          );
+        }
+      });
+      const zipFile = await zip.generateAsync({ type: "blob" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(zipFile);
+      a.download = `${selectedUser.name}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="min-h-[100vh] min-w-full p-4 pt-[100px]">
-      <div className="relative mx-auto w-full max-w-4xl space-y-5 md:flex md:w-3/4 md:flex-col">
+      <div className="relative mx-auto w-full max-w-4xl md:flex md:w-3/4 md:flex-col">
         <Autocomplete
           onChange={(_e, value) => {
             setTabValue(value?.value || 0);
@@ -95,21 +129,15 @@ const AdminPontozoFelulet = ({ sections }: { sections: Section[] }) => {
                 <Typography className="self-center" sx={{ flex: 1 }}>
                   {participant.name}
                 </Typography>
-                {/* DISABLED FOR NOW */}
-                {/* <Button
+                <Button
                   variant="contained"
                   endIcon={<Download />}
                   className="bg-darkcherry"
                   sx={{ mr: 2 }}
+                  onClick={() => filesDownload(participant)}
                 >
-                  <a
-                    href={participant.extract.url}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {participant.title}
-                  </a>
-                </Button> */}
+                  Dokumentumok letöltése
+                </Button>
               </AccordionSummary>
               <AccordionDetails>
                 {sections && sections[tabValue] && (
@@ -146,24 +174,18 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       },
     };
   }
+  //TODO: FILTER AFTER LOGGED IN USER RESPONSABILITY
+  const sections = (await getClient(preview || false).fetch(
+    querySectionsForScoring
+  )) as Section[];
   return {
-    redirect: {
-      destination: "/admin",
-      permanent: false,
+    props: {
+      sections: sections.sort((a, b) =>
+        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+      ),
+      preview: preview || false,
     },
   };
-  // //TODO: FILTER AFTER LOGGED IN USER RESPONSABILITY
-  // const sections = (await getClient(preview || false).fetch(
-  //   querySectionsForScoring
-  // )) as Section[];
-  // return {
-  //   props: {
-  //     sections: sections.sort((a, b) =>
-  //       a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-  //     ),
-  //     preview: preview || false,
-  //   },
-  // };
 }
 
 export default AdminPontozoFelulet;

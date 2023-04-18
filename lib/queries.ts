@@ -238,7 +238,6 @@ export const getAllParticipants = groq`
   accepted,
   "extract": extract.asset->{url, originalFilename},
   "annex": annex.asset->{url, originalFilename},
-  "declaration": declaration.asset->{url, originalFilename},
   "contribution": contribution.asset->{url, originalFilename},
   "essay": essay.asset->{url, originalFilename},
 
@@ -284,12 +283,16 @@ export const querySectionsForScoring = groq`
 }`;
 
 export const sectionParticipants = (section: string) => groq`
-*[_type == "participants" && section._ref == "${section}" && accepted == true] {
+*[_type == "participants" && section._ref == "${section}" ] {
   _id, 
   name,
 
   title,
-  "extract": extract.asset->{url},
+  "extract": extract.asset->{url, originalFilename},
+  "annex": annex.asset->{url, originalFilename},
+  "declaration": declaration.asset->{url, originalFilename},
+  "contribution": contribution.asset->{url, originalFilename},
+  "essay": essay.asset->{url, originalFilename},
   "section":section -> name,
   score[] {
     criteria->{name, _id},

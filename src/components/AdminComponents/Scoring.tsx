@@ -19,7 +19,7 @@ export const ParticipantScoring = ({
   criteria,
   participant,
 }: {
-  criteria: Criteria[];
+  criteria?: Criteria[];
   participant: SanityParticipant;
 }) => {
   const [scores, setScores] = useState<ScoreType>(
@@ -46,7 +46,7 @@ export const ParticipantScoring = ({
     <div>
       <table className="border-separate border-spacing-x-3 border-spacing-y-2 ">
         <tbody>
-          {criteria.map((c) => (
+          {(criteria || []).map((c) => (
             <tr key={c._id}>
               <td className="w-full">
                 <p>{c.name}</p>

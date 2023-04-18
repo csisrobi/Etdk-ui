@@ -16,8 +16,13 @@ export default {
         "Ez fog megjelenni az urlbe pld: https://etdk.kmdsz.ro/allam-es-jogtudomany, lehetoleg ekezet nelkul",
     },
     {
-      title: "Aktív",
+      title: "Aktuális",
       name: "active",
+      type: "boolean",
+    },
+    {
+      title: "Zárva",
+      name: "closed",
       type: "boolean",
     },
     {
