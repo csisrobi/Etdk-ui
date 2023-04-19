@@ -117,7 +117,6 @@ const ApplicationForm = ({
               section: "",
               contribution: null,
               annex: null,
-              declaration: null,
               companions: [],
             },
           ]
@@ -166,14 +165,6 @@ const ApplicationForm = ({
             typeof project.annex === "object"
               ? await getClient().assets.upload("file", project.annex, {
                   filename: project.annex.name,
-                })
-              : null;
-          const declarationData =
-            projectDirtyFields.projects?.[index]?.declaration &&
-            project.declaration &&
-            typeof project.declaration === "object"
-              ? await getClient().assets.upload("file", project.declaration, {
-                  filename: project.declaration.name,
                 })
               : null;
           const essayData =
@@ -266,15 +257,6 @@ const ApplicationForm = ({
                       _type: "file",
                       asset: {
                         _ref: contributionData._id,
-                        _type: "reference",
-                      },
-                    },
-                  }),
-                  ...(declarationData && {
-                    declaration: {
-                      _type: "file",
-                      asset: {
-                        _ref: declarationData._id,
                         _type: "reference",
                       },
                     },
@@ -1213,49 +1195,6 @@ const ApplicationForm = ({
                           />
                         )}
                         {defaultValues && (
-                          <Controller
-                            name={`projects.${index}.declaration`}
-                            control={projectsControl}
-                            render={({ field: { onChange, value } }) => {
-                              return (
-                                <div className="flex flex-col">
-                                  <span className="pl-3">
-                                    Adatbankos nyilatkozat
-                                  </span>
-                                  <label>
-                                    <div
-                                      className={classNames(
-                                        inputClasses,
-                                        "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
-                                      )}
-                                    >
-                                      <div className="overflow-hidden truncate opacity-80">
-                                        {value && typeof value === "object"
-                                          ? value.name
-                                          : typeof value === "string"
-                                          ? value
-                                          : "Adatbankos nyilatkozat"}
-                                      </div>
-                                    </div>
-                                    <input
-                                      type="file"
-                                      autoComplete="off"
-                                      className="hidden"
-                                      onChange={(e) =>
-                                        onChange(
-                                          e.target.files
-                                            ? e.target.files[0]
-                                            : null
-                                        )
-                                      }
-                                    />
-                                  </label>
-                                </div>
-                              );
-                            }}
-                          />
-                        )}
-                        {defaultValues && (
                           <ContributionField
                             index={index}
                             control={projectsControl}
@@ -2056,7 +1995,6 @@ const ApplicationForm = ({
                 section: "",
                 contribution: null,
                 annex: null,
-                declaration: null,
                 essay: null,
               })
             }

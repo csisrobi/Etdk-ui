@@ -160,10 +160,6 @@ export type SanityParticipant = SanityPersonData & {
     originalFilename: string;
     url: string;
   };
-  declaration: {
-    originalFilename: string;
-    url: string;
-  };
   contribution: {
     originalFilename: string;
     url: string;
