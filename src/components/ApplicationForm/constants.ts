@@ -156,7 +156,6 @@ export type ProjectInputs = {
 
   extract: File | null | string;
   annex: File | null | string;
-  declaration: File | null | string;
   contribution: File | null | string;
   essay: File | null | string;
 
