@@ -284,11 +284,6 @@ export default {
       type: "file",
     },
     {
-      title: "Adatbankos nyilatkozat",
-      name: "declaration",
-      type: "file",
-    },
-    {
       title: "Hozzájárulási nyilatkozat",
       name: "contribution",
       type: "file",

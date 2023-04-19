@@ -40,8 +40,6 @@ export const queryGeneral = groq`
 export const queryFiles = groq`
 *[_type == "files"]{
   "certificateURL": certificate.asset->url,
-  "declarationURL": declaration.asset->url,
-  "declarationProjectURL": declarationProject.asset->url,
   "contributionURL": contribution.asset->url,
 }`;
 
@@ -156,7 +154,6 @@ export const getProjectsDataForParticipant = (email: string) => groq`
   "extract": extract.asset->originalFilename,
   "essay":essay.asset->originalFilename,
   "contribution": contribution.asset->originalFilename,
-  "declaration": declaration.asset->originalFilename,
   "annex": annex.asset->originalFilename,
 
   companions[]{
@@ -238,7 +235,6 @@ export const getAllParticipants = groq`
   accepted,
   "extract": extract.asset->{url, originalFilename},
   "annex": annex.asset->{url, originalFilename},
-  "declaration": declaration.asset->{url, originalFilename},
   "contribution": contribution.asset->{url, originalFilename},
   "essay": essay.asset->{url, originalFilename},
 

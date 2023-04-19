@@ -5,8 +5,6 @@ type Props = {
   files: {
     certificateURL: string;
     contributionURL: string;
-    declarationProjectURL: string;
-    declarationURL: string;
   };
 };
 
@@ -18,24 +16,6 @@ const LetolthetoDokumentumok = ({ files }: Props) => {
           <div className="w-fit rounded-lg bg-lightcherry px-4 py-2 text-white">
             <a target="_blank" href={files.certificateURL} rel="noreferrer">
               Témavezetői igazolás
-            </a>
-          </div>
-        )}
-        {files.declarationURL && (
-          <div className="w-fit rounded-lg bg-lightcherry px-4 py-2 text-white">
-            <a target="_blank" href={files.declarationURL} rel="noreferrer">
-              Adatbankos nyilatkozat - a kivonatos füzetre vonatkozóan
-            </a>
-          </div>
-        )}
-        {files.declarationProjectURL && (
-          <div className="w-fit rounded-lg bg-lightcherry px-4 py-2 text-white">
-            <a
-              target="_blank"
-              href={files.declarationProjectURL}
-              rel="noreferrer"
-            >
-              Adatbankos nyilatkozat - a dolgozatra vonatkozóan
             </a>
           </div>
         )}

@@ -46,7 +46,6 @@ const headersProject = {
   extract: "Kivonat",
   essay: "Dolgozat",
   annex: "Melléklet",
-  declaration: "Adatbankos nyilatkozat",
   contribution: "Hozzájárulási nyilatkozat",
 };
 
@@ -198,8 +197,6 @@ const EllenorzoFelulet = () => {
               ? ("extract.originalFilename" as keyof SanityParticipant)
               : key === "annex"
               ? ("annex.originalFilename" as keyof SanityParticipant)
-              : key === "declaration"
-              ? ("declaration.originalFilename" as keyof SanityParticipant)
               : key === "contribution"
               ? ("contribution.originalFilename" as keyof SanityParticipant)
               : key === "essay"
@@ -209,7 +206,6 @@ const EllenorzoFelulet = () => {
         header: headersProject[key as keyof typeof headersProject],
         ...((key === "extract" ||
           key === "annex" ||
-          key === "declaration" ||
           key === "contribution" ||
           key === "essay") && {
           Cell: ({ row }: { row: { original: SanityParticipant } }) => (
@@ -320,12 +316,6 @@ const EllenorzoFelulet = () => {
           if (cachedRowKey.includes("Melléklet")) {
             return {
               [cachedRowKey]: row.original.annex?.originalFilename || null,
-            };
-          }
-          if (cachedRowKey.includes("Adatbankos nyilatkozat")) {
-            return {
-              [cachedRowKey]:
-                row.original.declaration?.originalFilename || null,
             };
           }
           if (cachedRowKey.includes("Hozzájárulási nyilatkozat")) {
