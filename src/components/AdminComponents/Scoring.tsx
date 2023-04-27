@@ -2,7 +2,7 @@ import { fetcher } from "@lib/queries";
 import { Button, InputAdornment, TextField } from "@mui/material";
 import { useState } from "react";
 import { Criteria } from "src/pages/admin/pontozas";
-import { SanityParticipant } from "types";
+import { SanityParticipantScoring } from "types";
 
 export type ScoreType = {
   [key: string]: {
@@ -18,29 +18,32 @@ type ErrorType = {
 export const ParticipantScoring = ({
   criteria,
   participant,
+  closed,
 }: {
   criteria?: Criteria[];
-  participant: SanityParticipant;
+  participant: SanityParticipantScoring;
+  closed: boolean;
 }) => {
   const [scores, setScores] = useState<ScoreType>(
-    {}
-    // disabled for now
-    // participant.score
-    //   ? participant.score.reduce(
-    //       (acc, cur) => ({
-    //         ...acc,
-    //         [cur.criteria._id]: { score: cur.score, name: cur.criteria.name },
-    //       }),
-    //       {}
-    //     )
-    //   : {}
+    participant.score
+      ? participant.score.reduce(
+          (acc, cur) => ({
+            ...acc,
+            [cur.criteria._id]: { score: cur.score, name: cur.criteria.name },
+          }),
+          {}
+        )
+      : {}
   );
   const [errors, setErrors] = useState<ErrorType>({});
   const scoreParticipant = async () =>
-    await fetcher(`/participants/score`, {
-      id: participant._id,
-      scores: scores,
-    });
+    await fetcher(
+      `/participants/score`,
+      JSON.stringify({
+        id: participant._id,
+        scores: scores,
+      })
+    );
 
   return (
     <div>
@@ -54,8 +57,8 @@ export const ParticipantScoring = ({
               <td>
                 <TextField
                   size="small"
-                  value={scores[c._id]?.score || 0}
-                  type="number"
+                  value={scores[c._id]?.score || ""}
+                  disabled={closed}
                   onChange={(e) => {
                     if (parseInt(e.target.value) > c.maxScore) {
                       setErrors({
@@ -89,16 +92,19 @@ export const ParticipantScoring = ({
               </td>
             </tr>
           ))}
+
           <tr>
             <td>
-              <Button
-                variant="contained"
-                disabled={Object.keys(errors).length > 0}
-                onClick={scoreParticipant}
-                className="bg-darkcherry"
-              >
-                Mentés
-              </Button>
+              {!closed && (
+                <Button
+                  variant="contained"
+                  disabled={Object.keys(errors).length > 0}
+                  onClick={scoreParticipant}
+                  className="bg-darkcherry"
+                >
+                  Mentés
+                </Button>
+              )}
             </td>
             <td className="pl-4">
               {Object.keys(scores).reduce(

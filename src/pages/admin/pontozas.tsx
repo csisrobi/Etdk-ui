@@ -11,14 +11,15 @@ import {
   Typography,
 } from "@mui/material";
 import type { GetServerSidePropsContext } from "next";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { useState, useMemo } from "react";
 import useSWR from "swr";
-import type { SanityParticipant } from "types";
+import type { SanityParticipant, SanityParticipantScoring } from "types";
 import { ParticipantScoring } from "src/components/AdminComponents/Scoring";
-import { fetcher, querySectionsForScoring } from "@lib/queries";
+import { adminSections, fetcher, querySectionsForScoring } from "@lib/queries";
 import { getClient } from "@lib/sanity";
 import JSZip from "jszip";
+import { useRouter } from "next/router";
 
 export type Criteria = {
   _id: string;
@@ -30,6 +31,18 @@ type Section = {
   _id: string;
   criteria: Criteria[];
   name: string;
+  active: boolean;
+  closed: boolean;
+};
+
+type RespSections = {
+  sections:
+    | {
+        _key: string;
+        _ref: string;
+        _type: string;
+      }[]
+    | null;
 };
 
 const fileAttributes: (keyof Pick<
@@ -37,10 +50,39 @@ const fileAttributes: (keyof Pick<
   "extract" | "annex" | "contribution" | "essay"
 >)[] = ["extract", "annex", "contribution", "essay"];
 
-const AdminPontozoFelulet = ({ sections }: { sections: Section[] }) => {
+const AdminPontozoFelulet = ({
+  sectionsDefault,
+  responsibleSections,
+}: {
+  sectionsDefault: Section[];
+  responsibleSections: Section[];
+}) => {
   const [tabValue, setTabValue] = useState<number>(0);
+  const session = useSession();
+  const router = useRouter();
+  const sections = useMemo(
+    () =>
+      responsibleSections
+        .filter((s) => s.active)
+        .map((s, i) => ({
+          name: s.name,
+          _id: s._id,
+          value: i,
+          closed: s.closed,
+        })),
+    [responsibleSections]
+  );
+
+  const closeSection = async () =>
+    await fetcher(
+      `/sections/close`,
+      JSON.stringify({
+        id: sections[tabValue]!._id,
+      })
+    ).then(() => router.reload());
+
   const { data: sectionParticipantsData, isLoading } = useSWR<
-    SanityParticipant[]
+    SanityParticipantScoring[]
   >(
     ["/section_participants", tabValue],
     async () =>
@@ -52,16 +94,12 @@ const AdminPontozoFelulet = ({ sections }: { sections: Section[] }) => {
       ).then((r) => (Array.isArray(r) ? r : []))
   );
 
-  const sectionsOptions = useMemo(
-    () =>
-      sections.map((s, i) => ({
-        name: s.name,
-        value: i,
-      })),
-    [sections]
+  const selectedSectionClosed = useMemo(
+    () => sections[tabValue]!.closed,
+    [sections, tabValue]
   );
 
-  const filesDownload = async (selectedUser: SanityParticipant) => {
+  const filesDownload = async (selectedUser: SanityParticipantScoring) => {
     try {
       const zip = new JSZip();
       const folder = zip.folder(`${selectedUser.name}`);
@@ -92,12 +130,21 @@ const AdminPontozoFelulet = ({ sections }: { sections: Section[] }) => {
           onChange={(_e, value) => {
             setTabValue(value?.value || 0);
           }}
-          options={sectionsOptions}
+          options={sections}
           getOptionLabel={(option) => option.name}
-          value={sectionsOptions[tabValue] || null}
+          value={sections[tabValue] || null}
           renderInput={(params) => <TextField {...params} label="Szekció" />}
           sx={{ width: "100%" }}
         />
+        {session.data?.user.role !== "scorer" && !selectedSectionClosed && (
+          <Button
+            onClick={closeSection}
+            className="my-4 w-full bg-darkcherry"
+            variant="contained"
+          >
+            Szekció zárása
+          </Button>
+        )}
         {isLoading && (
           <div>
             <svg
@@ -142,8 +189,13 @@ const AdminPontozoFelulet = ({ sections }: { sections: Section[] }) => {
               <AccordionDetails>
                 {sections && sections[tabValue] && (
                   <ParticipantScoring
-                    criteria={sections[tabValue]!.criteria}
+                    criteria={
+                      sectionsDefault.find(
+                        (s) => s._id === participant.section._id
+                      )?.criteria || []
+                    }
                     participant={participant}
+                    closed={selectedSectionClosed}
                   />
                 )}
               </AccordionDetails>
@@ -174,13 +226,26 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       },
     };
   }
-  //TODO: FILTER AFTER LOGGED IN USER RESPONSABILITY
-  const sections = (await getClient(preview || false).fetch(
+  const sectionsDefault = (await getClient(preview || false).fetch(
     querySectionsForScoring
   )) as Section[];
+  const responsibleSections = (
+    await getClient(preview || false).fetch(adminSections(session.user.email))
+  )[0] as RespSections;
+  const sections =
+    session.user.role === "superadmin"
+      ? sectionsDefault
+      : responsibleSections.sections && responsibleSections.sections.length
+      ? sectionsDefault.filter((sect) =>
+          responsibleSections.sections!.find((refs) => refs._ref === sect._id)
+        )
+      : [];
   return {
     props: {
-      sections: sections.sort((a, b) =>
+      sectionsDefault: sectionsDefault.sort((a, b) =>
+        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+      ),
+      responsibleSections: sections.sort((a, b) =>
         a.name.toLowerCase().localeCompare(b.name.toLowerCase())
       ),
       preview: preview || false,

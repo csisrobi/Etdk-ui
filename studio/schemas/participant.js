@@ -274,6 +274,15 @@ export default {
       },
     },
     {
+      title: "Összevont szekció",
+      name: "merged_section",
+      type: "reference",
+      to: [{ type: "sections" }],
+      options: {
+        disableNew: true,
+      },
+    },
+    {
       title: "Dolgozat",
       name: "essay",
       type: "file",
