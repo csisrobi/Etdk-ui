@@ -11,6 +11,7 @@ export const FacultyField = ({
   fieldName,
   universities,
   clearError,
+  disabled,
 }: {
   setAdditional?: (value: string | undefined) => void;
   fieldName: string;
@@ -21,6 +22,7 @@ export const FacultyField = ({
   control: Control<any, any>;
   universities: UniversitiesSanity[];
   clearError?: () => void;
+  disabled: boolean;
 }) => {
   const selectedUniversity = useWatch({
     control,
@@ -59,7 +61,7 @@ export const FacultyField = ({
           bg={bg}
           setAdditional={setAdditional}
           error={!!error}
-          disabled={!faculties}
+          disabled={!faculties || disabled}
         />
       )}
     />

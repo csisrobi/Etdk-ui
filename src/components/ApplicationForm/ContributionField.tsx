@@ -6,11 +6,13 @@ export const ContributionField = ({
   index,
   sections,
   control,
+  disabled,
 }: {
   index: number;
   sections: SectionsSanity[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: Control<any, any>;
+  disabled: boolean;
 }) => {
   const selectedSection = useWatch({
     control: control,
@@ -48,6 +50,7 @@ export const ContributionField = ({
                   onChange={(e) =>
                     onChange(e.target.files ? e.target.files[0] : null)
                   }
+                  disabled={disabled}
                 />
               </label>
             </div>

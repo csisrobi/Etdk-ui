@@ -11,6 +11,7 @@ export const SubjectField = ({
   fieldName,
   faculties,
   clearError,
+  disabled,
 }: {
   advisor?: boolean;
   index?: number;
@@ -23,6 +24,7 @@ export const SubjectField = ({
   control: Control<any, any>;
   faculties: FacultySanity[];
   clearError?: () => void;
+  disabled: boolean;
 }) => {
   const selectedFaculty = useWatch({
     control,
@@ -60,7 +62,7 @@ export const SubjectField = ({
           text={text}
           bg={bg}
           error={!!error}
-          disabled={!subjects}
+          disabled={!subjects || disabled}
         />
       )}
     />
