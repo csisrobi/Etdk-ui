@@ -201,6 +201,8 @@ const EllenorzoFelulet = () => {
               ? ("contribution.originalFilename" as keyof SanityParticipant)
               : key === "essay"
               ? ("essay.originalFilename" as keyof SanityParticipant)
+              : key === "section" && row.merged_section
+              ? ("merged_section" as keyof SanityParticipant)
               : (key as keyof SanityParticipant)
           ],
         header: headersProject[key as keyof typeof headersProject],
