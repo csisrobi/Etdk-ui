@@ -232,6 +232,7 @@ export const getAllParticipants = groq`
 
   title,
   "section":section -> name,
+  "merged_section":merged_section -> name,
   accepted,
   "extract": extract.asset->{url, originalFilename},
   "annex": annex.asset->{url, originalFilename},

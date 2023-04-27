@@ -274,6 +274,15 @@ export default {
       },
     },
     {
+      title: "Összevont szekció",
+      name: "merged_section",
+      type: "reference",
+      to: [{ type: "sections" }],
+      options: {
+        disableNew: true,
+      },
+    },
+    {
       title: "Dolgozat",
       name: "essay",
       type: "file",
@@ -335,6 +344,16 @@ export default {
       type: "boolean",
     },
     {
+      title: "Jelölve OTDKra",
+      name: "otdk_nominated",
+      type: "boolean",
+    },
+    {
+      title: "Jelölve publikálásra",
+      name: "publish_nominated",
+      type: "boolean",
+    },
+    {
       title: "GDPR",
       name: "gdpr",
       type: "boolean",
@@ -345,6 +364,10 @@ export default {
       type: "string",
     },
   ],
+  initialValue: {
+    otdk_nominated: false,
+    publish_nominated: false,
+  },
   preview: {
     select: {
       title: "name",
