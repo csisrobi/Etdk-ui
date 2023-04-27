@@ -43,6 +43,7 @@ const ApplicationForm = ({
   sections,
   defaultValues,
   gdpr,
+  closed = false,
 }: {
   universities: UniversitiesSanity[];
   faculties: FacultySanity[];
@@ -52,6 +53,7 @@ const ApplicationForm = ({
     projectsData: ProjectInputs[];
   };
   gdpr?: SanityRichText[];
+  closed?: boolean;
 }) => {
   const router = useRouter();
   const [confirmationMessage, setConfirmationMessage] = useState("");
@@ -646,6 +648,7 @@ const ApplicationForm = ({
                       "bg-application1 text-darkcherry placeholder:text-darkcherry"
                     )}
                     placeholder="Név"
+                    disabled={closed}
                   />
                 </div>
               )}
@@ -675,6 +678,7 @@ const ApplicationForm = ({
                       "bg-application1 text-darkcherry placeholder:text-darkcherry"
                     )}
                     placeholder="Hallgatói azonosító (nr. matricol)"
+                    disabled={closed}
                   />
                 </div>
               )}
@@ -690,6 +694,7 @@ const ApplicationForm = ({
               }}
               universities={universities}
               clearError={() => personClearErrors("university")}
+              disabled={closed}
             />
             <OtherField
               control={personFormControl}
@@ -699,6 +704,7 @@ const ApplicationForm = ({
               fieldName="universityOther"
               placeholder="Egyéb egyetem"
               clearError={() => personClearErrors("universityOther")}
+              disabled={closed}
             />
             <FacultyField
               control={personFormControl}
@@ -712,6 +718,7 @@ const ApplicationForm = ({
               }}
               universities={universities}
               clearError={() => personClearErrors("faculty")}
+              disabled={closed}
             />
             <OtherField
               control={personFormControl}
@@ -721,6 +728,7 @@ const ApplicationForm = ({
               fieldName="facultyOther"
               placeholder="Egyéb kar"
               clearError={() => personClearErrors("facultyOther")}
+              disabled={closed}
             />
             <SubjectField
               fieldName="subject"
@@ -733,6 +741,7 @@ const ApplicationForm = ({
               }
               faculties={faculties}
               clearError={() => personClearErrors("subject")}
+              disabled={closed}
             />
             <OtherField
               control={personFormControl}
@@ -742,6 +751,7 @@ const ApplicationForm = ({
               fieldName="subjectOther"
               placeholder="Egyéb szak"
               clearError={() => personClearErrors("subjectOther")}
+              disabled={closed}
             />
             <Controller
               name="degree"
@@ -761,6 +771,7 @@ const ApplicationForm = ({
                   text="text-darkcherry"
                   bg="bg-application1"
                   error={!!error}
+                  disabled={closed}
                 />
               )}
             />
@@ -782,6 +793,7 @@ const ApplicationForm = ({
                   text="text-darkcherry"
                   bg="bg-application1"
                   error={!!error}
+                  disabled={closed}
                 />
               )}
             />
@@ -803,6 +815,7 @@ const ApplicationForm = ({
                   text="text-darkcherry"
                   bg="bg-application1"
                   error={!!error}
+                  disabled={closed}
                 />
               )}
             />
@@ -822,7 +835,7 @@ const ApplicationForm = ({
                       onChange(e.target.value);
                     }}
                     autoComplete="off"
-                    disabled={!!defaultValues}
+                    disabled={!!defaultValues || closed}
                     type="text"
                     className={classNames(
                       inputClasses,
@@ -857,6 +870,7 @@ const ApplicationForm = ({
                       "bg-application1 text-darkcherry placeholder:text-darkcherry"
                     )}
                     placeholder="Telefonszám"
+                    disabled={closed}
                   />
                 </div>
               )}
@@ -907,6 +921,7 @@ const ApplicationForm = ({
                             onChange(e.target.files ? e.target.files[0] : null);
                           }
                         }}
+                        disabled={closed}
                       />
                     </label>
                     {error && error.type === "custom" && (
@@ -949,6 +964,7 @@ const ApplicationForm = ({
                           onChange={(e) =>
                             onChange(e.target.files ? e.target.files[0] : null)
                           }
+                          disabled={closed}
                         />
                       </label>
                     </div>
@@ -1023,6 +1039,7 @@ const ApplicationForm = ({
                                   "bg-application3 text-darkcherry placeholder:text-darkcherry"
                                 )}
                                 placeholder="Cím"
+                                disabled={closed}
                               />
                             </div>
                           )}
@@ -1074,6 +1091,7 @@ const ApplicationForm = ({
                                           : null
                                       )
                                     }
+                                    disabled={closed}
                                   />
                                 </label>
                               </div>
@@ -1094,7 +1112,7 @@ const ApplicationForm = ({
                             }));
                             return (
                               <Select
-                                disabled={!!defaultValues}
+                                disabled={!!defaultValues || closed}
                                 onChange={(value: string | number) => {
                                   onChange(value as string);
                                 }}
@@ -1146,6 +1164,7 @@ const ApplicationForm = ({
                                             : null
                                         )
                                       }
+                                      disabled={closed}
                                     />
                                   </label>
                                 </div>
@@ -1187,6 +1206,7 @@ const ApplicationForm = ({
                                             : null
                                         )
                                       }
+                                      disabled={closed}
                                     />
                                   </label>
                                 </div>
@@ -1199,6 +1219,7 @@ const ApplicationForm = ({
                             index={index}
                             control={projectsControl}
                             sections={sections}
+                            disabled={closed}
                           />
                         )}
                       </div>
@@ -1286,6 +1307,7 @@ const ApplicationForm = ({
                                                 "bg-application2 text-white placeholder:text-white"
                                               )}
                                               placeholder="Név"
+                                              disabled={closed}
                                             />
                                           </div>
                                         )}
@@ -1304,6 +1326,7 @@ const ApplicationForm = ({
                                           );
                                         }}
                                         universities={universities}
+                                        disabled={closed}
                                       />
                                       <OtherField
                                         control={projectsControl}
@@ -1312,6 +1335,7 @@ const ApplicationForm = ({
                                         dependencyName={`projects.${index}.advisors.${ai}.university`}
                                         fieldName={`projects.${index}.advisors.${ai}.universityOther`}
                                         placeholder="Egyéb egyetem"
+                                        disabled={closed}
                                       />
                                       <Controller
                                         name={`projects.${index}.advisors.${ai}.title`}
@@ -1337,6 +1361,7 @@ const ApplicationForm = ({
                                             text="text-white"
                                             bg="bg-application2"
                                             error={!!error}
+                                            disabled={closed}
                                           />
                                         )}
                                       />
@@ -1371,6 +1396,7 @@ const ApplicationForm = ({
                                                 "bg-application2 text-white placeholder:text-white"
                                               )}
                                               placeholder="E-mail cím"
+                                              disabled={closed}
                                             />
                                           </div>
                                         )}
@@ -1407,6 +1433,7 @@ const ApplicationForm = ({
                                                 "bg-application2 text-white placeholder:text-white"
                                               )}
                                               placeholder="Telefonszám"
+                                              disabled={closed}
                                             />
                                           </div>
                                         )}
@@ -1470,6 +1497,7 @@ const ApplicationForm = ({
                                                         : null
                                                     )
                                                   }
+                                                  disabled={closed}
                                                 />
                                               </label>
                                             </div>
@@ -1566,6 +1594,7 @@ const ApplicationForm = ({
                                                 "bg-application1 text-darkcherry placeholder:text-darkcherry"
                                               )}
                                               placeholder="Név"
+                                              disabled={closed}
                                             />
                                           </div>
                                         )}
@@ -1594,6 +1623,7 @@ const ApplicationForm = ({
                                                 "bg-application1 text-darkcherry placeholder:text-darkcherry"
                                               )}
                                               placeholder="Hallgatói azonosító (nr. matricol)"
+                                              disabled={closed}
                                             />
                                           </div>
                                         )}
@@ -1612,6 +1642,7 @@ const ApplicationForm = ({
                                           );
                                         }}
                                         universities={universities}
+                                        disabled={closed}
                                       />
                                       <OtherField
                                         control={projectsControl}
@@ -1620,6 +1651,7 @@ const ApplicationForm = ({
                                         fieldName={`projects.${index}.companions.${ci}.universityOther`}
                                         dependencyName={`projects.${index}.companions.${ci}.university`}
                                         placeholder="Egyéb egyetem"
+                                        disabled={closed}
                                       />
                                       <FacultyField
                                         control={projectsControl}
@@ -1636,6 +1668,7 @@ const ApplicationForm = ({
                                           )
                                         }
                                         universities={universities}
+                                        disabled={closed}
                                       />
                                       <OtherField
                                         control={projectsControl}
@@ -1644,6 +1677,7 @@ const ApplicationForm = ({
                                         dependencyName={`projects.${index}.companions.${ci}.faculty`}
                                         fieldName={`projects.${index}.companions.${ci}.facultyOther`}
                                         placeholder="Egyéb kar"
+                                        disabled={closed}
                                       />
                                       <SubjectField
                                         fieldName={`projects.${index}.companions.${ci}.subject`}
@@ -1660,6 +1694,7 @@ const ApplicationForm = ({
                                           )
                                         }
                                         faculties={faculties}
+                                        disabled={closed}
                                       />
                                       <OtherField
                                         control={projectsControl}
@@ -1668,6 +1703,7 @@ const ApplicationForm = ({
                                         dependencyName={`projects.${index}.companions.${ci}.subject`}
                                         fieldName={`projects.${index}.companions.${ci}.subjectOther`}
                                         placeholder="Egyéb szak"
+                                        disabled={closed}
                                       />
                                       <Controller
                                         name={`projects.${index}.companions.${ci}.degree`}
@@ -1693,6 +1729,7 @@ const ApplicationForm = ({
                                             text="text-darkcherry"
                                             bg="bg-application1"
                                             error={!!error}
+                                            disabled={closed}
                                           />
                                         )}
                                       />
@@ -1720,6 +1757,7 @@ const ApplicationForm = ({
                                             text="text-darkcherry"
                                             bg="bg-application1"
                                             error={!!error}
+                                            disabled={closed}
                                           />
                                         )}
                                       />
@@ -1747,6 +1785,7 @@ const ApplicationForm = ({
                                             text="text-darkcherry"
                                             bg="bg-application1"
                                             error={!!error}
+                                            disabled={closed}
                                           />
                                         )}
                                       />
@@ -1772,7 +1811,9 @@ const ApplicationForm = ({
                                             <input
                                               {...field}
                                               autoComplete="off"
-                                              disabled={!!defaultValues}
+                                              disabled={
+                                                !!defaultValues || closed
+                                              }
                                               type="text"
                                               className={classNames(
                                                 inputClasses,
@@ -1817,6 +1858,7 @@ const ApplicationForm = ({
                                                 "bg-application1 text-darkcherry placeholder:text-darkcherry"
                                               )}
                                               placeholder="Telefonszám"
+                                              disabled={closed}
                                             />
                                           </div>
                                         )}
@@ -1892,6 +1934,7 @@ const ApplicationForm = ({
                                                       );
                                                     }
                                                   }}
+                                                  disabled={closed}
                                                 />
                                               </label>
                                               {error &&
@@ -1945,6 +1988,7 @@ const ApplicationForm = ({
                                                           : null
                                                       )
                                                     }
+                                                    disabled={closed}
                                                   />
                                                 </label>
                                               </div>
@@ -1961,7 +2005,7 @@ const ApplicationForm = ({
                         </Disclosure>
                       </React.Fragment>
                     ))}
-                    {!defaultValues && (
+                    {!defaultValues && !closed && (
                       <div className="mt-4 flex space-x-2">
                         <AddCompanionButton index={index} />
                         <AddAdvisorButton index={index} />
@@ -2023,21 +2067,24 @@ const ApplicationForm = ({
           </p>
         </div>
       )}
-      <button
-        className={classNames(
-          !!defaultValues ? "mt-10" : "",
-          "flex h-10 w-40 items-center justify-center rounded-xl bg-lightcherry py-2 px-4 font-bold text-white disabled:cursor-not-allowed disabled:bg-gray-200"
-        )}
-        onClick={() => submitData()}
-        disabled={
-          !!Object.keys(projectErrors).length ||
-          !!Object.keys(personErrors).length ||
-          !gdprApproved ||
-          saving
-        }
-      >
-        <p>Mentés</p>
-      </button>
+      {!closed && (
+        <button
+          className={classNames(
+            !!defaultValues ? "mt-10" : "",
+            "flex h-10 w-40 items-center justify-center rounded-xl bg-lightcherry py-2 px-4 font-bold text-white disabled:bg-gray-200"
+          )}
+          onClick={() => submitData()}
+          disabled={
+            !!Object.keys(projectErrors).length ||
+            !!Object.keys(personErrors).length ||
+            !gdprApproved ||
+            saving
+          }
+        >
+          <p>Mentés</p>
+        </button>
+      )}
+
       {(!!Object.keys(projectErrors).length ||
         !!Object.keys(personErrors).length) && (
         <div className="mt-4">

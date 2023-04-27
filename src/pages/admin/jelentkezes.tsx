@@ -7,6 +7,7 @@ import {
   queryUniversities,
 } from "@lib/queries";
 import { getClient } from "@lib/sanity";
+import { isAfter, parseISO } from "date-fns";
 import type { GetServerSidePropsContext } from "next";
 import { getSession } from "next-auth/react";
 
@@ -45,6 +46,7 @@ const AdminJelentkezes = ({
       faculties={faculties}
       sections={sections}
       defaultValues={participantData}
+      closed={isAfter(new Date(), parseISO("2023-04-30T23:59:59"))}
     />
   );
 };
