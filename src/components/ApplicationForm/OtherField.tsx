@@ -9,6 +9,7 @@ export const OtherField = ({
   bg,
   control,
   clearError,
+  disabled,
 }: {
   dependencyName: string;
   fieldName: string;
@@ -19,6 +20,7 @@ export const OtherField = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: Control<any, any>;
   clearError?: () => void;
+  disabled: boolean;
 }) => {
   const dependencyValue = useWatch({
     control,
@@ -49,6 +51,7 @@ export const OtherField = ({
                 `${text} ${bg} placeholder:${text}`
               )}
               placeholder={placeholder}
+              disabled={disabled}
             />
           </div>
         )}

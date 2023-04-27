@@ -10,6 +10,7 @@ export const UniversityField = ({
   fieldName,
   universities,
   clearError,
+  disabled,
 }: {
   advisor?: boolean;
   setAdditional?: (value: string | undefined) => void;
@@ -21,6 +22,7 @@ export const UniversityField = ({
   index?: number;
   universities: UniversitiesSanity[];
   clearError?: () => void;
+  disabled: boolean;
 }) => {
   const universitiesOption = universities
     .map((uni) => ({
@@ -52,6 +54,7 @@ export const UniversityField = ({
           bg={bg}
           setAdditional={setAdditional}
           error={!!error}
+          disabled={disabled}
         />
       )}
     />
