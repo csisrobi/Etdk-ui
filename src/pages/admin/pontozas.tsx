@@ -226,6 +226,14 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       },
     };
   }
+  if (session.user.role === "data_checker") {
+    return {
+      redirect: {
+        destination: "/admin/ellenorzes",
+        permanent: false,
+      },
+    };
+  }
   const sectionsDefault = (await getClient(preview || false).fetch(
     querySectionsForScoring
   )) as Section[];
