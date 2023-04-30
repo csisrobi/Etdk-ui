@@ -27,6 +27,7 @@ export default {
           { title: "Pontozó", value: "scorer" },
           { title: "Szuperadmin", value: "superadmin" },
           { title: "Szekció záró", value: "section_closer" },
+          { title: "Adat ellenőrző", value: "data_checker" },
         ],
       },
     },

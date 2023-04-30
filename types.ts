@@ -148,6 +148,7 @@ export type SanityParticipant = SanityPersonData & {
   advisors: SanityAdvisorData[];
   title: string;
   section: string;
+  merged_section: string;
   extract: {
     originalFilename: string;
     url: string;
