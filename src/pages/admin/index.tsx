@@ -115,7 +115,10 @@ export async function getServerSideProps(
   const session = await getSession(ctx);
 
   if (session?.user) {
-    if (session.user.role === "superadmin") {
+    if (
+      session.user.role === "superadmin" ||
+      session.user.role === "data_checker"
+    ) {
       return {
         redirect: {
           destination: "/admin/ellenorzes",
