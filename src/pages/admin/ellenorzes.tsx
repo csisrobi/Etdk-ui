@@ -14,6 +14,7 @@ import { fetcher } from "@lib/queries";
 import { Button } from "@mui/material";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { ExportToCsv } from "export-to-csv";
+import toast from "react-hot-toast";
 
 const headersParticipant = {
   name: "Név",
@@ -228,6 +229,15 @@ const EllenorzoFelulet = () => {
       };
     });
 
+    const acceptParticipant = async (userData: SanityParticipant) =>
+      await fetcher(
+        `/participants/accept`,
+        JSON.stringify({
+          id: userData._id,
+          currentValue: userData.accepted,
+        })
+      );
+
     const acceptedHeader: MRT_ColumnDef<SanityParticipant> = {
       accessorKey: "accepted",
       header: "Elfogadva",
@@ -235,13 +245,13 @@ const EllenorzoFelulet = () => {
         <Switch
           checked={row.original.accepted}
           onChange={async () =>
-            await fetcher(
-              `/participants/accept`,
-              JSON.stringify({
-                id: row.original._id,
-                currentValue: row.original.accepted,
-              })
-            )
+            toast.promise(acceptParticipant(row.original), {
+              loading: "Elfogadás...",
+              success: (
+                <b>Elfogadás sikeres, picit várjál az adatok frissüljenek</b>
+              ),
+              error: <b>Elfogadás sikertelen</b>,
+            })
           }
           className={`${
             row.original.accepted ? "bg-lightcherry" : "bg-lightBrown"
@@ -415,6 +425,18 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     return {
       redirect: {
         destination: "/admin/jelentkezes",
+        permanent: false,
+      },
+    };
+  }
+
+  if (
+    session.user.role === "section_closer" ||
+    session.user.role === "scorer"
+  ) {
+    return {
+      redirect: {
+        destination: "/admin/pontozas",
         permanent: false,
       },
     };
