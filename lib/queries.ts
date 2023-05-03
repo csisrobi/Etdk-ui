@@ -278,6 +278,7 @@ export const querySectionsForScoring = groq`
   criteria[]->{
     name,
     maxScore,
+    written,
     _id
   }
 }`;

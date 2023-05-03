@@ -1,5 +1,6 @@
 import { fetcher } from "@lib/queries";
 import { Button, InputAdornment, TextField } from "@mui/material";
+import { isAfter, parseISO } from "date-fns";
 import { useState } from "react";
 import { Criteria } from "src/pages/admin/pontozas";
 import { SanityParticipantScoring } from "types";
@@ -44,53 +45,57 @@ export const ParticipantScoring = ({
         scores: scores,
       })
     );
-
   return (
     <div>
       <table className="border-separate border-spacing-x-3 border-spacing-y-2 ">
         <tbody>
           {(criteria || []).map((c) => (
-            <tr key={c._id}>
-              <td className="w-full">
-                <p>{c.name}</p>
-              </td>
-              <td>
-                <TextField
-                  size="small"
-                  value={scores[c._id]?.score || ""}
-                  disabled={closed}
-                  onChange={(e) => {
-                    if (parseInt(e.target.value) > c.maxScore) {
-                      setErrors({
-                        ...errors,
-                        [c._id]: `A maximum pontszám ${c.maxScore}`,
-                      });
-                    } else {
-                      const errorsHolder = errors;
-                      delete errorsHolder[c._id];
-                      setErrors(errorsHolder);
-                    }
-                    setScores({
-                      ...scores,
-                      [c._id]: {
-                        name: c.name,
-                        score: parseInt(e.target.value) || 0,
-                      },
-                    });
-                  }}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        /{c.maxScore}
-                      </InputAdornment>
-                    ),
-                  }}
-                  error={!!errors[c._id]}
-                  helperText={errors[c._id]}
-                  className="w-32"
-                />
-              </td>
-            </tr>
+            <>
+              {(isAfter(new Date(), parseISO("2023-05-17T23:59:59")) ||
+                c.written) && (
+                <tr key={c._id}>
+                  <td className="w-full">
+                    <p>{c.name}</p>
+                  </td>
+                  <td>
+                    <TextField
+                      size="small"
+                      value={scores[c._id]?.score || ""}
+                      disabled={closed}
+                      onChange={(e) => {
+                        if (parseInt(e.target.value) > c.maxScore) {
+                          setErrors({
+                            ...errors,
+                            [c._id]: `A maximum pontszám ${c.maxScore}`,
+                          });
+                        } else {
+                          const errorsHolder = errors;
+                          delete errorsHolder[c._id];
+                          setErrors(errorsHolder);
+                        }
+                        setScores({
+                          ...scores,
+                          [c._id]: {
+                            name: c.name,
+                            score: parseInt(e.target.value) || 0,
+                          },
+                        });
+                      }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            /{c.maxScore}
+                          </InputAdornment>
+                        ),
+                      }}
+                      error={!!errors[c._id]}
+                      helperText={errors[c._id]}
+                      className="w-32"
+                    />
+                  </td>
+                </tr>
+              )}
+            </>
           ))}
 
           <tr>

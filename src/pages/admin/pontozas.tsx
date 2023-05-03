@@ -20,11 +20,13 @@ import { adminSections, fetcher, querySectionsForScoring } from "@lib/queries";
 import { getClient } from "@lib/sanity";
 import JSZip from "jszip";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 export type Criteria = {
   _id: string;
   maxScore: number;
   name: string;
+  written: boolean;
 };
 
 type Section = {
@@ -125,6 +127,11 @@ const AdminPontozoFelulet = ({
 
   return (
     <div className="min-h-[100vh] min-w-full p-4 pt-[100px]">
+      {session.data?.user.role === "superadmin" && (
+        <Button className="mb-4 bg-darkcherry" variant="contained">
+          <Link href="ellenorzes">Ellenőrzés</Link>
+        </Button>
+      )}
       <div className="relative mx-auto w-full max-w-4xl md:flex md:w-3/4 md:flex-col">
         <Autocomplete
           onChange={(_e, value) => {
