@@ -154,8 +154,8 @@ const AdminPontozoFelulet = ({
             Szekció zárása
           </Button>
         )}
-        {isLoading && (
-          <div>
+        {true && (
+          <div className="flex items-center justify-center">
             <svg
               aria-hidden="true"
               className="mr-2 h-14 w-14 animate-spin fill-white text-lightcherry dark:text-lightcherry"
