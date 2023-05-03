@@ -284,7 +284,7 @@ export const querySectionsForScoring = groq`
 }`;
 
 export const sectionParticipants = (section: string) => groq`
-*[_type == "participants" && "${section}" in [section._ref, merged_section._ref] ] {
+*[_type == "participants" && "${section}" in [section._ref, merged_section._ref] && accepted == true ] {
   _id, 
   name,
 
@@ -295,6 +295,8 @@ export const sectionParticipants = (section: string) => groq`
   "essay": essay.asset->{url, originalFilename},
   "section" : section -> {_id, name},
   "merged_section":merged_section -> {_id, name},
+  otdk_nominated,
+  publish_nominated,
   score[] {
     criteria->{name, _id},
     score

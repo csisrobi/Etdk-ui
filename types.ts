@@ -205,4 +205,6 @@ export type SanityParticipantScoring = {
     criteria: { name: string; _id: string };
     score: number;
   }[];
+  otdk_nominated: boolean;
+  publish_nominated: boolean;
 };

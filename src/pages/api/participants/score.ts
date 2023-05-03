@@ -18,6 +18,8 @@ export default async function handler(
                 criteria: { _type: "reference", _ref: s },
                 _key: nanoid(),
               })),
+              publish_nominated: req.body.publish_nominated,
+              otdk_nominated: req.body.otdk_nominated,
             },
           })
           .commit()

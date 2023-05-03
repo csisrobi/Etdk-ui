@@ -83,9 +83,11 @@ const AdminPontozoFelulet = ({
       })
     ).then(() => router.reload());
 
-  const { data: sectionParticipantsData, isLoading } = useSWR<
-    SanityParticipantScoring[]
-  >(
+  const {
+    data: sectionParticipantsData,
+    mutate,
+    isLoading,
+  } = useSWR<SanityParticipantScoring[]>(
     ["/section_participants", tabValue],
     async () =>
       await fetcher(
@@ -203,6 +205,7 @@ const AdminPontozoFelulet = ({
                     }
                     participant={participant}
                     closed={selectedSectionClosed}
+                    mutate={mutate}
                   />
                 )}
               </AccordionDetails>
@@ -255,14 +258,19 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
           responsibleSections.sections!.find((refs) => refs._ref === sect._id)
         )
       : [];
+  console.log(sectionsDefault.filter((s) => !s.name));
   return {
     props: {
-      sectionsDefault: sectionsDefault.sort((a, b) =>
-        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-      ),
-      responsibleSections: sections.sort((a, b) =>
-        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-      ),
+      sectionsDefault: sectionsDefault
+        .filter((s) => s.name)
+        .sort((a, b) =>
+          a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+        ),
+      responsibleSections: sections
+        .filter((s) => s.name)
+        .sort((a, b) =>
+          a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+        ),
       preview: preview || false,
     },
   };

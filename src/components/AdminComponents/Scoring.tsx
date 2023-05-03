@@ -1,8 +1,17 @@
 import { fetcher } from "@lib/queries";
-import { Button, InputAdornment, TextField } from "@mui/material";
+import {
+  Button,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
+  InputAdornment,
+  TextField,
+} from "@mui/material";
 import { isAfter, parseISO } from "date-fns";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { Criteria } from "src/pages/admin/pontozas";
+import { KeyedMutator } from "swr";
 import { SanityParticipantScoring } from "types";
 
 export type ScoreType = {
@@ -20,10 +29,12 @@ export const ParticipantScoring = ({
   criteria,
   participant,
   closed,
+  mutate,
 }: {
   criteria?: Criteria[];
   participant: SanityParticipantScoring;
   closed: boolean;
+  mutate: KeyedMutator<SanityParticipantScoring[]>;
 }) => {
   const [scores, setScores] = useState<ScoreType>(
     participant.score
@@ -36,15 +47,33 @@ export const ParticipantScoring = ({
         )
       : {}
   );
+  const [otdk, setOtdk] = useState<boolean>(
+    participant.otdk_nominated || false
+  );
+  const [publish, setPublish] = useState<boolean>(
+    participant.publish_nominated || false
+  );
+
   const [errors, setErrors] = useState<ErrorType>({});
+
   const scoreParticipant = async () =>
     await fetcher(
       `/participants/score`,
       JSON.stringify({
         id: participant._id,
         scores: scores,
+        publish_nominated: publish,
+        otdk_nominated: otdk,
       })
-    );
+    ).then(() => mutate());
+
+  const scoreParticipantPromise = async () =>
+    toast.promise(scoreParticipant(), {
+      loading: "Pontozás...",
+      success: <b>Pontozás sikeres</b>,
+      error: <b>Pontozás sikertelen</b>,
+    });
+
   return (
     <div>
       <table className="border-separate border-spacing-x-3 border-spacing-y-2 ">
@@ -100,11 +129,43 @@ export const ParticipantScoring = ({
 
           <tr>
             <td>
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={otdk}
+                      disabled={closed}
+                      onChange={(e) => setOtdk(e.target.checked)}
+                    />
+                  }
+                  label="OTDKra jelölés"
+                />
+              </FormGroup>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={publish}
+                      disabled={closed}
+                      onChange={(e) => setPublish(e.target.checked)}
+                    />
+                  }
+                  label="Publikálásra jelölés"
+                />
+              </FormGroup>
+            </td>
+          </tr>
+          <tr>
+            <td>
               {!closed && (
                 <Button
                   variant="contained"
                   disabled={Object.keys(errors).length > 0}
-                  onClick={scoreParticipant}
+                  onClick={scoreParticipantPromise}
                   className="bg-darkcherry"
                 >
                   Mentés
