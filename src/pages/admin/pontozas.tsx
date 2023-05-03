@@ -244,11 +244,11 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       },
     };
   }
-  const sectionsDefault = (await getClient(preview || false).fetch(
+  const sectionsDefault = (await getClient(true).fetch(
     querySectionsForScoring
   )) as Section[];
   const responsibleSections = (
-    await getClient(preview || false).fetch(adminSections(session.user.email))
+    await getClient(true).fetch(adminSections(session.user.email))
   )[0] as RespSections;
   const sections =
     session.user.role === "superadmin"

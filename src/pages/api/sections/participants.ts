@@ -9,7 +9,9 @@ export default async function handler(
   switch (req.method) {
     case "POST":
       try {
-        const resp = await getClient().fetch(sectionParticipants(req.body.id));
+        const resp = await getClient(true).fetch(
+          sectionParticipants(req.body.id)
+        );
         res.send({ status: 200, body: resp });
       } catch (e) {
         res.send({ status: 500, message: e });
