@@ -11,61 +11,151 @@ import {
   Typography,
 } from "@mui/material";
 import type { GetServerSidePropsContext } from "next";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { useState, useMemo } from "react";
 import useSWR from "swr";
-import type { SanityParticipant } from "types";
+import type { SanityParticipant, SanityParticipantScoring } from "types";
 import { ParticipantScoring } from "src/components/AdminComponents/Scoring";
-import { fetcher, querySectionsForScoring } from "@lib/queries";
+import { adminSections, fetcher, querySectionsForScoring } from "@lib/queries";
 import { getClient } from "@lib/sanity";
+import JSZip from "jszip";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 export type Criteria = {
   _id: string;
   maxScore: number;
   name: string;
+  written: boolean;
 };
 
 type Section = {
   _id: string;
   criteria: Criteria[];
   name: string;
+  active: boolean;
+  closed: boolean;
 };
 
-const AdminPontozoFelulet = ({ sections }: { sections: Section[] }) => {
+type RespSections = {
+  sections:
+    | {
+        _key: string;
+        _ref: string;
+        _type: string;
+      }[]
+    | null;
+};
+
+const fileAttributes: (keyof Pick<
+  SanityParticipant,
+  "extract" | "annex" | "contribution" | "essay"
+>)[] = ["extract", "annex", "contribution", "essay"];
+
+const AdminPontozoFelulet = ({
+  sectionsDefault,
+  responsibleSections,
+}: {
+  sectionsDefault: Section[];
+  responsibleSections: Section[];
+}) => {
   const [tabValue, setTabValue] = useState<number>(0);
-  const { data: sectionParticipantsData, isLoading } = useSWR<
-    SanityParticipant[]
-  >(
-    ["/section_participants", tabValue],
-    async () =>
-      await fetcher(`/sections/participants`, {
-        id: sections[tabValue]?._id || "",
-      }).then((r) => (Array.isArray(r) ? r : []))
+  const session = useSession();
+  const router = useRouter();
+  const sections = useMemo(
+    () =>
+      responsibleSections
+        .filter((s) => s.active)
+        .map((s, i) => ({
+          name: s.name,
+          _id: s._id,
+          value: i,
+          closed: s.closed,
+        })),
+    [responsibleSections]
   );
 
-  const sectionsOptions = useMemo(
-    () =>
-      sections.map((s, i) => ({
-        name: s.name,
-        value: i,
-      })),
-    [sections]
+  const closeSection = async () =>
+    await fetcher(
+      `/sections/close`,
+      JSON.stringify({
+        id: sections[tabValue]!._id,
+      })
+    ).then(() => router.reload());
+
+  const {
+    data: sectionParticipantsData,
+    mutate,
+    isLoading,
+  } = useSWR<SanityParticipantScoring[]>(
+    ["/section_participants", tabValue],
+    async () =>
+      await fetcher(
+        `/sections/participants`,
+        JSON.stringify({
+          id: sections[tabValue]?._id || "",
+        })
+      ).then((r) => (Array.isArray(r) ? r : []))
   );
+
+  const selectedSectionClosed = useMemo(
+    () => sections[tabValue]!.closed,
+    [sections, tabValue]
+  );
+
+  const filesDownload = async (selectedUser: SanityParticipantScoring) => {
+    try {
+      const zip = new JSZip();
+      const folder = zip.folder(`${selectedUser.name}`);
+      fileAttributes.forEach((attribute) => {
+        if (folder && selectedUser[attribute]) {
+          folder.file(
+            selectedUser[attribute].originalFilename,
+            fetch(selectedUser[attribute].url).then((res) => res.blob())
+          );
+        }
+      });
+      const zipFile = await zip.generateAsync({ type: "blob" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(zipFile);
+      a.download = `${selectedUser.name}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="min-h-[100vh] min-w-full p-4 pt-[100px]">
-      <div className="relative mx-auto w-full max-w-4xl space-y-5 md:flex md:w-3/4 md:flex-col">
+      {session.data?.user.role === "superadmin" && (
+        <Button className="mb-4 bg-darkcherry" variant="contained">
+          <Link href="ellenorzes">Ellenőrzés</Link>
+        </Button>
+      )}
+      <div className="relative mx-auto w-full max-w-4xl md:flex md:w-3/4 md:flex-col">
         <Autocomplete
           onChange={(_e, value) => {
             setTabValue(value?.value || 0);
           }}
-          options={sectionsOptions}
+          options={sections}
           getOptionLabel={(option) => option.name}
-          value={sectionsOptions[tabValue] || null}
+          value={sections[tabValue] || null}
           renderInput={(params) => <TextField {...params} label="Szekció" />}
           sx={{ width: "100%" }}
         />
+        {session.data?.user.role !== "scorer" && !selectedSectionClosed && (
+          <Button
+            onClick={closeSection}
+            className="my-4 w-full bg-darkcherry"
+            variant="contained"
+          >
+            Szekció zárása
+          </Button>
+        )}
         {isLoading && (
-          <div>
+          <div className="flex items-center justify-center">
             <svg
               aria-hidden="true"
               className="mr-2 h-14 w-14 animate-spin fill-white text-lightcherry dark:text-lightcherry"
@@ -95,27 +185,27 @@ const AdminPontozoFelulet = ({ sections }: { sections: Section[] }) => {
                 <Typography className="self-center" sx={{ flex: 1 }}>
                   {participant.name}
                 </Typography>
-                {/* DISABLED FOR NOW */}
-                {/* <Button
+                <Button
                   variant="contained"
                   endIcon={<Download />}
                   className="bg-darkcherry"
                   sx={{ mr: 2 }}
+                  onClick={() => filesDownload(participant)}
                 >
-                  <a
-                    href={participant.extract.url}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {participant.title}
-                  </a>
-                </Button> */}
+                  Dokumentumok letöltése
+                </Button>
               </AccordionSummary>
               <AccordionDetails>
                 {sections && sections[tabValue] && (
                   <ParticipantScoring
-                    criteria={sections[tabValue]!.criteria}
+                    criteria={
+                      sectionsDefault.find(
+                        (s) => s._id === participant.section._id
+                      )?.criteria || []
+                    }
                     participant={participant}
+                    closed={selectedSectionClosed}
+                    mutate={mutate}
                   />
                 )}
               </AccordionDetails>
@@ -146,24 +236,44 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       },
     };
   }
+  if (session.user.role === "data_checker") {
+    return {
+      redirect: {
+        destination: "/admin/ellenorzes",
+        permanent: false,
+      },
+    };
+  }
+  const sectionsDefault = (await getClient(true).fetch(
+    querySectionsForScoring
+  )) as Section[];
+  const responsibleSections = (
+    await getClient(true).fetch(adminSections(session.user.email))
+  )[0] as RespSections;
+  const sections =
+    session.user.role === "superadmin"
+      ? sectionsDefault
+      : responsibleSections.sections && responsibleSections.sections.length
+      ? sectionsDefault.filter((sect) =>
+          responsibleSections.sections!.find((refs) => refs._ref === sect._id)
+        )
+      : [];
+  console.log(sectionsDefault.filter((s) => !s.name));
   return {
-    redirect: {
-      destination: "/admin",
-      permanent: false,
+    props: {
+      sectionsDefault: sectionsDefault
+        .filter((s) => s.name)
+        .sort((a, b) =>
+          a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+        ),
+      responsibleSections: sections
+        .filter((s) => s.name)
+        .sort((a, b) =>
+          a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+        ),
+      preview: preview || false,
     },
   };
-  // //TODO: FILTER AFTER LOGGED IN USER RESPONSABILITY
-  // const sections = (await getClient(preview || false).fetch(
-  //   querySectionsForScoring
-  // )) as Section[];
-  // return {
-  //   props: {
-  //     sections: sections.sort((a, b) =>
-  //       a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-  //     ),
-  //     preview: preview || false,
-  //   },
-  // };
 }
 
 export default AdminPontozoFelulet;

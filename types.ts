@@ -165,6 +165,46 @@ export type SanityParticipant = SanityPersonData & {
     originalFilename: string;
     url: string;
   };
+  score: {
+    criteria: { name: string; _id: string };
+    score: number;
+  }[];
 
   accepted: boolean;
+};
+
+export type SanityParticipantScoring = {
+  _id: string;
+  name: string;
+  title: string;
+  section: {
+    _id: string;
+    name: string;
+  };
+  merged_section: {
+    _id: string;
+    name: string;
+  };
+  extract: {
+    originalFilename: string;
+    url: string;
+  };
+  essay: {
+    originalFilename: string;
+    url: string;
+  };
+  annex: {
+    originalFilename: string;
+    url: string;
+  };
+  contribution: {
+    originalFilename: string;
+    url: string;
+  };
+  score: {
+    criteria: { name: string; _id: string };
+    score: number;
+  }[];
+  otdk_nominated: boolean;
+  publish_nominated: boolean;
 };

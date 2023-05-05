@@ -270,28 +270,42 @@ export const getAllParticipants = groq`
 }`;
 
 export const querySectionsForScoring = groq`
-*[_type == "sections" && active == true ]{
+*[_type == "sections" ]{
   name,
   _id,
+  active,
+  closed,
   criteria[]->{
     name,
     maxScore,
+    written,
     _id
   }
 }`;
 
 export const sectionParticipants = (section: string) => groq`
-*[_type == "participants" && section._ref == "${section}" && accepted == true] {
+*[_type == "participants" && "${section}" in [section._ref, merged_section._ref] && accepted == true ] {
   _id, 
   name,
 
   title,
-  "extract": extract.asset->{url},
-  "section":section -> name,
+  "extract": extract.asset->{url, originalFilename},
+  "annex": annex.asset->{url, originalFilename},
+  "contribution": contribution.asset->{url, originalFilename},
+  "essay": essay.asset->{url, originalFilename},
+  "section" : section -> {_id, name},
+  "merged_section":merged_section -> {_id, name},
+  otdk_nominated,
+  publish_nominated,
   score[] {
     criteria->{name, _id},
     score
   }
+}`;
+
+export const adminSections = (email: string) => groq`
+*[_type == "admins" && email == "${email}" ] {
+  sections
 }`;
 
 type Response = {

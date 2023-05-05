@@ -1,4 +1,3 @@
-import { sectionParticipants } from "@lib/queries";
 import { getClient } from "@lib/sanity";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -9,9 +8,13 @@ export default async function handler(
   switch (req.method) {
     case "POST":
       try {
-        const resp = await getClient(true).fetch(
-          sectionParticipants(req.body.id)
-        );
+        const resp = await getClient()
+          .patch(req.body.id, {
+            set: {
+              closed: true,
+            },
+          })
+          .commit();
         res.send({ status: 200, body: resp });
       } catch (e) {
         res.send({ status: 500, message: e });
