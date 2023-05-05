@@ -1,7 +1,7 @@
 import type { MRT_ColumnDef, MRT_Row } from "material-react-table";
 import MaterialReactTable from "material-react-table";
 import type { GetServerSidePropsContext } from "next";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { useMemo } from "react";
 import type {
   SanityAdvisorData,
@@ -15,6 +15,7 @@ import { Button } from "@mui/material";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { ExportToCsv } from "export-to-csv";
 import toast from "react-hot-toast";
+import Link from "next/link";
 
 const headersParticipant = {
   name: "Név",
@@ -51,11 +52,17 @@ const headersProject = {
 };
 
 const EllenorzoFelulet = () => {
-  const { data: allParticipantData, isLoading } = useSWR<SanityParticipant[]>(
+  const {
+    data: allParticipantData,
+    mutate,
+    isLoading,
+  } = useSWR<SanityParticipant[]>(
     "/participants_data",
     async () =>
       await fetcher(`/participants`).then((r) => (Array.isArray(r) ? r : []))
   );
+
+  const { data } = useSession();
 
   const columns = useMemo<MRT_ColumnDef<SanityParticipant>[]>(() => {
     const participantHeaders: MRT_ColumnDef<SanityParticipant>[] = Object.keys(
@@ -236,7 +243,7 @@ const EllenorzoFelulet = () => {
           id: userData._id,
           currentValue: userData.accepted,
         })
-      );
+      ).then(() => mutate());
 
     const acceptedHeader: MRT_ColumnDef<SanityParticipant> = {
       accessorKey: "accepted",
@@ -247,9 +254,7 @@ const EllenorzoFelulet = () => {
           onChange={async () =>
             toast.promise(acceptParticipant(row.original), {
               loading: "Elfogadás...",
-              success: (
-                <b>Elfogadás sikeres, picit várjál az adatok frissüljenek</b>
-              ),
+              success: <b>Elfogadás sikeres</b>,
               error: <b>Elfogadás sikertelen</b>,
             })
           }
@@ -272,7 +277,7 @@ const EllenorzoFelulet = () => {
       ...projectHeaders,
       acceptedHeader,
     ];
-  }, []);
+  }, [mutate]);
 
   if (isLoading) {
     return (
@@ -387,6 +392,11 @@ const EllenorzoFelulet = () => {
 
   return (
     <div className="ellenorzes min-h-[100vh] min-w-full pt-[100px] text-white">
+      {data?.user.role === "superadmin" && (
+        <Button className="mb-4 bg-darkcherry" variant="contained">
+          <Link href="pontozas">Pontozás</Link>
+        </Button>
+      )}
       {!!allParticipantData && (
         <MaterialReactTable
           columns={columns}
@@ -399,6 +409,7 @@ const EllenorzoFelulet = () => {
               }}
               startIcon={<FileDownloadIcon />}
               variant="contained"
+              className="bg-blue-700"
             >
               Export
             </Button>
