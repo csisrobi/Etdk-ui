@@ -1,7 +1,7 @@
 import type { MRT_ColumnDef, MRT_Row } from "material-react-table";
 import MaterialReactTable from "material-react-table";
 import type { GetServerSidePropsContext } from "next";
-import { getSession, useSession } from "next-auth/react";
+import { getSession, signOut, useSession } from "next-auth/react";
 import { useMemo } from "react";
 import type {
   SanityAdvisorData,
@@ -392,11 +392,18 @@ const EllenorzoFelulet = () => {
 
   return (
     <div className="ellenorzes min-h-[100vh] min-w-full pt-[100px] text-white">
-      {data?.user.role === "superadmin" && (
-        <Button className="mb-4 bg-darkcherry" variant="contained">
-          <Link href="pontozas">Pontozás</Link>
+      <div className="flex w-full">
+        <div className="flex-1">
+          {data?.user.role === "superadmin" && (
+            <Button sx={{ mb: 4 }} variant="contained">
+              <Link href="pontozas">Pontozás</Link>
+            </Button>
+          )}
+        </div>
+        <Button sx={{ mb: 4 }} variant="contained" onClick={() => signOut()}>
+          Kijelentkezés
         </Button>
-      )}
+      </div>
       {!!allParticipantData && (
         <MaterialReactTable
           columns={columns}

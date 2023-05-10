@@ -11,7 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import type { GetServerSidePropsContext } from "next";
-import { getSession, useSession } from "next-auth/react";
+import { getSession, signOut, useSession } from "next-auth/react";
 import { useState, useMemo } from "react";
 import useSWR from "swr";
 import type { SanityParticipant, SanityParticipantScoring } from "types";
@@ -129,11 +129,23 @@ const AdminPontozoFelulet = ({
 
   return (
     <div className="min-h-[100vh] min-w-full p-4 pt-[100px]">
-      {session.data?.user.role === "superadmin" && (
-        <Button className="mb-4 bg-darkcherry" variant="contained">
-          <Link href="ellenorzes">Ellenőrzés</Link>
+      <div className="flex w-full">
+        <div className="flex-1">
+          {session.data?.user.role === "superadmin" && (
+            <Button variant="contained" sx={{ mb: 4 }}>
+              <Link href="ellenorzes">Ellenőrzés</Link>
+            </Button>
+          )}
+        </div>
+        <Button
+          sx={{ mb: 4 }}
+          variant="contained"
+          color="primary"
+          onClick={() => signOut()}
+        >
+          Kijelentkezés
         </Button>
-      )}
+      </div>
       <div className="relative mx-auto w-full max-w-4xl md:flex md:w-3/4 md:flex-col">
         <Autocomplete
           onChange={(_e, value) => {
@@ -143,17 +155,18 @@ const AdminPontozoFelulet = ({
           getOptionLabel={(option) => option.name}
           value={sections[tabValue] || null}
           renderInput={(params) => <TextField {...params} label="Szekció" />}
-          sx={{ width: "100%" }}
+          sx={{ width: "100%", mb: 4 }}
         />
         {session.data?.user.role !== "scorer" && !selectedSectionClosed && (
           <Button
             onClick={closeSection}
-            className="my-4 w-full bg-darkcherry"
+            sx={{ mb: 4, width: "100%" }}
             variant="contained"
           >
             Szekció zárása
           </Button>
         )}
+
         {isLoading && (
           <div className="flex items-center justify-center">
             <svg
