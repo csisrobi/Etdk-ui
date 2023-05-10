@@ -80,7 +80,7 @@ export const ParticipantScoring = ({
         <tbody>
           {(criteria || []).map((c) => (
             <>
-              {(isAfter(new Date(), parseISO("2023-05-17T23:59:59")) ||
+              {(isAfter(new Date(), parseISO("2023-05-16T23:59:59")) ||
                 c.written) && (
                 <tr key={c._id}>
                   <td className="w-full">
