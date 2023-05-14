@@ -1,3 +1,5 @@
+import scoredPoints from "./scoredPoints";
+
 export default {
   name: "participants",
   title: "Résztvevők",
@@ -304,35 +306,43 @@ export default {
       type: "array",
       of: [
         {
-          title: "Elért pontszám",
+          title: "Tanár pontozások",
           type: "object",
           fields: [
             {
-              title: "Kritérium",
-              name: "criteria",
+              title: "Tanár",
+              name: "scorer",
               type: "reference",
-              to: [{ type: "criteria" }],
+              to: [{ type: "admins" }],
               options: {
                 disableNew: true,
               },
             },
             {
-              title: "Pontszám",
+              title: "Pontok",
               name: "score",
-              type: "number",
+              type: "array",
+              of: [scoredPoints],
+            },
+            {
+              title: "Jelölve OTDKra",
+              name: "otdk_nominated",
+              type: "boolean",
+            },
+            {
+              title: "Jelölve publikálásra",
+              name: "publish_nominated",
+              type: "boolean",
             },
           ],
           preview: {
             select: {
-              title: "criteria.name",
-              score: "score",
+              title: "scorer.name",
             },
-            prepare(selection) {
-              const { title, score } = selection;
-              return {
-                title: `${title} ${score}`,
-              };
-            },
+          },
+          initialValue: {
+            otdk_nominated: false,
+            publish_nominated: false,
           },
         },
       ],
@@ -341,16 +351,6 @@ export default {
     {
       title: "Elfogadva",
       name: "accepted",
-      type: "boolean",
-    },
-    {
-      title: "Jelölve OTDKra",
-      name: "otdk_nominated",
-      type: "boolean",
-    },
-    {
-      title: "Jelölve publikálásra",
-      name: "publish_nominated",
       type: "boolean",
     },
     {
@@ -364,10 +364,6 @@ export default {
       type: "string",
     },
   ],
-  initialValue: {
-    otdk_nominated: false,
-    publish_nominated: false,
-  },
   preview: {
     select: {
       title: "name",
