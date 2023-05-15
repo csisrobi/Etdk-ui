@@ -8,7 +8,7 @@ import {
   TextField,
 } from "@mui/material";
 import { isAfter, parseISO } from "date-fns";
-import { useState } from "react";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { Criteria } from "src/pages/admin/pontozas";
 import { KeyedMutator } from "swr";
@@ -37,8 +37,8 @@ export const ParticipantScoring = ({
   mutate: KeyedMutator<SanityParticipantScoring[]>;
 }) => {
   const [scores, setScores] = useState<ScoreType>(
-    participant.score
-      ? participant.score.reduce(
+    participant.score?.[0]
+      ? participant.score[0].score.reduce(
           (acc, cur) => ({
             ...acc,
             [cur.criteria._id]: { score: cur.score, name: cur.criteria.name },
@@ -48,10 +48,10 @@ export const ParticipantScoring = ({
       : {}
   );
   const [otdk, setOtdk] = useState<boolean>(
-    participant.otdk_nominated || false
+    participant.score?.[0]?.otdk_nominated || false
   );
   const [publish, setPublish] = useState<boolean>(
-    participant.publish_nominated || false
+    participant.score?.[0]?.publish_nominated || false
   );
 
   const [errors, setErrors] = useState<ErrorType>({});
@@ -64,6 +64,7 @@ export const ParticipantScoring = ({
         scores: scores,
         publish_nominated: publish,
         otdk_nominated: otdk,
+        scorerId: participant.score?.[0]?.scorer._id,
       })
     ).then(() => mutate());
 
@@ -79,7 +80,7 @@ export const ParticipantScoring = ({
       <table className="border-separate border-spacing-x-3 border-spacing-y-2 ">
         <tbody>
           {(criteria || []).map((c) => (
-            <>
+            <React.Fragment key={c._id}>
               {(isAfter(new Date(), parseISO("2023-05-16T23:59:59")) ||
                 c.written) && (
                 <tr key={c._id}>
@@ -124,7 +125,7 @@ export const ParticipantScoring = ({
                   </td>
                 </tr>
               )}
-            </>
+            </React.Fragment>
           ))}
 
           <tr>

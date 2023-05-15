@@ -166,8 +166,15 @@ export type SanityParticipant = SanityPersonData & {
     url: string;
   };
   score: {
-    criteria: { name: string; _id: string };
-    score: number;
+    scorer: {
+      email: string;
+      _id: string;
+    };
+    score: {
+      criteria: { name: string; _id: string };
+      score: number;
+    }[];
+    _key: string;
   }[];
 
   accepted: boolean;
@@ -202,9 +209,16 @@ export type SanityParticipantScoring = {
     url: string;
   };
   score: {
-    criteria: { name: string; _id: string };
-    score: number;
+    scorer: {
+      email: string;
+      _id: string;
+    };
+    score: {
+      criteria: { name: string; _id: string };
+      score: number;
+    }[];
+    _key: string;
+    otdk_nominated: boolean;
+    publish_nominated: boolean;
   }[];
-  otdk_nominated: boolean;
-  publish_nominated: boolean;
 };
