@@ -60,12 +60,14 @@ export const authOptions = (_req: NextApiRequest, res: NextApiResponse) => ({
         user.role = "participant";
       } else {
         user.role = admin[0].role;
+        user.id = admin[0]._id;
       }
       return true;
     },
     jwt: ({ token, user }: { token: any; user?: any }) => {
       if (user) {
         token.role = user.role;
+        token.id = user.id;
         delete token.image;
       }
       return token;
@@ -73,6 +75,7 @@ export const authOptions = (_req: NextApiRequest, res: NextApiResponse) => ({
     session: ({ session, token }: { token: any; session: any }) => {
       if (token) {
         session.user.role = token.role;
+        session.user.id = token.id;
         delete session.user.image;
       }
       return session;

@@ -143,7 +143,8 @@ export const checkIfCredentialsOk = (email: string, password: string) => groq`
 export const checkIfAdmin = (email: string) => groq`
 *[_type == "admins" && email == "${email}"]{
   email,
-  role
+  role,
+  _id
 }`;
 
 export const getProjectsDataForParticipant = (email: string) => groq`
@@ -295,17 +296,33 @@ export const sectionParticipants = (section: string) => groq`
   "essay": essay.asset->{url, originalFilename},
   "section" : section -> {_id, name},
   "merged_section":merged_section -> {_id, name},
-  otdk_nominated,
-  publish_nominated,
   score[] {
-    criteria->{name, _id},
-    score
+    scorer -> {email, _id},
+    score[] {
+      criteria->{name, _id},
+      score,
+    }, 
+    _key,
+    otdk_nominated,
+    publish_nominated,
   }
 }`;
 
 export const adminSections = (email: string) => groq`
 *[_type == "admins" && email == "${email}" ] {
   sections
+}`;
+
+export const getParticipantScore = (id: string) => groq`
+*[_type == "participants" && _id == "${id}" ] {
+  score[] {
+    scorer -> {email, _id},
+    score[] {
+      criteria->{name, _id},
+      score,
+    }, 
+    _key,
+  }
 }`;
 
 type Response = {
