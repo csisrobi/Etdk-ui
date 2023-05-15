@@ -51,6 +51,12 @@ export default {
       of: [{ type: "block" }],
     },
     {
+      title: "Program",
+      name: "schedule",
+      type: "array",
+      of: [{ type: "block" }],
+    },
+    {
       title: "GDPR",
       name: "gdpr",
       type: "array",

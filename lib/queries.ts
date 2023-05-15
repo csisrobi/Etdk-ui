@@ -80,6 +80,11 @@ export const queryRequirement = groq`
   requirement
 }`;
 
+export const querySchedule = groq`
+*[_type == "general"]{
+  schedule
+}`;
+
 export const queryArchivsBasic = groq`
 *[_type == "archiv"] | order(year){
   year,
@@ -323,6 +328,12 @@ export const getParticipantScore = (id: string) => groq`
     }, 
     _key,
   }
+}`;
+
+export const querySectionScorers = groq`
+*[_type == "sections" && active == true ] {
+  name,
+  scorers[] -> {name}
 }`;
 
 type Response = {

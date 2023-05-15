@@ -57,5 +57,21 @@ export default {
       ],
       validation: (Rule) => Rule.unique(),
     },
+    {
+      title: "Zsűrik",
+      name: "scorers",
+      type: "array",
+      of: [
+        {
+          title: "Zsűrik",
+          type: "reference",
+          to: [{ type: "admins" }],
+          options: {
+            disableNew: true,
+          },
+        },
+      ],
+      validation: (Rule) => Rule.unique(),
+    },
   ],
 };
