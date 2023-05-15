@@ -1,4 +1,4 @@
-import { getParticipantScore } from "@lib/queries";
+import { checkIfAdmin, getParticipantScore } from "@lib/queries";
 import { getClient } from "@lib/sanity";
 import { nanoid } from "nanoid";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -16,6 +16,9 @@ export default async function handler(
         if (!session) {
           res.send({ status: 401, message: "Unauthorized" });
         }
+        const adminData = await getClient(true).fetch(
+          checkIfAdmin(session!.user.email)
+        );
         const participantOtherScores = await getClient(true).fetch(
           getParticipantScore(req.body.id)
         );
@@ -41,7 +44,7 @@ export default async function handler(
                       {
                         score: newScore,
                         scorer: {
-                          _ref: req.body.scorerId || session?.user.id,
+                          _ref: req.body.scorerId || adminData[0]._id,
                           _type: "reference",
                         },
                         _key: nanoid(),
@@ -57,7 +60,7 @@ export default async function handler(
                       {
                         score: newScore,
                         scorer: {
-                          _ref: req.body.scorerId || session?.user.id,
+                          _ref: req.body.scorerId || adminData[0]._id,
                           _type: "reference",
                         },
                         _key: nanoid(),
