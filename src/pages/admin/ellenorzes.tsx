@@ -49,6 +49,9 @@ const headersProject = {
   essay: "Dolgozat",
   annex: "Melléklet",
   contribution: "Hozzájárulási nyilatkozat",
+  score: "Pontszám",
+  otdk_nominated: "Jelölve OTDKra",
+  publish_nominated: "Jelölve publikálásra",
 };
 
 const EllenorzoFelulet = () => {
@@ -61,7 +64,6 @@ const EllenorzoFelulet = () => {
     async () =>
       await fetcher(`/participants`).then((r) => (Array.isArray(r) ? r : []))
   );
-
   const { data } = useSession();
 
   const columns = useMemo<MRT_ColumnDef<SanityParticipant>[]>(() => {
@@ -213,6 +215,7 @@ const EllenorzoFelulet = () => {
               ? ("merged_section" as keyof SanityParticipant)
               : (key as keyof SanityParticipant)
           ],
+
         header: headersProject[key as keyof typeof headersProject],
         ...((key === "extract" ||
           key === "annex" ||
@@ -231,6 +234,11 @@ const EllenorzoFelulet = () => {
                 </a>
               ) : null}
             </>
+          ),
+        }),
+        ...((key === "otdk_nominated" || key === "publish_nominated") && {
+          Cell: ({ row }: { row: { original: SanityParticipant } }) => (
+            <>{row.original?.[key] ? "Igen" : "Nem"}</>
           ),
         }),
       };
