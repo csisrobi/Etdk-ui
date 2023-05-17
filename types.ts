@@ -165,19 +165,26 @@ export type SanityParticipant = SanityPersonData & {
     originalFilename: string;
     url: string;
   };
-  score: {
-    scorer: {
-      email: string;
-      _id: string;
-    };
-    score: {
-      criteria: { name: string; _id: string };
-      score: number;
-    }[];
-    _key: string;
-  }[];
-
+  score: number;
+  otdk_nominated: boolean;
+  publish_nominated: boolean;
   accepted: boolean;
+};
+
+export type ParticipantScore = {
+  criteria: { name: string; _id: string };
+  score: number;
+};
+
+export type ParticipantScoring = {
+  scorer: {
+    email: string;
+    _id: string;
+  };
+  score: ParticipantScore[];
+  _key: string;
+  otdk_nominated: boolean;
+  publish_nominated: boolean;
 };
 
 export type SanityParticipantScoring = {
@@ -208,17 +215,13 @@ export type SanityParticipantScoring = {
     originalFilename: string;
     url: string;
   };
-  score: {
-    scorer: {
-      email: string;
-      _id: string;
-    };
-    score: {
-      criteria: { name: string; _id: string };
-      score: number;
-    }[];
-    _key: string;
-    otdk_nominated: boolean;
-    publish_nominated: boolean;
-  }[];
+  score: ParticipantScoring[];
 };
+
+export enum UserRoles {
+  "Participant" = "participant",
+  "Superadmin" = "superadmin",
+  "Section_closer" = "section_closer",
+  "Data_checker" = "data_checker",
+  "Scorer" = "scorer",
+}
