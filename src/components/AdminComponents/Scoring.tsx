@@ -8,13 +8,14 @@ import {
   TextField,
 } from "@mui/material";
 import { isAfter, parseISO } from "date-fns";
+import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { Criteria } from "src/pages/admin/pontozas";
 import { KeyedMutator } from "swr";
-import { SanityParticipantScoring } from "types";
+import { SanityParticipantScoring, UserRoles } from "types";
 
-export type ScoreType = {
+type ScoreType = {
   [key: string]: {
     name: string;
     score: number;
@@ -36,6 +37,8 @@ export const ParticipantScoring = ({
   closed: boolean;
   mutate: KeyedMutator<SanityParticipantScoring[]>;
 }) => {
+  const session = useSession();
+  const notScorer = session.data?.user.role !== UserRoles.Scorer;
   const [scores, setScores] = useState<ScoreType>(
     participant.score?.[0]
       ? participant.score[0].score.reduce(
@@ -91,7 +94,7 @@ export const ParticipantScoring = ({
                     <TextField
                       size="small"
                       value={scores[c._id]?.score || ""}
-                      disabled={closed}
+                      disabled={closed || notScorer}
                       onChange={(e) => {
                         if (parseInt(e.target.value) > c.maxScore) {
                           setErrors({
@@ -111,13 +114,17 @@ export const ParticipantScoring = ({
                           },
                         });
                       }}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            /{c.maxScore}
-                          </InputAdornment>
-                        ),
-                      }}
+                      InputProps={
+                        !notScorer
+                          ? {
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  /{c.maxScore}
+                                </InputAdornment>
+                              ),
+                            }
+                          : {}
+                      }
                       error={!!errors[c._id]}
                       helperText={errors[c._id]}
                       className="w-32"
@@ -135,7 +142,7 @@ export const ParticipantScoring = ({
                   control={
                     <Checkbox
                       checked={otdk}
-                      disabled={closed}
+                      disabled={closed || notScorer}
                       onChange={(e) => setOtdk(e.target.checked)}
                     />
                   }
@@ -151,7 +158,7 @@ export const ParticipantScoring = ({
                   control={
                     <Checkbox
                       checked={publish}
-                      disabled={closed}
+                      disabled={closed || notScorer}
                       onChange={(e) => setPublish(e.target.checked)}
                     />
                   }
@@ -162,7 +169,7 @@ export const ParticipantScoring = ({
           </tr>
           <tr>
             <td>
-              {!closed && (
+              {!closed && !notScorer && (
                 <Button
                   variant="contained"
                   disabled={Object.keys(errors).length > 0}

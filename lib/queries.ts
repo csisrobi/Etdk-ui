@@ -272,6 +272,17 @@ export const getAllParticipants = groq`
     email,
     mobileNumber,
     "certificate": certificate.asset->{url, originalFilename},
+  },
+
+  score[] {
+    scorer -> {email, _id},
+    score[] {
+      criteria->{name, _id},
+      score,
+    }, 
+    _key,
+    otdk_nominated,
+    publish_nominated,
   }
 }`;
 
@@ -334,6 +345,12 @@ export const querySectionScorers = groq`
 *[_type == "sections" && active == true ] {
   name,
   scorers[] -> {name}
+}`;
+
+export const queryAllCriteria = groq`
+*[_type == "criteria" ] {
+  name,
+  _id
 }`;
 
 type Response = {
