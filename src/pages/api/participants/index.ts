@@ -17,10 +17,11 @@ export default async function handler(
           const { otdk, publish } = calculateNomination(userScores);
           return {
             ...user,
-            score: Object.values(summarizedScoresByCriteria).reduce(
-              (acc, cur) => acc + cur || 0,
-              0
-            ),
+            score:
+              Object.values(summarizedScoresByCriteria).reduce(
+                (acc, cur) => acc + cur || 0,
+                0
+              ) / userScores.length || 0,
             otdk_nominated:
               otdk.false === 0 && otdk.true === 0
                 ? false

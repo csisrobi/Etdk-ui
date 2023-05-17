@@ -47,7 +47,7 @@ export default async function handler(
                 name: allCriterias.find((c) => c._id === ssc[0])?.name || "",
                 _id: ssc[0],
               },
-              score: ssc[1],
+              score: ssc[1] / userScores.length || 0,
             }));
             return {
               ...user,
