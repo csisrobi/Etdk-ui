@@ -77,14 +77,14 @@ const Header = () => {
                 </LinkWrapper>
               </span>
             ))}
-            <button
+            {/* <button
               type="button"
               className="w-48 rounded-3xl bg-white py-2 px-1 text-center text-3xl tracking-wide  text-darkcherry xl:w-52"
             >
               <Link href={application.href}>
                 <span>{application.label}</span>
               </Link>
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
@@ -170,7 +170,7 @@ const Header = () => {
                               </LinkWrapper>
                             </span>
                           ))}
-                          <div className="border-t border-lightcherry pt-4 text-center">
+                          {/* <div className="border-t border-lightcherry pt-4 text-center">
                             <button
                               type="button"
                               className="w-48 rounded-3xl bg-lightcherry py-2 px-1 text-center text-3xl tracking-wide  text-white hover:bg-opacity-75 xl:w-52"
@@ -183,7 +183,7 @@ const Header = () => {
                                 </span>
                               </Link>
                             </button>
-                          </div>
+                          </div> */}
                         </div>
                       </div>
                     </div>
