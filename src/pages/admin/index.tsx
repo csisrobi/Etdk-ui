@@ -113,37 +113,45 @@ export async function getServerSideProps(
 ) {
   const providers = await getProviders();
   const session = await getSession(ctx);
-
-  if (session?.user) {
-    if (
-      session.user.role === "superadmin" ||
-      session.user.role === "data_checker"
-    ) {
-      return {
-        redirect: {
-          destination: "/admin/ellenorzes",
-          permanent: false,
-        },
-      };
-    }
-    if (session.user.role !== "participant") {
-      return {
-        redirect: {
-          destination: "/admin/pontozas",
-          permanent: false,
-        },
-      };
-    }
-    return {
-      redirect: {
-        destination: "/admin/jelentkezes",
-        permanent: false,
-      },
-    };
-  }
+  return {
+    redirect: {
+      destination: "/",
+      permanent: false,
+    },
+  };
   return {
     props: { providers },
   };
+  // if (session?.user) {
+  //   if (
+  //     session.user.role === "superadmin" ||
+  //     session.user.role === "data_checker"
+  //   ) {
+  //     return {
+  //       redirect: {
+  //         destination: "/admin/ellenorzes",
+  //         permanent: false,
+  //       },
+  //     };
+  //   }
+  //   if (session.user.role !== "participant") {
+  //     return {
+  //       redirect: {
+  //         destination: "/admin/pontozas",
+  //         permanent: false,
+  //       },
+  //     };
+  //   }
+  //   return {
+  //     redirect: {
+  //       destination: "/admin/jelentkezes",
+  //       permanent: false,
+  //     },
+  //   };
+  // }
+  // return {
+  //   props: { providers },
+  // };
 }
 
 export default AdminLogin;
