@@ -15,6 +15,7 @@ import participant from "./participant";
 import criteria from "./criteria";
 import admin from "./admin";
 import singletonDocumentsGeneral from "./singletonDocumentsGeneral";
+import winners from "./winners";
 
 export default createSchema({
   name: "default",
@@ -34,5 +35,6 @@ export default createSchema({
     participant,
     criteria,
     admin,
+    winners,
   ]),
 });

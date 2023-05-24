@@ -100,6 +100,12 @@ export const queryArhivDetails = (year: string) => groq`
   },
 }`;
 
+export const queryWinners = groq`
+*[_type == "winners"]{
+  winnerPersons,
+  section->{name}
+}`;
+
 export const queryActiveSections = groq`
   *[_type == "sections" && active == true ] | order(name){
     name,

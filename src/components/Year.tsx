@@ -5,7 +5,7 @@ const yearElements = [
   { text: "Határidők", link: "/hataridok" },
   { text: "Zsűrik", link: "/zsurik" },
   { text: "Program", link: "/program" },
-  { text: "Díjazottak" },
+  { text: "Díjazottak", link: "/dijazottak" },
   { text: "Előadások és workshopok" },
   { text: "Meghirdetett szekciók", link: "/meghirdetett-szekciok" },
 ];
