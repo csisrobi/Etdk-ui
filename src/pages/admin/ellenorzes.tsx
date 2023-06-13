@@ -439,6 +439,14 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const { preview } = ctx;
 
   const session = await getSession(ctx);
+  if (!session?.user || session.user.role !== "superadmin") {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
   if (!session?.user || !session.user.email) {
     return {
       redirect: {
@@ -447,26 +455,26 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       },
     };
   }
-  if (session.user.role === "participant") {
-    return {
-      redirect: {
-        destination: "/admin/jelentkezes",
-        permanent: false,
-      },
-    };
-  }
+  // if (session.user.role === "participant") {
+  //   return {
+  //     redirect: {
+  //       destination: "/admin/jelentkezes",
+  //       permanent: false,
+  //     },
+  //   };
+  // }
 
-  if (
-    session.user.role === "section_closer" ||
-    session.user.role === "scorer"
-  ) {
-    return {
-      redirect: {
-        destination: "/admin/pontozas",
-        permanent: false,
-      },
-    };
-  }
+  // if (
+  //   session.user.role === "section_closer" ||
+  //   session.user.role === "scorer"
+  // ) {
+  //   return {
+  //     redirect: {
+  //       destination: "/admin/pontozas",
+  //       permanent: false,
+  //     },
+  //   };
+  // }
 
   return {
     props: {
