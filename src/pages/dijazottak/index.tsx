@@ -1,19 +1,17 @@
 import { queryWinners } from "@lib/queries";
 import { getClient } from "@lib/sanity";
 
-const Winners = ({
-  winners,
-}: {
-  winners: {
-    section: {
-      name: string;
-    };
-    winnerPersons: {
-      name: string;
-      result: string;
-    }[];
+type WinnersType = {
+  section: {
+    name: string;
+  };
+  winnerPersons: {
+    name: string;
+    result: string;
   }[];
-}) => {
+};
+
+const Winners = ({ winners }: { winners: WinnersType[] }) => {
   return (
     <div className="flex min-h-[100vh] min-w-full flex-col space-y-10 bg-lightcherry p-4 pt-[100px] text-white">
       <div className="flex flex-wrap justify-evenly gap-4 md:gap-8">
@@ -68,10 +66,12 @@ const Winners = ({
 };
 
 export const getServerSideProps = async ({ preview = false }) => {
-  const winners = await getClient(preview).fetch(queryWinners);
+  const winners: WinnersType[] = await getClient(preview).fetch(queryWinners);
   return {
     props: {
-      winners,
+      winners: winners.sort((a, b) =>
+        a.section.name.toLowerCase().localeCompare(b.section.name.toLowerCase())
+      ),
       preview,
     },
   };

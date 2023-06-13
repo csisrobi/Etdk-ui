@@ -61,7 +61,14 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const sections = await getClient(preview).fetch(queryActiveSections);
 
   const session = await getSession(ctx);
-
+  if (!session?.user || session.user.role !== "superadmin") {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
   if (!session?.user || !session.user.email) {
     return {
       redirect: {
@@ -71,14 +78,14 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     };
   }
 
-  if (session.user.role !== "participant") {
-    return {
-      redirect: {
-        destination: "/admin/ellenorzes",
-        permanent: false,
-      },
-    };
-  }
+  // if (session.user.role !== "participant") {
+  //   return {
+  //     redirect: {
+  //       destination: "/admin/ellenorzes",
+  //       permanent: false,
+  //     },
+  //   };
+  // }
   const defaultParticipantPersonData: PersonInputs[] = await getClient(
     true
   ).fetch(getPersonDataForParticipant(session.user.email));
