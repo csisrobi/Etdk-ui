@@ -48,7 +48,6 @@ const Home: NextPage<Props> = ({
 }: Props) => {
   return (
     <>
-      {/* TODO: SEO FROM STRAPI*/}
       <Head>
         <title>ETDK</title>
         <meta

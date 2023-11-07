@@ -1,6 +1,7 @@
 import { queryArhivDetails } from "@lib/queries";
 import { getClient } from "@lib/sanity";
 import GetImage from "@utils/getImage";
+import classNames from "classnames";
 import type { GetServerSideProps } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,17 +13,23 @@ const Archivum = ({ archivData }: { archivData: SanityArchiv }) => {
     <div className="flex min-h-[100vh] min-w-full flex-col space-y-10 bg-lightcherry p-4 pt-[100px] text-white">
       <div className="flex flex-col items-center justify-center space-y-5">
         <span className="text-center text-6xl">Kivonatos füzet</span>
-        <Link href={archivData.book} target="_blank">
-          <Image
-            loader={imageSettings.loader}
-            src={imageSettings.src}
-            height={563}
-            width={801}
-            alt={`${archivData.year} kivonatos füzet`}
-            className="object-cover"
-            priority
-          />
-        </Link>
+        {imageSettings && (
+          <Link
+            href={archivData.book || ""}
+            target="_blank"
+            className={classNames(!archivData.book && "pointer-events-none")}
+          >
+            <Image
+              loader={imageSettings.loader}
+              src={imageSettings.src}
+              height={563}
+              width={801}
+              alt={`${archivData.year} kivonatos füzet`}
+              className="object-cover"
+              priority
+            />
+          </Link>
+        )}
       </div>
       {archivData?.winners && (
         <div className="flex flex-col space-y-5">

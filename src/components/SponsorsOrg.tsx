@@ -17,7 +17,7 @@ const SponsorsOrg = ({ sponsors, organizers }: Props) => {
           <div>
             <span className="text-7xl text-lightcherry">Támogatók</span>
           </div>
-          <div className="flex w-full flex-col items-center justify-evenly gap-24 sm:flex-row">
+          <div className="flex flex-col flex-wrap items-center justify-evenly gap-24 sm:flex-row">
             {sponsors.map((sponsor) => {
               const imageSettings = GetImage(sponsor.image);
               if (!imageSettings) {
@@ -43,7 +43,7 @@ const SponsorsOrg = ({ sponsors, organizers }: Props) => {
         <div>
           <span className="text-7xl text-lightcherry">Szervezők</span>
         </div>
-        <div className="flex w-full flex-col flex-wrap items-center justify-evenly gap-24 sm:flex-row">
+        <div className="flex flex-col flex-wrap items-center justify-evenly gap-24 sm:flex-row">
           {organizers.map((organizer) => {
             const imageSettings = GetImage(organizer.image);
             if (!imageSettings) {

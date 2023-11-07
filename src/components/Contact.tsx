@@ -42,9 +42,10 @@ const Contact = ({
               KOLOZSVÁRI MAGYAR DIÁKSZÖVETSÉG – KMDSZ (Uniunea Studențească
               Maghiară din Cluj)
             </p>
-            <p className="text-lg">{address}</p>
-            <p className="text-lg">Telefonszám : {phone}</p>
-            <p className="text-lg"> Email : {email}</p>
+            {address && <p className="text-lg">{address}</p>}
+            {phone && <p className="text-lg">Telefonszám : {phone}</p>}
+            {email && <p className="text-lg"> Email : {email}</p>}
+
             <div className="flex justify-center gap-2 md:justify-start">
               <a href={facebook} target="_blank" rel="noreferrer">
                 <Image
