@@ -11,9 +11,9 @@ const Archivum = ({ archivData }: { archivData: SanityArchiv }) => {
   const imageSettings = GetImage(archivData.book_image);
   return (
     <div className="flex min-h-[100vh] min-w-full flex-col space-y-10 bg-lightcherry p-4 pt-[100px] text-white">
-      <div className="flex flex-col items-center justify-center space-y-5">
-        <span className="text-center text-6xl">Kivonatos füzet</span>
-        {imageSettings && (
+      {imageSettings && (
+        <div className="flex flex-col items-center justify-center space-y-5">
+          <span className="text-center text-6xl">Kivonatos füzet</span>
           <Link
             href={archivData.book || ""}
             target="_blank"
@@ -29,8 +29,8 @@ const Archivum = ({ archivData }: { archivData: SanityArchiv }) => {
               priority
             />
           </Link>
-        )}
-      </div>
+        </div>
+      )}
       {archivData?.winners && (
         <div className="flex flex-col space-y-5">
           <span className="text-center text-6xl">Díjazottak</span>
