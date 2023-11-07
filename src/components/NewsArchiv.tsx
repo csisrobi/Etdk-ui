@@ -26,54 +26,58 @@ const NewsArchiv = ({
             <span className="text-7xl text-darkcherry">Hírek</span>
           </div>
           <div className="flex flex-col flex-wrap items-center justify-evenly gap-10 sm:flex-row">
-            {news.map((newElem) => {
-              const imageSettings = newElem.featuredImage
-                ? GetImage(newElem.featuredImage)
-                : undefined;
-              return (
-                !isAfter(parseISO(newElem.date), new Date()) && (
-                  <div key={newElem.name}>
-                    {imageSettings && (
-                      <div className="absolute my-auto mx-auto h-72 w-72">
-                        <Image
-                          loader={imageSettings.loader}
-                          src={imageSettings.src}
-                          fill
-                          alt={`${newElem.name} kep`}
-                          className="object-cover"
-                          priority
-                        />
+            {news
+              .sort((a, b) =>
+                isAfter(parseISO(b.date), parseISO(a.date)) ? -1 : 1
+              )
+              .map((newElem, idx) => {
+                const imageSettings = newElem.featuredImage
+                  ? GetImage(newElem.featuredImage)
+                  : undefined;
+                return (
+                  !isAfter(parseISO(newElem.date), new Date()) && (
+                    <div key={newElem.name + idx}>
+                      {imageSettings && (
+                        <div className="absolute my-auto mx-auto h-72 w-72">
+                          <Image
+                            loader={imageSettings.loader}
+                            src={imageSettings.src}
+                            fill
+                            alt={`${newElem.name} kep`}
+                            className="object-cover"
+                            priority
+                          />
+                        </div>
+                      )}
+                      <div
+                        className={`relative flex h-72 w-72 cursor-pointer flex-col items-center gap-8 bg-white ${
+                          imageSettings ? "bg-opacity-60" : ""
+                        } p-8`}
+                        onClick={() => {
+                          setActiveNews(newElem);
+                          setOpenNewsDialog(true);
+                        }}
+                      >
+                        <div className="w-36 rounded-2xl bg-lightBrown text-center text-3xl tracking-wide text-yellow-400">
+                          <span>{newElem.date}</span>
+                        </div>
+                        <span className="text-2xl text-lightcherry">
+                          {newElem.summary}
+                        </span>
                       </div>
-                    )}
-                    <div
-                      className={`relative flex h-72 w-72 cursor-pointer flex-col items-center gap-8 bg-white ${
-                        imageSettings ? "bg-opacity-60" : ""
-                      } p-8`}
-                      onClick={() => {
-                        setActiveNews(newElem);
-                        setOpenNewsDialog(true);
-                      }}
-                    >
-                      <div className="w-36 rounded-2xl bg-lightBrown text-center text-3xl tracking-wide text-yellow-400">
-                        <span>{newElem.date}</span>
-                      </div>
-                      <span className="text-2xl text-lightcherry">
-                        {newElem.summary}
-                      </span>
                     </div>
-                  </div>
-                )
-              );
-            })}
+                  )
+                );
+              })}
           </div>
         </div>
       </div>
-      <div className="flex flex-col items-center justify-center gap-8">
+      <div className="relative z-10 flex flex-col items-center justify-center gap-8">
         <div id="archivum" className="absolute -top-[70px]" />
         <div>
           <span className="text-7xl text-darkcherry">Archívum</span>
         </div>
-        <div className="flex flex-col gap-12 md:flex-row">
+        <div className="flex flex-col flex-wrap items-center justify-evenly gap-10 sm:flex-row">
           {archivs.map((archivEl) => (
             <Link key={archivEl.year} href={`archivum/${archivEl.year}`}>
               <div className="relative h-11 w-40 cursor-pointer rounded-3xl bg-lightBrown py-2 px-2 text-center text-3xl tracking-wide text-yellow-400">
