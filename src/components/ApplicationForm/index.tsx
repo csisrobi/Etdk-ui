@@ -623,7 +623,7 @@ const ApplicationForm = ({
     <div className="flex min-h-[100vh] min-w-full flex-col items-center bg-white pb-40 pt-[66px]">
       <div className="w-full space-y-4 md:w-[720px]">
         <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:p-6 ">
-          <p className="text-3xl text-darkcherry">Személyes adatok:</p>
+          <p className="text-3xl text-primaryDark">Személyes adatok:</p>
           <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:pl-2">
             <Controller
               name="name"
@@ -645,7 +645,7 @@ const ApplicationForm = ({
                     className={classNames(
                       inputClasses,
                       error ? "ring ring-red-700" : "",
-                      "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                      "bg-application1 text-primaryDark placeholder:text-primaryDark"
                     )}
                     placeholder="Név"
                     disabled={closed}
@@ -675,7 +675,7 @@ const ApplicationForm = ({
                     className={classNames(
                       inputClasses,
                       error ? "ring ring-red-700" : "",
-                      "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                      "bg-application1 text-primaryDark placeholder:text-primaryDark"
                     )}
                     placeholder="Hallgatói azonosító (nr. matricol)"
                     disabled={closed}
@@ -686,7 +686,7 @@ const ApplicationForm = ({
             <UniversityField
               control={personFormControl}
               fieldName="university"
-              text="text-darkcherry"
+              text="text-primaryDark"
               bg="bg-application1"
               setAdditional={(value: string | undefined) => {
                 personSetValue("faculty", "");
@@ -698,7 +698,7 @@ const ApplicationForm = ({
             />
             <OtherField
               control={personFormControl}
-              text="text-darkcherry"
+              text="text-primaryDark"
               bg="bg-application1"
               dependencyName="university"
               fieldName="universityOther"
@@ -710,7 +710,7 @@ const ApplicationForm = ({
               control={personFormControl}
               fieldName="faculty"
               dependencyName="university"
-              text="text-darkcherry"
+              text="text-primaryDark"
               bg="bg-application1"
               setAdditional={(value: string | undefined) => {
                 personSetValue("subject", "");
@@ -722,7 +722,7 @@ const ApplicationForm = ({
             />
             <OtherField
               control={personFormControl}
-              text="text-darkcherry"
+              text="text-primaryDark"
               bg="bg-application1"
               dependencyName="faculty"
               fieldName="facultyOther"
@@ -734,7 +734,7 @@ const ApplicationForm = ({
               fieldName="subject"
               dependencyName="faculty"
               control={personFormControl}
-              text="text-darkcherry"
+              text="text-primaryDark"
               bg="bg-application1"
               setAdditional={(value: string | undefined) =>
                 personSetValue("subjectOther", value)
@@ -745,7 +745,7 @@ const ApplicationForm = ({
             />
             <OtherField
               control={personFormControl}
-              text="text-darkcherry"
+              text="text-primaryDark"
               bg="bg-application1"
               dependencyName="subject"
               fieldName="subjectOther"
@@ -768,7 +768,7 @@ const ApplicationForm = ({
                   options={degreeOptions}
                   value={degreeOptions.find((d) => d.value === value) || null}
                   placeholder="Képzési szint"
-                  text="text-darkcherry"
+                  text="text-primaryDark"
                   bg="bg-application1"
                   error={!!error}
                   disabled={closed}
@@ -790,7 +790,7 @@ const ApplicationForm = ({
                   options={classOptions}
                   value={classOptions.find((c) => c.value === value) || null}
                   placeholder="Évfolyam"
-                  text="text-darkcherry"
+                  text="text-primaryDark"
                   bg="bg-application1"
                   error={!!error}
                   disabled={closed}
@@ -812,7 +812,7 @@ const ApplicationForm = ({
                   options={semesterOptions}
                   value={semesterOptions.find((c) => c.value === value) || null}
                   placeholder="Elvégzett félévek száma"
-                  text="text-darkcherry"
+                  text="text-primaryDark"
                   bg="bg-application1"
                   error={!!error}
                   disabled={closed}
@@ -840,7 +840,7 @@ const ApplicationForm = ({
                     className={classNames(
                       inputClasses,
                       error ? "ring ring-red-700" : "",
-                      "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                      "bg-application1 text-primaryDark placeholder:text-primaryDark"
                     )}
                     placeholder="E-mail cím"
                   />
@@ -867,7 +867,7 @@ const ApplicationForm = ({
                     className={classNames(
                       inputClasses,
                       error ? "ring ring-red-700" : "",
-                      "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                      "bg-application1 text-primaryDark placeholder:text-primaryDark"
                     )}
                     placeholder="Telefonszám"
                     disabled={closed}
@@ -890,7 +890,7 @@ const ApplicationForm = ({
                         className={classNames(
                           inputClasses,
                           error ? "ring ring-red-700" : "",
-                          "flex cursor-pointer items-center bg-application1 pl-4  text-darkcherry placeholder:text-darkcherry"
+                          "flex cursor-pointer items-center bg-application1 pl-4  text-primaryDark placeholder:text-primaryDark"
                         )}
                       >
                         <div className="overflow-hidden truncate opacity-80">
@@ -946,7 +946,7 @@ const ApplicationForm = ({
                         <div
                           className={classNames(
                             inputClasses,
-                            "flex cursor-pointer items-center bg-application1 pl-4 text-darkcherry  placeholder:text-darkcherry "
+                            "flex cursor-pointer items-center bg-application1 pl-4 text-primaryDark  placeholder:text-primaryDark "
                           )}
                         >
                           <div className="overflow-hidden truncate opacity-80">
@@ -979,12 +979,12 @@ const ApplicationForm = ({
             {({ open }) => (
               <>
                 <Disclosure.Button className="flex w-full items-center rounded-xl bg-application3 py-2 px-4">
-                  <p className="flex-1 text-start text-lg text-darkcherry">
+                  <p className="flex-1 text-start text-lg text-primaryDark">
                     {index + 1}. Dolgozat adatai
                   </p>
                   {fields.length > 1 && !defaultValues && (
                     <TrashIcon
-                      className="mr-6 h-7 w-7 text-darkcherry"
+                      className="mr-6 h-7 w-7 text-primaryDark"
                       onClick={(e) => {
                         e.preventDefault();
                         remove(index);
@@ -994,12 +994,12 @@ const ApplicationForm = ({
 
                   {!open ? (
                     <ChevronDownIcon
-                      className="h-7 w-7 text-darkcherry"
+                      className="h-7 w-7 text-primaryDark"
                       aria-hidden="true"
                     />
                   ) : (
                     <ChevronUpIcon
-                      className="h-7 w-7 text-darkcherry"
+                      className="h-7 w-7 text-primaryDark"
                       aria-hidden="true"
                     />
                   )}
@@ -1018,7 +1018,7 @@ const ApplicationForm = ({
                     unmount={false}
                   >
                     <div className="h-fit w-full space-y-4 bg-lightGray px-2 py-6 md:w-[700px] md:p-6 ">
-                      <p className="text-3xl text-darkcherry">
+                      <p className="text-3xl text-primaryDark">
                         {index + 1}. Dolgozat:
                       </p>
                       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:pl-2">
@@ -1036,7 +1036,7 @@ const ApplicationForm = ({
                                 className={classNames(
                                   inputClasses,
                                   error ? "ring ring-red-700" : "",
-                                  "bg-application3 text-darkcherry placeholder:text-darkcherry"
+                                  "bg-application3 text-primaryDark placeholder:text-primaryDark"
                                 )}
                                 placeholder="Cím"
                                 disabled={closed}
@@ -1068,7 +1068,7 @@ const ApplicationForm = ({
                                     className={classNames(
                                       inputClasses,
                                       error ? "ring ring-red-700" : "",
-                                      "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
+                                      "flex cursor-pointer items-center  bg-application3 pl-4 text-primaryDark"
                                     )}
                                   >
                                     <div className="overflow-hidden truncate opacity-80">
@@ -1123,7 +1123,7 @@ const ApplicationForm = ({
                                   ) || null
                                 }
                                 placeholder="Szekció"
-                                text="text-darkcherry"
+                                text="text-primaryDark"
                                 bg="bg-application3"
                                 error={!!error}
                               />
@@ -1142,7 +1142,7 @@ const ApplicationForm = ({
                                     <div
                                       className={classNames(
                                         inputClasses,
-                                        "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
+                                        "flex cursor-pointer items-center  bg-application3 pl-4 text-primaryDark"
                                       )}
                                     >
                                       <div className="overflow-hidden truncate opacity-80">
@@ -1184,7 +1184,7 @@ const ApplicationForm = ({
                                     <div
                                       className={classNames(
                                         inputClasses,
-                                        "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
+                                        "flex cursor-pointer items-center  bg-application3 pl-4 text-primaryDark"
                                       )}
                                     >
                                       <div className="overflow-hidden truncate opacity-80">
@@ -1230,12 +1230,12 @@ const ApplicationForm = ({
                           {({ open }) => (
                             <>
                               <Disclosure.Button className="my-4 flex w-full items-center rounded-xl bg-application1 py-2 px-4 ">
-                                <p className="flex-1 text-start text-lg text-darkcherry">
+                                <p className="flex-1 text-start text-lg text-primaryDark">
                                   {ai + 1}. Témavezető adatai:
                                 </p>
                                 {ai !== 0 && (
                                   <TrashIcon
-                                    className="mr-6 h-7 w-7 text-darkcherry"
+                                    className="mr-6 h-7 w-7 text-primaryDark"
                                     onClick={(e) => {
                                       e.preventDefault();
                                       if (
@@ -1263,12 +1263,12 @@ const ApplicationForm = ({
 
                                 {!open ? (
                                   <ChevronDownIcon
-                                    className="h-7 w-7 text-darkcherry"
+                                    className="h-7 w-7 text-primaryDark"
                                     aria-hidden="true"
                                   />
                                 ) : (
                                   <ChevronUpIcon
-                                    className="h-7 w-7 text-darkcherry"
+                                    className="h-7 w-7 text-primaryDark"
                                     aria-hidden="true"
                                   />
                                 )}
@@ -1519,11 +1519,11 @@ const ApplicationForm = ({
                           {({ open }) => (
                             <>
                               <Disclosure.Button className="my-4 flex w-full items-center rounded-xl bg-application1 py-2 px-4 ">
-                                <p className="flex-1 text-start text-lg text-darkcherry">
+                                <p className="flex-1 text-start text-lg text-primaryDark">
                                   {ci + 1}. Társszerző adatok:
                                 </p>
                                 <TrashIcon
-                                  className="mr-6 h-7 w-7 text-darkcherry"
+                                  className="mr-6 h-7 w-7 text-primaryDark"
                                   onClick={(e) => {
                                     e.preventDefault();
                                     if (
@@ -1550,12 +1550,12 @@ const ApplicationForm = ({
 
                                 {!open ? (
                                   <ChevronDownIcon
-                                    className="h-7 w-7 text-darkcherry"
+                                    className="h-7 w-7 text-primaryDark"
                                     aria-hidden="true"
                                   />
                                 ) : (
                                   <ChevronUpIcon
-                                    className="h-7 w-7 text-darkcherry"
+                                    className="h-7 w-7 text-primaryDark"
                                     aria-hidden="true"
                                   />
                                 )}
@@ -1591,7 +1591,7 @@ const ApplicationForm = ({
                                                 error
                                                   ? "ring ring-red-700"
                                                   : "",
-                                                "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                                                "bg-application1 text-primaryDark placeholder:text-primaryDark"
                                               )}
                                               placeholder="Név"
                                               disabled={closed}
@@ -1620,7 +1620,7 @@ const ApplicationForm = ({
                                                 error
                                                   ? "ring ring-red-700"
                                                   : "",
-                                                "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                                                "bg-application1 text-primaryDark placeholder:text-primaryDark"
                                               )}
                                               placeholder="Hallgatói azonosító (nr. matricol)"
                                               disabled={closed}
@@ -1631,7 +1631,7 @@ const ApplicationForm = ({
                                       <UniversityField
                                         control={projectsControl}
                                         fieldName={`projects.${index}.companions.${ci}.university`}
-                                        text="text-darkcherry"
+                                        text="text-primaryDark"
                                         bg="bg-application1"
                                         setAdditional={(
                                           value: string | undefined
@@ -1646,7 +1646,7 @@ const ApplicationForm = ({
                                       />
                                       <OtherField
                                         control={projectsControl}
-                                        text="text-darkcherry"
+                                        text="text-primaryDark"
                                         bg="bg-application1"
                                         fieldName={`projects.${index}.companions.${ci}.universityOther`}
                                         dependencyName={`projects.${index}.companions.${ci}.university`}
@@ -1657,7 +1657,7 @@ const ApplicationForm = ({
                                         control={projectsControl}
                                         fieldName={`projects.${index}.companions.${ci}.faculty`}
                                         dependencyName={`projects.${index}.companions.${ci}.university`}
-                                        text="text-darkcherry"
+                                        text="text-primaryDark"
                                         bg="bg-application1"
                                         setAdditional={(
                                           value: string | undefined
@@ -1672,7 +1672,7 @@ const ApplicationForm = ({
                                       />
                                       <OtherField
                                         control={projectsControl}
-                                        text="text-darkcherry"
+                                        text="text-primaryDark"
                                         bg="bg-application1"
                                         dependencyName={`projects.${index}.companions.${ci}.faculty`}
                                         fieldName={`projects.${index}.companions.${ci}.facultyOther`}
@@ -1683,7 +1683,7 @@ const ApplicationForm = ({
                                         fieldName={`projects.${index}.companions.${ci}.subject`}
                                         dependencyName={`projects.${index}.companions.${ci}.faculty`}
                                         control={projectsControl}
-                                        text="text-darkcherry"
+                                        text="text-primaryDark"
                                         bg="bg-application1"
                                         setAdditional={(
                                           value: string | undefined
@@ -1698,7 +1698,7 @@ const ApplicationForm = ({
                                       />
                                       <OtherField
                                         control={projectsControl}
-                                        text="text-darkcherry"
+                                        text="text-primaryDark"
                                         bg="bg-application1"
                                         dependencyName={`projects.${index}.companions.${ci}.subject`}
                                         fieldName={`projects.${index}.companions.${ci}.subjectOther`}
@@ -1726,7 +1726,7 @@ const ApplicationForm = ({
                                               ) || null
                                             }
                                             placeholder="Képzési szint"
-                                            text="text-darkcherry"
+                                            text="text-primaryDark"
                                             bg="bg-application1"
                                             error={!!error}
                                             disabled={closed}
@@ -1754,7 +1754,7 @@ const ApplicationForm = ({
                                               ) || null
                                             }
                                             placeholder="Évfolyam"
-                                            text="text-darkcherry"
+                                            text="text-primaryDark"
                                             bg="bg-application1"
                                             error={!!error}
                                             disabled={closed}
@@ -1782,7 +1782,7 @@ const ApplicationForm = ({
                                               ) || null
                                             }
                                             placeholder="Elvégzett félévek száma"
-                                            text="text-darkcherry"
+                                            text="text-primaryDark"
                                             bg="bg-application1"
                                             error={!!error}
                                             disabled={closed}
@@ -1820,7 +1820,7 @@ const ApplicationForm = ({
                                                 error
                                                   ? "ring ring-red-700"
                                                   : "",
-                                                "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                                                "bg-application1 text-primaryDark placeholder:text-primaryDark"
                                               )}
                                               placeholder="E-mail cím"
                                             />
@@ -1855,7 +1855,7 @@ const ApplicationForm = ({
                                                 error
                                                   ? "ring ring-red-700"
                                                   : "",
-                                                "bg-application1 text-darkcherry placeholder:text-darkcherry"
+                                                "bg-application1 text-primaryDark placeholder:text-primaryDark"
                                               )}
                                               placeholder="Telefonszám"
                                               disabled={closed}
@@ -1884,7 +1884,7 @@ const ApplicationForm = ({
                                                     error
                                                       ? "ring ring-red-700"
                                                       : "",
-                                                    "flex cursor-pointer items-center bg-application1 pl-4 text-darkcherry  placeholder:text-darkcherry "
+                                                    "flex cursor-pointer items-center bg-application1 pl-4 text-primaryDark  placeholder:text-primaryDark "
                                                   )}
                                                 >
                                                   <div className="overflow-hidden truncate opacity-80">
@@ -1964,7 +1964,7 @@ const ApplicationForm = ({
                                                   <div
                                                     className={classNames(
                                                       inputClasses,
-                                                      "flex cursor-pointer items-center bg-application1 pl-4 text-darkcherry  placeholder:text-darkcherry "
+                                                      "flex cursor-pointer items-center bg-application1 pl-4 text-primaryDark  placeholder:text-primaryDark "
                                                     )}
                                                   >
                                                     <div className="overflow-hidden truncate opacity-80">
@@ -2071,7 +2071,7 @@ const ApplicationForm = ({
         <button
           className={classNames(
             !!defaultValues ? "mt-10" : "",
-            "flex h-10 w-40 items-center justify-center rounded-xl bg-lightcherry py-2 px-4 font-bold text-white disabled:bg-gray-200"
+            "flex h-10 w-40 items-center justify-center rounded-xl bg-primaryLight py-2 px-4 font-bold text-white disabled:bg-gray-200"
           )}
           onClick={() => submitData()}
           disabled={

@@ -13,7 +13,7 @@ type WinnersType = {
 
 const Winners = ({ winners }: { winners: WinnersType[] }) => {
   return (
-    <div className="flex min-h-[100vh] min-w-full flex-col space-y-10 bg-lightcherry p-4 pt-[100px] text-white">
+    <div className="flex min-h-[100vh] min-w-full flex-col space-y-10 bg-primaryLight p-4 pt-[100px] text-white">
       <div className="flex flex-wrap justify-evenly gap-4 md:gap-8">
         {winners.map((winner) => (
           <div
@@ -24,12 +24,12 @@ const Winners = ({ winners }: { winners: WinnersType[] }) => {
               <thead>
                 <tr>
                   <th className="w-2/3">
-                    <span className="flex text-left text-2xl text-darkcherry md:text-3xl">
+                    <span className="flex text-left text-2xl text-primaryDark md:text-3xl">
                       {winner.section.name}
                     </span>
                   </th>
                   <th>
-                    <span className=" flex text-left text-lg text-darkcherry md:text-xl">
+                    <span className=" flex text-left text-lg text-primaryDark md:text-xl">
                       ELÉRT EREDMÉNY:
                     </span>
                   </th>

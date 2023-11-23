@@ -12,7 +12,7 @@ type Props = {
 
 const Zsurik = ({ sections }: Props) => {
   return (
-    <div className="flex min-h-[100vh] min-w-full flex-col space-y-10 bg-lightcherry p-4 pt-[100px] text-white">
+    <div className="flex min-h-[100vh] min-w-full flex-col space-y-10 bg-primaryLight p-4 pt-[100px] text-white">
       <div className="flex flex-wrap justify-evenly gap-4 md:gap-8">
         {sections.map((s) => (
           <div
@@ -23,7 +23,7 @@ const Zsurik = ({ sections }: Props) => {
               <thead>
                 <tr>
                   <th className="w-2/3">
-                    <span className="flex text-left text-2xl text-darkcherry md:text-3xl">
+                    <span className="flex text-left text-2xl text-primaryDark md:text-3xl">
                       {s.name}
                     </span>
                   </th>

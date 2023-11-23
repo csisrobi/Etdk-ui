@@ -8,7 +8,7 @@ export default function Custom404() {
     router.push("/");
   });
   return (
-    <div className="flex min-h-[100vh] min-w-full items-center justify-center bg-lightcherry pt-[100px]">
+    <div className="flex min-h-[100vh] min-w-full items-center justify-center bg-primaryLight pt-[100px]">
       <Image
         width={800}
         height={800}

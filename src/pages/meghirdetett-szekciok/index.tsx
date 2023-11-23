@@ -17,7 +17,7 @@ const MeghirdetettSzekciok = ({
   sections: SanitySectionPart[];
 }) => {
   return (
-    <div className="flex min-h-[100vh] min-w-full flex-col space-y-10 bg-lightcherry p-4 pt-[100px] text-white">
+    <div className="flex min-h-[100vh] min-w-full flex-col space-y-10 bg-primaryLight p-4 pt-[100px] text-white">
       <div className="flex flex-wrap justify-evenly gap-4 md:gap-8">
         {sections.map((section) => {
           const imageSettings = section.image
@@ -28,7 +28,7 @@ const MeghirdetettSzekciok = ({
               key={section.name}
               className="relative flex w-full flex-col items-center justify-center bg-lightGray p-2 md:w-[400px] md:p-4"
             >
-              <span className="flex text-center text-2xl text-darkcherry md:text-3xl">
+              <span className="flex text-center text-2xl text-primaryDark md:text-3xl">
                 {section.name}
               </span>
               {imageSettings && (

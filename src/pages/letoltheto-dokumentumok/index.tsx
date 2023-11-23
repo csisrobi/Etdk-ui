@@ -10,17 +10,17 @@ type Props = {
 
 const LetolthetoDokumentumok = ({ files }: Props) => {
   return (
-    <div className="flex min-h-[100vh] min-w-full flex-col bg-lightGray px-6 pb-6 pt-[100px] text-black  md:px-10 md:pb-10 lg:bg-lightcherry ">
+    <div className="flex min-h-[100vh] min-w-full flex-col bg-lightGray px-6 pb-6 pt-[100px] text-black  md:px-10 md:pb-10 lg:bg-primaryLight ">
       <div className="flex flex-col items-center justify-center space-y-4 p-6 lg:bg-lightGray">
         {files.certificateURL && (
-          <div className="w-fit rounded-lg bg-lightcherry px-4 py-2 text-white">
+          <div className="w-fit rounded-lg bg-primaryLight px-4 py-2 text-white">
             <a target="_blank" href={files.certificateURL} rel="noreferrer">
               Témavezetői igazolás
             </a>
           </div>
         )}
         {files.contributionURL && (
-          <div className="w-fit rounded-lg bg-lightcherry px-4 py-2 text-white">
+          <div className="w-fit rounded-lg bg-primaryLight px-4 py-2 text-white">
             <a target="_blank" href={files.contributionURL} rel="noreferrer">
               Hozzájárulási nyilatkozat - a Biológia szekcióban résztvevőknek
             </a>

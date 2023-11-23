@@ -22,7 +22,7 @@ const AdminLogin = ({
     <div className="flex min-h-[100vh] min-w-full flex-col items-center justify-center space-y-4 bg-white p-4">
       <div className="flex w-full items-center justify-center rounded-lg bg-gray-100 p-6 sm:w-[400px]">
         <div className="flex h-full w-full flex-col items-center justify-center space-y-6">
-          <p className="text-2xl font-semibold text-darkcherry">
+          <p className="text-2xl font-semibold text-primaryDark">
             Bejelentkezés
           </p>
           {providers &&
@@ -41,7 +41,7 @@ const AdminLogin = ({
                           type="email"
                           autoComplete="email"
                           required
-                          className="relative block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-lightcherry sm:text-sm sm:leading-6"
+                          className="relative block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-primaryLight sm:text-sm sm:leading-6"
                           placeholder="E-mail"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
@@ -57,7 +57,7 @@ const AdminLogin = ({
                           type="password"
                           autoComplete="current-password"
                           required
-                          className="relative block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-lightcherry sm:text-sm sm:leading-6"
+                          className="relative block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-primaryLight sm:text-sm sm:leading-6"
                           placeholder="Jelszó"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
@@ -77,7 +77,7 @@ const AdminLogin = ({
                             toast.error("Minden mező kötelező");
                           }
                         }}
-                        className="group relative flex w-full justify-center rounded-md bg-lightcherry py-2 px-3 text-sm font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                        className="group relative flex w-full justify-center rounded-md bg-primaryLight py-2 px-3 text-sm font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                       >
                         <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                           <LockClosedIcon
@@ -94,7 +94,7 @@ const AdminLogin = ({
                     <button
                       key={provider.id}
                       onClick={() => signIn(provider.id)}
-                      className="rounded-xl bg-darkcherry px-4 py-2 text-white"
+                      className="rounded-xl bg-primaryDark px-4 py-2 text-white"
                     >
                       Folytatás {provider.name}-al
                     </button>

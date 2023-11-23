@@ -168,4 +168,4 @@ export type Inputs = {
 };
 
 export const inputClasses =
-  "pl-3 border-none block h-11 w-full rounded-xl text-lg font-semibold placeholder:opacity-80 focus:border-darkcherry focus:ring-darkcherry";
+  "pl-3 border-none block h-11 w-full rounded-xl text-lg font-semibold placeholder:opacity-80 focus:border-primaryDark focus:ring-primaryDark";

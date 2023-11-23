@@ -267,7 +267,7 @@ const EllenorzoFelulet = () => {
             })
           }
           className={`${
-            row.original.accepted ? "bg-lightcherry" : "bg-lightBrown"
+            row.original.accepted ? "bg-primaryLight" : "bg-lightBrown"
           } relative inline-flex h-6 w-11 items-center rounded-full`}
         >
           <span
@@ -292,7 +292,7 @@ const EllenorzoFelulet = () => {
       <div className="align-center flex min-h-[100vh] min-w-full items-center justify-center p-4 pt-[100px]">
         <svg
           aria-hidden="true"
-          className="mr-2 h-28 w-28 animate-spin fill-white text-lightcherry dark:text-lightcherry"
+          className="mr-2 h-28 w-28 animate-spin fill-white text-primaryLight dark:text-primaryLight"
           viewBox="0 0 100 101"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"

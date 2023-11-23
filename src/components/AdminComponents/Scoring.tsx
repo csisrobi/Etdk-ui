@@ -174,7 +174,7 @@ export const ParticipantScoring = ({
                   variant="contained"
                   disabled={Object.keys(errors).length > 0}
                   onClick={scoreParticipantPromise}
-                  className="bg-darkcherry"
+                  className="bg-primaryDark"
                 >
                   Mentés
                 </Button>
