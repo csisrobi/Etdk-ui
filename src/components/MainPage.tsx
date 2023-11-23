@@ -8,7 +8,7 @@ type Props = {
 
 const MainPage = ({ date, edition, romanEdition }: Props) => {
   return (
-    <div className="relative flex min-h-[100vh] min-w-full flex-col items-center justify-center bg-lightcherry p-4 pt-[100px] lg:pt-0">
+    <div className="relative flex min-h-[100vh] min-w-full flex-col items-center justify-center bg-primaryLight p-4 pt-[100px] lg:pt-0">
       <div id="general" className="absolute -top-[70px]" />
       <div className="flex h-full w-full flex-col items-center lg:flex-row">
         <div className=" lg:mr-1/2 relative aspect-square w-full md:h-[600px] md:w-[600px] lg:-ml-32 lg:mr-4 lg:w-1/2 xl:mr-auto xl:-ml-4 xl:h-[500px] xl:w-[500px]">
@@ -52,16 +52,18 @@ const MainPage = ({ date, edition, romanEdition }: Props) => {
           </div>
           <div className="flex flex-col">
             <span className="text-xl text-white sm:text-4xl lg:text-4xl 2xl:text-5xl">
-              {`Conferința științifică din transilvania, ediția ${
+              {`Conferința științifică din transilvania, ediția a ${
                 edition.slice(0, 2) || ""
               }-a`}
             </span>
             <span className="text-xl text-white sm:text-4xl lg:text-4xl 2xl:text-5xl">
-              {`${edition || ""} transilvanian students’ scientific conference`}
+              {`${edition || ""} transylvanian students’ scientific conference`}
             </span>
             <span className="text-lg sm:text-3xl lg:text-3xl 2xl:text-4xl">
-              <span className="text-yellow-400"> ȘTIINȚE REALE ȘI UMANE /</span>
-              <span className="text-darkcherry">
+              <span className="text-yellow-400">
+                ȘTIINȚE REALE ȘI UMANISTE /
+              </span>
+              <span className="text-white">
                 / FORMAL AND EMPIRICAL SCIENCES
               </span>
             </span>

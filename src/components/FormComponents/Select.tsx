@@ -60,7 +60,7 @@ export default function Select({
             <div
               className={classNames(
                 error ? "ring ring-red-700" : "",
-                `relative h-11 w-full cursor-default rounded-xl py-2 pl-3 pr-10 text-left text-lg shadow-sm focus:border-darkcherry focus:outline-none focus:ring-1 focus:ring-darkcherry sm:text-sm ${bg}`
+                `relative h-11 w-full cursor-default rounded-xl py-2 pl-3 pr-10 text-left text-lg shadow-sm focus:border-primaryDark focus:outline-none focus:ring-1 focus:ring-primaryDark sm:text-sm ${bg}`
               )}
             >
               <Combobox.Input
@@ -111,7 +111,7 @@ export default function Select({
                           </div>
 
                           {selected ? (
-                            <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-darkcherry ui-active:text-white">
+                            <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-primaryDark ui-active:text-white">
                               <CheckIcon
                                 className="h-5 w-5"
                                 aria-hidden="true"

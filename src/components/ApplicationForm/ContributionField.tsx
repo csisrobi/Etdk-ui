@@ -31,8 +31,8 @@ export const ContributionField = ({
               <label>
                 <div
                   className={classNames(
-                    "block h-11 w-full rounded-xl border-none pl-3 text-lg font-semibold placeholder:opacity-80 focus:border-darkcherry focus:ring-darkcherry",
-                    "flex cursor-pointer items-center  bg-application3 pl-4 text-darkcherry"
+                    "block h-11 w-full rounded-xl border-none pl-3 text-lg font-semibold placeholder:opacity-80 focus:border-primaryDark focus:ring-primaryDark",
+                    "flex cursor-pointer items-center  bg-application3 pl-4 text-primaryDark"
                   )}
                 >
                   <div className="overflow-hidden truncate opacity-80">

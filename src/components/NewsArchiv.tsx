@@ -23,7 +23,7 @@ const NewsArchiv = ({
         <div id="hirek" className="absolute -top-[70px]" />
         <div className="flex flex-col items-center justify-center gap-8">
           <div>
-            <span className="text-7xl text-darkcherry">Hírek</span>
+            <span className="text-7xl text-primaryDark">Hírek</span>
           </div>
           <div className="flex flex-col flex-wrap items-center justify-evenly gap-10 sm:flex-row">
             {news
@@ -61,7 +61,7 @@ const NewsArchiv = ({
                         <div className="w-36 rounded-2xl bg-lightBrown text-center text-3xl tracking-wide text-yellow-400">
                           <span>{newElem.date}</span>
                         </div>
-                        <span className="text-2xl text-lightcherry">
+                        <span className="text-2xl text-primaryLight">
                           {newElem.summary}
                         </span>
                       </div>
@@ -75,7 +75,7 @@ const NewsArchiv = ({
       <div className="relative z-10 flex flex-col items-center justify-center gap-8">
         <div id="archivum" className="absolute -top-[70px]" />
         <div>
-          <span className="text-7xl text-darkcherry">Archívum</span>
+          <span className="text-7xl text-primaryDark">Archívum</span>
         </div>
         <div className="flex flex-col flex-wrap items-center justify-evenly gap-10 sm:flex-row">
           {archivs.map((archivEl) => (

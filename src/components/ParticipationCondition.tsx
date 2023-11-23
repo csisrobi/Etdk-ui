@@ -37,7 +37,7 @@ const ParticipationCondition = ({
           <div className="flex w-full flex-col items-center gap-4">
             {conditions.map((condition) => (
               <LinkWrapper key={condition.text} href={condition.link || "#"}>
-                <div className="min-w-max cursor-pointer rounded-2xl bg-white py-2 px-2 text-center text-3xl tracking-wide text-lightcherry">
+                <div className="min-w-max cursor-pointer rounded-2xl bg-white py-2 px-2 text-center text-3xl tracking-wide text-primaryLight">
                   <span>{condition.text}</span>
                 </div>
               </LinkWrapper>

@@ -18,10 +18,10 @@ const WhyApplicate = ({
           </div>
           <div className="left-0 bottom-14 flex w-full flex-col space-y-14 bg-lightGray p-4 text-center lg:absolute lg:h-[600px] lg:w-[600px] lg:text-start">
             <div className="mt-2">
-              <span className="text-7xl text-darkcherry">{title}</span>
+              <span className="text-7xl text-primaryDark">{title}</span>
             </div>
             <div>
-              <div className="text-lg font-medium leading-tight text-darkcherry">
+              <div className="text-lg font-medium leading-tight text-primaryDark">
                 <RichText blocks={description} />
               </div>
             </div>
@@ -31,7 +31,7 @@ const WhyApplicate = ({
                   key={benefit}
                   className="flex items-center justify-center rounded-3xl bg-white p-2 text-center "
                 >
-                  <span className="flex justify-center text-sm font-semibold tracking-wide text-darkcherry">
+                  <span className="flex justify-center text-sm font-semibold tracking-wide text-primaryDark">
                     {benefit}
                   </span>
                 </div>
@@ -64,7 +64,7 @@ const WhyApplicate = ({
                 alt={benefit.title}
               />
             </div>
-            <span className="text-4xl font-semibold text-darkcherry">
+            <span className="text-4xl font-semibold text-primaryDark">
               {benefit.title}
             </span>
             <p className="text-center text-lg">{benefit.description}</p>

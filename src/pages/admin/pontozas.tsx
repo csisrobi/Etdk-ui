@@ -171,7 +171,7 @@ const AdminPontozoFelulet = ({
           <div className="flex items-center justify-center">
             <svg
               aria-hidden="true"
-              className="mr-2 h-14 w-14 animate-spin fill-white text-lightcherry dark:text-lightcherry"
+              className="mr-2 h-14 w-14 animate-spin fill-white text-primaryLight dark:text-primaryLight"
               viewBox="0 0 100 101"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -201,7 +201,7 @@ const AdminPontozoFelulet = ({
                 <Button
                   variant="contained"
                   endIcon={<Download />}
-                  className="bg-darkcherry"
+                  className="bg-primaryDark"
                   sx={{ mr: 2 }}
                   onClick={() => filesDownload(participant)}
                 >
