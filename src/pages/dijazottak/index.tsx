@@ -15,7 +15,7 @@ const Winners = ({ winners }: { winners: WinnersType[] }) => {
   return (
     <div className="flex min-h-[100vh] min-w-full flex-col space-y-10 bg-primaryLight p-4 pt-[100px] text-white">
       <div className="flex flex-wrap justify-evenly gap-4 md:gap-8">
-        {winners.map((winner) => (
+        {(winners || []).map((winner) => (
           <div
             key={winner.section.name}
             className="h-auto w-full bg-lightGray p-2 md:w-[500px] md:p-4"

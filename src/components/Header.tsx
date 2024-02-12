@@ -2,7 +2,6 @@ import { Dialog, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { isAfter, parseISO } from "date-fns";
 import Image from "next/image";
-import Link from "next/link";
 import { Fragment, useState } from "react";
 import LinkWrapper from "./UtilityComponents/LinkWrapper";
 
@@ -14,8 +13,7 @@ const Header = () => {
       id: "#altalanos_tudnivalok",
     },
     {
-      //TODO: CHANGE TO THE UPCOMING YEAR
-      title: "2023",
+      title: new Date().getFullYear().toString(),
       id: "#aktualis_ev",
     },
     {

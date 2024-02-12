@@ -6,9 +6,11 @@ const queryAdminsNotSuperAdmin = `*[_type == "admins" && role != "superadmin"][0
 const queryParticipants = `*[_type == "participants"][0...999]{
   _id,
 }._id`;
-
+const queryWinners = `*[_type == "winners"][0...999]{
+  _id,
+}._id`;
 client
-  .fetch(queryAdminsNotSuperAdmin)
+  .fetch(queryWinners)
   .then((ids) => {
     if (!ids.length) {
       console.log("No one to delete");
