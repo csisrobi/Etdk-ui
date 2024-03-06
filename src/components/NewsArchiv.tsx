@@ -28,7 +28,7 @@ const NewsArchiv = ({
           <div className="flex flex-col flex-wrap items-center justify-evenly gap-10 sm:flex-row">
             {news
               .sort((a, b) =>
-                isAfter(parseISO(b.date), parseISO(a.date)) ? -1 : 1
+                isAfter(parseISO(b.date), parseISO(a.date)) ? 1 : -1
               )
               .map((newElem, idx) => {
                 const imageSettings = newElem.featuredImage

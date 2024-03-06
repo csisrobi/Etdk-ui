@@ -32,9 +32,7 @@ const MeghirdetettSzekciok = ({
                 {section.name}
               </span>
               {imageSettings && (
-                <div
-                  className={`relative h-[70vw] w-[75vw] md:h-72 md:w-[310px]`}
-                >
+                <div className={`relative h-[70vw] w-[70vw] md:h-64 md:w-64`}>
                   <Image
                     loader={imageSettings.loader}
                     src={imageSettings.src}

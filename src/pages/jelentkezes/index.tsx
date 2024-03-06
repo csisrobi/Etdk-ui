@@ -27,7 +27,7 @@ const Jelentkezes = ({
   gdpr: SanityRichText[];
 }) => {
   //TODO: CHANGE IT TO SANITY DATE
-  if (isAfter(new Date(), parseISO("2023-04-02T23:59:59"))) {
+  if (isAfter(new Date(), parseISO("2024-04-02T23:59:59"))) {
     return (
       <div className="flex min-h-[100vh] min-w-full flex-col items-center justify-center space-y-4 bg-white p-2 pb-40 pt-[71px] text-center">
         <p className="text-5xl">A regisztráció lezárult.</p>
