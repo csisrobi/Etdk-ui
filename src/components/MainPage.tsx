@@ -52,7 +52,7 @@ const MainPage = ({ date, edition, romanEdition }: Props) => {
           </div>
           <div className="flex flex-col">
             <span className="text-xl text-white sm:text-4xl lg:text-4xl 2xl:text-5xl">
-              {`Conferința științifică din transilvania, ediția a ${
+              {`Conferința științifică studențească din transilvania, ediția a ${
                 edition.slice(0, 2) || ""
               }-a`}
             </span>
