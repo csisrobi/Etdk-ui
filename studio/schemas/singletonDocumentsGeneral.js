@@ -4,11 +4,28 @@ export default {
   type: "document",
   __experimental_actions: ["create", "update", /*"delete",*/ "publish"],
   fields: [
-    { title: "Témavezetői igazolás", name: "certificate", type: "file" },
     {
-      title: "Hozzájárulási nyilatkozat - a Biológia szekcióban résztvevőknek",
-      name: "contribution",
-      type: "file",
+      title: "Letölthető dokumentumok",
+      name: "files",
+      type: "array",
+      of: [
+        {
+          title: "Dokumentum",
+          type: "object",
+          fields: [
+            {
+              title: "Név",
+              name: "name",
+              type: "string",
+            },
+            {
+              title: "Dokumentum",
+              name: "file",
+              type: "file",
+            },
+          ],
+        },
+      ],
     },
   ],
 };

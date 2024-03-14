@@ -134,7 +134,6 @@ export type SanityAdvisorData = {
   universityOther: string;
   title: string;
   email: string;
-  mobileNumber: string;
   certificate: {
     originalFilename: string;
     url: string;
@@ -216,6 +215,19 @@ export type SanityParticipantScoring = {
     url: string;
   };
   score: ParticipantScoring[];
+};
+
+export type SanityDeadlines = {
+  applicationStart: string;
+  applicationEnd: string;
+  documentUploadStart: string;
+  documentUploadEnd: string;
+  dataCheckStart: string;
+  dataCheckEnd: string;
+  scoringStart: string;
+  scoringEnd: string;
+  scoringCheckStart: string;
+  scoringCheckEnd: string;
 };
 
 export enum UserRoles {

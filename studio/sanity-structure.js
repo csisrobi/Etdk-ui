@@ -1,7 +1,9 @@
 import S from "@sanity/desk-tool/structure-builder";
 
 const hiddenDocTypes = (listItem) =>
-  !["general", "contact", "applicate", "files"].includes(listItem.getId());
+  !["general", "contact", "applicate", "files", "deadlines"].includes(
+    listItem.getId()
+  );
 
 export default () =>
   S.list()
@@ -38,6 +40,14 @@ export default () =>
             .id("files")
             .schemaType("files")
             .documentId("singleton-files")
+        ),
+      S.listItem()
+        .title("Határidők")
+        .child(
+          S.editor()
+            .id("deadlines")
+            .schemaType("deadlines")
+            .documentId("singleton-deadlines")
         ),
       ...S.documentTypeListItems().filter(hiddenDocTypes),
     ]);

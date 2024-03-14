@@ -84,6 +84,7 @@ export const ParticipantScoring = ({
         <tbody>
           {(criteria || []).map((c) => (
             <React.Fragment key={c._id}>
+              {/* TODO WRITTEN AND ORAL */}
               {(isAfter(new Date(), parseISO("2023-05-16T23:59:59")) ||
                 c.written) && (
                 <tr key={c._id}>

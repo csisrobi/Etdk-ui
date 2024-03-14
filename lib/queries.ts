@@ -39,8 +39,10 @@ export const queryGeneral = groq`
 
 export const queryFiles = groq`
 *[_type == "files"]{
-  "certificateURL": certificate.asset->url,
-  "contributionURL": contribution.asset->url,
+  files[] {
+    name,
+    "url": file.asset->url,
+  }
 }`;
 
 export const queryApplicate = groq`
@@ -196,7 +198,6 @@ export const getProjectsDataForParticipant = (email: string) => groq`
     universityOther,
     title,
     email,
-    mobileNumber,
     "certificate": certificate.asset->originalFilename,
     "certificateId": certificate.asset->_id,
 
@@ -276,7 +277,6 @@ export const getAllParticipants = groq`
     universityOther,
     title,
     email,
-    mobileNumber,
     "certificate": certificate.asset->{url, originalFilename},
   },
 
@@ -357,6 +357,20 @@ export const queryAllCriteria = groq`
 *[_type == "criteria" ] {
   name,
   _id
+}`;
+
+export const queryAllDeadline = groq`
+*[_type == "deadlines" ] {
+  applicationStart,
+  applicationEnd,
+  documentUploadStart,
+  documentUploadEnd,
+  dataCheckStart,
+  dataCheckEnd,
+  scoringStart,
+  scoringEnd,
+  scoringCheckStart,
+  scoringCheckEnd
 }`;
 
 type Response = {

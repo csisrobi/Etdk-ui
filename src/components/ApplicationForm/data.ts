@@ -31,7 +31,6 @@ export const mapAdvisorData = async (
         }),
     title: advisorData.title,
     email: advisorData.email,
-    mobileNumber: advisorData.mobileNumber,
     ...(certificateData && {
       certificate: {
         _type: "file",

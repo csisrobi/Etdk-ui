@@ -2,6 +2,7 @@ import {
   getPersonDataForParticipant,
   getProjectsDataForParticipant,
   queryActiveSections,
+  queryAllDeadline,
   queryFaculties,
   querySubjects,
   queryUniversities,
@@ -16,13 +17,19 @@ import {
   PersonInputs,
   ProjectInputs,
 } from "src/components/ApplicationForm/constants";
-import type { FacultySanity, SectionsSanity, UniversitiesSanity } from "types";
+import type {
+  FacultySanity,
+  SanityDeadlines,
+  SectionsSanity,
+  UniversitiesSanity,
+} from "types";
 
 const AdminJelentkezes = ({
   universities,
   faculties,
   sections,
   participantData,
+  deadlines,
 }: {
   universities: UniversitiesSanity[];
   faculties: FacultySanity[];
@@ -31,6 +38,7 @@ const AdminJelentkezes = ({
     personData: PersonInputs;
     projectsData: ProjectInputs[];
   };
+  deadlines: SanityDeadlines;
 }) => {
   if (!Object.keys(participantData).length) {
     return (
@@ -39,14 +47,16 @@ const AdminJelentkezes = ({
       </div>
     );
   }
-
   return (
     <ApplicationForm
       universities={universities}
       faculties={faculties}
       sections={sections}
       defaultValues={participantData}
-      closed={isAfter(new Date(), parseISO("2023-04-30T23:59:59"))}
+      closed={isAfter(
+        new Date(),
+        parseISO(`${deadlines.documentUploadEnd}T23:59:59`)
+      )}
     />
   );
 };
@@ -59,16 +69,11 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const faculties = await getClient(preview || false).fetch(queryFaculties);
   const subjects = await getClient(preview || false).fetch(querySubjects);
   const sections = await getClient(preview).fetch(queryActiveSections);
+  const deadlines = await getClient(preview).fetch(queryAllDeadline);
 
   const session = await getSession(ctx);
-  if (!session?.user || session.user.role !== "superadmin") {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  }
+
+  // if not logged in
   if (!session?.user || !session.user.email) {
     return {
       redirect: {
@@ -78,14 +83,15 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     };
   }
 
-  // if (session.user.role !== "participant") {
-  //   return {
-  //     redirect: {
-  //       destination: "/admin/ellenorzes",
-  //       permanent: false,
-  //     },
-  //   };
-  // }
+  // if they scorer or admins go to check
+  if (session.user.role !== "participant") {
+    return {
+      redirect: {
+        destination: "/admin/ellenorzes",
+        permanent: false,
+      },
+    };
+  }
   const defaultParticipantPersonData: PersonInputs[] = await getClient(
     true
   ).fetch(getPersonDataForParticipant(session.user.email));
@@ -137,6 +143,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       faculties,
       subjects,
       sections,
+      deadlines: deadlines[0],
       participantData:
         !!defaultParticipantPersonData.length &&
         !!defaultParticipantProjectsData.length
