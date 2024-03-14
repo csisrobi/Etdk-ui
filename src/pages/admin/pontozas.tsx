@@ -14,9 +14,18 @@ import type { GetServerSidePropsContext } from "next";
 import { getSession, signOut, useSession } from "next-auth/react";
 import { useState, useMemo } from "react";
 import useSWR from "swr";
-import type { SanityParticipant, SanityParticipantScoring } from "types";
+import type {
+  SanityDeadlines,
+  SanityParticipant,
+  SanityParticipantScoring,
+} from "types";
 import { ParticipantScoring } from "src/components/AdminComponents/Scoring";
-import { adminSections, fetcher, querySectionsForScoring } from "@lib/queries";
+import {
+  adminSections,
+  fetcher,
+  queryAllDeadline,
+  querySectionsForScoring,
+} from "@lib/queries";
 import { getClient } from "@lib/sanity";
 import JSZip from "jszip";
 import { useRouter } from "next/router";
@@ -55,9 +64,11 @@ const fileAttributes: (keyof Pick<
 const AdminPontozoFelulet = ({
   sectionsDefault,
   responsibleSections,
+  deadlines,
 }: {
   sectionsDefault: Section[];
   responsibleSections: Section[];
+  deadlines: SanityDeadlines;
 }) => {
   const [tabValue, setTabValue] = useState<number>(0);
   const session = useSession();
@@ -271,6 +282,8 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
           responsibleSections.sections!.find((refs) => refs._ref === sect._id)
         )
       : [];
+  const deadlines = await getClient(preview).fetch(queryAllDeadline);
+
   return {
     props: {
       sectionsDefault: sectionsDefault
@@ -283,6 +296,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
         .sort((a, b) =>
           a.name.toLowerCase().localeCompare(b.name.toLowerCase())
         ),
+      deadlines: deadlines[0],
       preview: preview || false,
     },
   };

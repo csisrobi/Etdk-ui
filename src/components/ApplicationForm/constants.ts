@@ -11,6 +11,10 @@ export const degreeOptions = [
     name: "BSc (alapképzés)",
     value: "BSc",
   },
+  {
+    name: "MSc (mesterképzés)",
+    value: "MSc",
+  },
 ];
 
 export const classOptions = [
@@ -37,6 +41,10 @@ export const classOptions = [
   {
     name: "6",
     value: "6",
+  },
+  {
+    name: "Évhosszabbítás",
+    value: "Évhosszabbítás",
   },
 ];
 
@@ -118,7 +126,6 @@ export type AdvisorInputs = {
   _key?: string;
   name: string;
   email: string;
-  mobileNumber: string;
   title: string;
   university: string;
   universityOther?: string;

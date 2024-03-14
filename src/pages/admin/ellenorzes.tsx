@@ -38,7 +38,6 @@ const headersAdvisor = {
   university: "Témavezető egyetem",
   title: "Témavezető titulus",
   email: "Témavezető email",
-  mobileNumber: "Témavezető telefonszám",
   certificate: "Témavezető igazolás",
 };
 

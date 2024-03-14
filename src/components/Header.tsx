@@ -4,9 +4,23 @@ import { isAfter, parseISO } from "date-fns";
 import Image from "next/image";
 import { Fragment, useState } from "react";
 import LinkWrapper from "./UtilityComponents/LinkWrapper";
+import { SanityDeadlines } from "types";
+import { queryAllDeadline } from "@lib/queries";
+import { getClient } from "@lib/sanity";
+import useSWR from "swr";
+import Link from "next/link";
+
+const getDeadlines = async () => {
+  const deadlines = await getClient().fetch(queryAllDeadline);
+  return deadlines[0];
+};
 
 const Header = () => {
   const [openMobileDialog, setOpenMobileDialog] = useState(false);
+  const { data: deadlines, isLoading } = useSWR<SanityDeadlines>(
+    ["deadlines"],
+    async () => await getDeadlines()
+  );
   const links = [
     {
       title: "Általános tudnivalók",
@@ -37,10 +51,27 @@ const Header = () => {
       id: "#kapcsolat",
     },
   ];
+  const afterApplicationStart = deadlines?.applicationStart
+    ? isAfter(new Date(), parseISO(`${deadlines.applicationStart}T23:59:59`))
+    : false;
+  const afterApplicationEnd = deadlines?.applicationEnd
+    ? isAfter(new Date(), parseISO(`${deadlines.applicationEnd}T23:59:59`))
+    : false;
 
-  const application = isAfter(new Date(), parseISO("2023-04-02T23:59:59"))
-    ? { label: "BEJELENTKEZÉS", href: "/admin" }
-    : { label: "JELENTKEZÉS", href: "/jelentkezes" };
+  const afterUploadStart = deadlines?.documentUploadStart
+    ? isAfter(new Date(), parseISO(`${deadlines.documentUploadStart}T23:59:59`))
+    : false;
+
+  const afterUploadEnd = deadlines?.documentUploadEnd
+    ? isAfter(new Date(), parseISO(`${deadlines.documentUploadEnd}T23:59:59`))
+    : false;
+
+  const application =
+    afterApplicationStart && !afterApplicationEnd
+      ? { label: "JELENTKEZÉS", href: "/jelentkezes" }
+      : afterUploadStart && !afterUploadEnd
+      ? { label: "BEJELENTKEZÉS", href: "/admin" }
+      : null;
 
   return (
     <div className="fixed top-0 z-20 h-fit w-full bg-primaryLight">
@@ -51,7 +82,7 @@ const Header = () => {
             alt={"logo"}
             width={50}
             height={50}
-            className="block hover:cursor-pointer lg:hidden xl:block"
+            className="block hover:cursor-pointer lg:block"
           />
         </LinkWrapper>
         <div className="flex flex-1 items-center justify-end lg:hidden">
@@ -75,14 +106,16 @@ const Header = () => {
                 </LinkWrapper>
               </span>
             ))}
-            {/* <button
-              type="button"
-              className="w-48 rounded-3xl bg-white py-2 px-1 text-center text-3xl tracking-wide  text-primaryDark xl:w-52"
-            >
-              <Link href={application.href}>
-                <span>{application.label}</span>
-              </Link>
-            </button> */}
+            {application && !isLoading && (
+              <button
+                type="button"
+                className="w-48 rounded-3xl bg-white py-2 px-1 text-center text-3xl tracking-wide  text-primaryDark xl:w-52"
+              >
+                <Link href={application.href}>
+                  <span>{application.label}</span>
+                </Link>
+              </button>
+            )}
           </div>
         </div>
       </div>
