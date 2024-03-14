@@ -237,11 +237,6 @@ export default {
               type: "string",
             },
             {
-              title: "Telefonszám",
-              name: "mobileNumber",
-              type: "string",
-            },
-            {
               title: "Igazolás",
               name: "certificate",
               type: "file",

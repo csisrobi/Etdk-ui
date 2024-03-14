@@ -16,6 +16,7 @@ import criteria from "./criteria";
 import admin from "./admin";
 import singletonDocumentsGeneral from "./singletonDocumentsGeneral";
 import winners from "./winners";
+import signletonDeadline from "./signletonDeadline";
 
 export default createSchema({
   name: "default",
@@ -36,5 +37,6 @@ export default createSchema({
     criteria,
     admin,
     winners,
+    signletonDeadline,
   ]),
 });
