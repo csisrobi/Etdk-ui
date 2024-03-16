@@ -201,20 +201,22 @@ const Header = () => {
                               </LinkWrapper>
                             </span>
                           ))}
-                          {/* <div className="border-t border-primaryLight pt-4 text-center">
-                            <button
-                              type="button"
-                              className="w-48 rounded-3xl bg-primaryLight py-2 px-1 text-center text-3xl tracking-wide  text-white hover:bg-opacity-75 xl:w-52"
-                            >
-                              <Link href={application.href}>
-                                <span
-                                  onClick={() => setOpenMobileDialog(false)}
-                                >
-                                  {application.label}
-                                </span>
-                              </Link>
-                            </button>
-                          </div> */}
+                          {application && !isLoading && (
+                            <div className="border-t border-primaryLight pt-4 text-center">
+                              <button
+                                type="button"
+                                className="w-48 rounded-3xl bg-primaryLight py-2 px-1 text-center text-3xl tracking-wide  text-white hover:bg-opacity-75 xl:w-52"
+                              >
+                                <Link href={application.href}>
+                                  <span
+                                    onClick={() => setOpenMobileDialog(false)}
+                                  >
+                                    {application.label}
+                                  </span>
+                                </Link>
+                              </button>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>

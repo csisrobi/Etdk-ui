@@ -89,7 +89,6 @@ const ApplicationForm = ({
         }
       : defaultValues.personData,
   });
-
   const {
     control: projectsControl,
     handleSubmit,
@@ -371,6 +370,18 @@ const ApplicationForm = ({
                   }
                 )
               : null;
+          const voucherData =
+            personDirtyFields.voucher &&
+            participantData.voucher &&
+            typeof participantData.voucher === "object"
+              ? await getClient().assets.upload(
+                  "file",
+                  participantData.voucher,
+                  {
+                    filename: participantData.voucher.name,
+                  }
+                )
+              : null;
           Promise.all(
             data.projects.map(async (project, index) => {
               if (project.extract && typeof project.extract === "object") {
@@ -437,6 +448,15 @@ const ApplicationForm = ({
                           },
                         },
                       }),
+                      ...(voucherData && {
+                        voucher: {
+                          _type: "file",
+                          asset: {
+                            _ref: voucherData._id,
+                            _type: "reference",
+                          },
+                        },
+                      }),
                       advisors: advisors,
                       companions: companions,
                       title: project.title,
@@ -494,7 +514,13 @@ const ApplicationForm = ({
         }
       }
     });
-  }, [handleSubmit, defaultValues, patchSubmit, personGetValues]);
+  }, [
+    handleSubmit,
+    defaultValues,
+    patchSubmit,
+    personGetValues,
+    personDirtyFields.voucher,
+  ]);
 
   const submitData = () => {
     const participantData = personGetValues();
@@ -507,8 +533,7 @@ const ApplicationForm = ({
           (data[0] === "facultyOther" &&
             participantData.faculty !== "additional") ||
           (data[0] === "subjectOther" &&
-            participantData.subject !== "additional") ||
-          data[0] === "voucher"
+            participantData.subject !== "additional")
         ) {
           return;
         }
@@ -935,8 +960,12 @@ const ApplicationForm = ({
             />
             <Controller
               name="voucher"
+              rules={{ required: true }}
               control={personFormControl}
-              render={({ field: { onChange, value } }) => {
+              render={({
+                field: { onChange, value },
+                fieldState: { error },
+              }) => {
                 return (
                   <div className="flex flex-col">
                     <span className="pl-3">Kifizetési bizonylat</span>
@@ -945,6 +974,7 @@ const ApplicationForm = ({
                       <div
                         className={classNames(
                           inputClasses,
+                          error ? "ring ring-red-700" : "",
                           "flex cursor-pointer items-center bg-application1 pl-4 text-primaryDark  placeholder:text-primaryDark "
                         )}
                       >
@@ -960,9 +990,10 @@ const ApplicationForm = ({
                         type="file"
                         autoComplete="off"
                         className="hidden"
-                        onChange={(e) =>
-                          onChange(e.target.files ? e.target.files[0] : null)
-                        }
+                        onChange={(e) => {
+                          personClearErrors("voucher");
+                          onChange(e.target.files ? e.target.files[0] : null);
+                        }}
                         disabled={closed}
                       />
                     </label>
@@ -1911,9 +1942,11 @@ const ApplicationForm = ({
                                       />
                                       <Controller
                                         name={`projects.${index}.companions.${ci}.voucher`}
+                                        rules={{ required: true }}
                                         control={projectsControl}
                                         render={({
                                           field: { onChange, value },
+                                          fieldState: { error },
                                         }) => {
                                           return (
                                             <div className="flex flex-col">
@@ -1925,6 +1958,9 @@ const ApplicationForm = ({
                                                 <div
                                                   className={classNames(
                                                     inputClasses,
+                                                    error
+                                                      ? "ring ring-red-700"
+                                                      : "",
                                                     "flex cursor-pointer items-center bg-application1 pl-4 text-primaryDark  placeholder:text-primaryDark "
                                                   )}
                                                 >
@@ -1942,13 +1978,16 @@ const ApplicationForm = ({
                                                   type="file"
                                                   autoComplete="off"
                                                   className="hidden"
-                                                  onChange={(e) =>
+                                                  onChange={(e) => {
+                                                    projectCleanErrors(
+                                                      `projects.${index}.companions.${ci}.voucher`
+                                                    );
                                                     onChange(
                                                       e.target.files
                                                         ? e.target.files[0]
                                                         : null
-                                                    )
-                                                  }
+                                                    );
+                                                  }}
                                                   disabled={closed}
                                                 />
                                               </label>
