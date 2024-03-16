@@ -114,14 +114,6 @@ export async function getServerSideProps(
   const providers = await getProviders();
   const session = await getSession(ctx);
   if (session?.user) {
-    if (session.user.role !== "superadmin") {
-      return {
-        redirect: {
-          destination: "/",
-          permanent: false,
-        },
-      };
-    }
     if (
       session.user.role === "superadmin" ||
       session.user.role === "data_checker"
