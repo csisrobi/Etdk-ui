@@ -82,6 +82,11 @@ export const queryRequirement = groq`
   requirement
 }`;
 
+export const queryScoringCriteria = groq`
+*[_type == "general"]{
+  scoringcriteria
+}`;
+
 export const querySchedule = groq`
 *[_type == "general"]{
   schedule
