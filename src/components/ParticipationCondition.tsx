@@ -11,7 +11,7 @@ const ParticipationCondition = ({
   const conditions = [
     { text: "Szabályzat", link: "/szabalyzat" },
     { text: "Követelmények", link: "/kovetelmenyek" },
-    { text: "Pontozási kritériumok" },
+    { text: "Pontozási kritériumok", link: "/pontozasi-kriteriumok" },
     {
       text: "Letölthető dokumentumok",
       link: "/letoltheto-dokumentumok",
