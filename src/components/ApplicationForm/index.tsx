@@ -36,6 +36,7 @@ import { FacultyField } from "./FacultyField";
 import { OtherField } from "./OtherField";
 import { SubjectField } from "./SubjectField";
 import { UniversityField } from "./UniversityField";
+import LinkWrapper from "../UtilityComponents/LinkWrapper";
 
 const ApplicationForm = ({
   universities,
@@ -997,6 +998,11 @@ const ApplicationForm = ({
                         disabled={closed}
                       />
                     </label>
+                    <LinkWrapper href="https://jegy.link/etdk">
+                      <p className="pl-3 text-sm text-blue-400 underline hover:text-purple-400">
+                        Befizetés
+                      </p>
+                    </LinkWrapper>
                   </div>
                 );
               }}
