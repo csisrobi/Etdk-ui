@@ -8,6 +8,7 @@ const yearElements = [
   { text: "Díjazottak", link: "/dijazottak" },
   { text: "Előadások és workshopok" },
   { text: "Meghirdetett szekciók", link: "/meghirdetett-szekciok" },
+  { text: "Befizetés", link: "https://jegy.link/etdk" },
 ];
 
 const Year = () => {
