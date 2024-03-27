@@ -108,6 +108,7 @@ const ApplicationForm = ({
                   name: "",
                   email: "",
                   title: "",
+                  titleOther: undefined,
                   university: "",
                   universityOther: undefined,
                   certificate: null,
@@ -1399,6 +1400,15 @@ const ApplicationForm = ({
                                             disabled={closed}
                                           />
                                         )}
+                                      />
+                                      <OtherField
+                                        control={projectsControl}
+                                        text="text-white"
+                                        bg="bg-application2"
+                                        dependencyName={`projects.${index}.advisors.${ai}.title`}
+                                        fieldName={`projects.${index}.advisors.${ai}.titleOther`}
+                                        placeholder="Egyéb titulus"
+                                        disabled={closed}
                                       />
                                       <Controller
                                         name={`projects.${index}.advisors.${ai}.email`}

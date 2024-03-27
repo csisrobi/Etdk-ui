@@ -29,7 +29,11 @@ export const mapAdvisorData = async (
             _ref: advisorData.university,
           },
         }),
-    title: advisorData.title,
+    ...(advisorData.titleOther
+      ? { titleOther: advisorData.titleOther }
+      : {
+          title: advisorData.title,
+        }),
     email: advisorData.email,
     ...(certificateData && {
       certificate: {
