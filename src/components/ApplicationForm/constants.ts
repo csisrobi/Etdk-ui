@@ -122,7 +122,7 @@ export const titleOptions = [
   },
   {
     name: "Egyéb",
-    value: "egyéb",
+    value: "additional",
   },
 ];
 
@@ -130,7 +130,9 @@ export type AdvisorInputs = {
   _key?: string;
   name: string;
   email: string;
+
   title: string;
+  titleOther?: string;
   university: string;
   universityOther?: string;
 

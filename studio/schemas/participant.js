@@ -232,6 +232,11 @@ export default {
               type: "string",
             },
             {
+              title: "Egyéb titulus",
+              name: "titleOther",
+              type: "string",
+            },
+            {
               title: "Email",
               name: "email",
               type: "string",
