@@ -120,6 +120,10 @@ export const titleOptions = [
     name: "Tanársegéd",
     value: "tanársegéd",
   },
+  {
+    name: "Egyéb",
+    value: "egyéb",
+  },
 ];
 
 export type AdvisorInputs = {
