@@ -79,7 +79,7 @@ const Jelentkezes = ({
   return null;
 };
 
-export async function getStaticProps({ preview = false }) {
+export async function getServerSideProps({ preview = false }) {
   const universities = await getClient(preview).fetch(queryUniversities);
   const faculties = await getClient(preview).fetch(queryFaculties);
   const sections = await getClient(preview).fetch(queryActiveSections);
@@ -95,7 +95,6 @@ export async function getStaticProps({ preview = false }) {
       deadlines: deadlines[0],
       gdpr: gdpr[0].gdpr,
     },
-    revalidate: 30,
   };
 }
 

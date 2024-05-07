@@ -64,7 +64,7 @@ export async function getStaticProps({ preview = false }) {
         ),
       preview,
     },
-    revalidate: 30,
+    revalidate: 300,
   };
 }
 

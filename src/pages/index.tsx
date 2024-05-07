@@ -106,7 +106,7 @@ export async function getStaticProps({ preview = false }) {
       organizers,
       preview,
     },
-    revalidate: 10,
+    revalidate: 600,
   };
 }
 

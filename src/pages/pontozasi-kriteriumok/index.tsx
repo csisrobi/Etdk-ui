@@ -26,7 +26,7 @@ export async function getStaticProps({ preview = false }) {
       scoringcriteria: general[0].scoringcriteria,
       preview,
     },
-    revalidate: 30,
+    revalidate: 300,
   };
 }
 

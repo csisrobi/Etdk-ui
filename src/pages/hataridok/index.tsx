@@ -27,7 +27,7 @@ export async function getStaticProps({ preview = false }) {
       deadline: deadline[0].deadline,
       preview,
     },
-    revalidate: 30,
+    revalidate: 600,
   };
 }
 
