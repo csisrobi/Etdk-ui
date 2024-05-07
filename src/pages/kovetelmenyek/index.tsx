@@ -19,14 +19,13 @@ const Kovetelmenyek = ({ requirement }: Props) => {
   );
 };
 
-export async function getStaticProps({ preview = false }) {
+export async function getServerSideProps({ preview = false }) {
   const general = await getClient(preview).fetch(queryRequirement);
   return {
     props: {
       requirement: general[0].requirement,
       preview,
     },
-    revalidate: 30,
   };
 }
 

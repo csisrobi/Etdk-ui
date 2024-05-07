@@ -26,7 +26,7 @@ export async function getStaticProps({ preview = false }) {
       general: generals[0],
       preview,
     },
-    revalidate: 30,
+    revalidate: 600,
   };
 }
 

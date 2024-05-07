@@ -26,7 +26,7 @@ export async function getStaticProps({ preview = false }) {
       schedule: general[0].schedule,
       preview,
     },
-    revalidate: 30,
+    revalidate: 600,
   };
 }
 
