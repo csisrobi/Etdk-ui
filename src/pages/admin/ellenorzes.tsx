@@ -50,7 +50,7 @@ const headersProject = {
   contribution: "Hozzájárulási nyilatkozat",
   score: "Pontszám",
   otdk_nominated: "Jelölve OTDKra",
-  publish_nominated: "Jelölve publikálásra",
+  // publish_nominated: "Jelölve publikálásra",
 };
 
 const EllenorzoFelulet = () => {

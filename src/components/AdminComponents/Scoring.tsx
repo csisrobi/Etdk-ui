@@ -53,9 +53,9 @@ export const ParticipantScoring = ({
   const [otdk, setOtdk] = useState<boolean>(
     participant.score?.[0]?.otdk_nominated || false
   );
-  const [publish, setPublish] = useState<boolean>(
-    participant.score?.[0]?.publish_nominated || false
-  );
+  // const [publish, setPublish] = useState<boolean>(
+  //   participant.score?.[0]?.publish_nominated || false
+  // );
 
   const [errors, setErrors] = useState<ErrorType>({});
 
@@ -65,7 +65,7 @@ export const ParticipantScoring = ({
       JSON.stringify({
         id: participant._id,
         scores: scores,
-        publish_nominated: publish,
+        // publish_nominated: publish,
         otdk_nominated: otdk,
         scorerId: participant.score?.[0]?.scorer._id,
       })
@@ -152,7 +152,7 @@ export const ParticipantScoring = ({
               </FormGroup>
             </td>
           </tr>
-          <tr>
+          {/* <tr>
             <td>
               <FormGroup>
                 <FormControlLabel
@@ -167,7 +167,7 @@ export const ParticipantScoring = ({
                 />
               </FormGroup>
             </td>
-          </tr>
+          </tr> */}
           <tr>
             <td>
               {!closed && !notScorer && (
