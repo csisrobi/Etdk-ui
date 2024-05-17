@@ -31,25 +31,25 @@ export const ParticipantScoring = ({
   participant,
   closed,
   mutate,
-  sectionCriterias,
 }: {
   criteria?: Criteria[];
   participant: SanityParticipantScoring;
   closed: boolean;
   mutate: KeyedMutator<SanityParticipantScoring[]>;
-  sectionCriterias: string[];
 }) => {
   const session = useSession();
   const notScorer = session.data?.user.role !== UserRoles.Scorer;
   const [scores, setScores] = useState<ScoreType>(
     participant.score?.[0]
-      ? participant.score[0].score.reduce(
-          (acc, cur) => ({
-            ...acc,
-            [cur.criteria._id]: { score: cur.score, name: cur.criteria.name },
-          }),
-          {}
-        )
+      ? participant.score[0].score.reduce((acc, cur) => {
+          if ((criteria || []).find((c) => c._id === cur.criteria._id)) {
+            return {
+              ...acc,
+              [cur.criteria._id]: { score: cur.score, name: cur.criteria.name },
+            };
+          }
+          return acc;
+        }, {})
       : {}
   );
   const [otdk, setOtdk] = useState<boolean>(
@@ -79,7 +79,7 @@ export const ParticipantScoring = ({
       success: <b>Pontozás sikeres</b>,
       error: <b>Pontozás sikertelen</b>,
     });
-
+  console.log(criteria);
   return (
     <div>
       <table className="border-separate border-spacing-x-3 border-spacing-y-2 ">
@@ -87,56 +87,54 @@ export const ParticipantScoring = ({
           {(criteria || []).map((c) => (
             <React.Fragment key={c._id}>
               {/* TODO WRITTEN AND ORAL */}
-              {sectionCriterias.includes(c._id)
-                ? (isAfter(new Date(), parseISO("2024-05-15T23:59:59")) ||
-                    c.written) && (
-                    <tr key={c._id}>
-                      <td className="w-full">
-                        <p>{c.name}</p>
-                      </td>
-                      <td>
-                        <TextField
-                          size="small"
-                          value={scores[c._id]?.score || ""}
-                          disabled={closed || notScorer}
-                          onChange={(e) => {
-                            if (parseInt(e.target.value) > c.maxScore) {
-                              setErrors({
-                                ...errors,
-                                [c._id]: `A maximum pontszám ${c.maxScore}`,
-                              });
-                            } else {
-                              const errorsHolder = errors;
-                              delete errorsHolder[c._id];
-                              setErrors(errorsHolder);
+              {(isAfter(new Date(), parseISO("2024-05-15T23:59:59")) ||
+                c.written) && (
+                <tr key={c._id}>
+                  <td className="w-full">
+                    <p>{c.name}</p>
+                  </td>
+                  <td>
+                    <TextField
+                      size="small"
+                      value={scores[c._id]?.score || ""}
+                      disabled={closed || notScorer}
+                      onChange={(e) => {
+                        if (parseInt(e.target.value) > c.maxScore) {
+                          setErrors({
+                            ...errors,
+                            [c._id]: `A maximum pontszám ${c.maxScore}`,
+                          });
+                        } else {
+                          const errorsHolder = errors;
+                          delete errorsHolder[c._id];
+                          setErrors(errorsHolder);
+                        }
+                        setScores({
+                          ...scores,
+                          [c._id]: {
+                            name: c.name,
+                            score: parseInt(e.target.value) || 0,
+                          },
+                        });
+                      }}
+                      InputProps={
+                        !notScorer
+                          ? {
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  /{c.maxScore}
+                                </InputAdornment>
+                              ),
                             }
-                            setScores({
-                              ...scores,
-                              [c._id]: {
-                                name: c.name,
-                                score: parseInt(e.target.value) || 0,
-                              },
-                            });
-                          }}
-                          InputProps={
-                            !notScorer
-                              ? {
-                                  endAdornment: (
-                                    <InputAdornment position="end">
-                                      /{c.maxScore}
-                                    </InputAdornment>
-                                  ),
-                                }
-                              : {}
-                          }
-                          error={!!errors[c._id]}
-                          helperText={errors[c._id]}
-                          className="w-32"
-                        />
-                      </td>
-                    </tr>
-                  )
-                : null}
+                          : {}
+                      }
+                      error={!!errors[c._id]}
+                      helperText={errors[c._id]}
+                      className="w-32"
+                    />
+                  </td>
+                </tr>
+              )}
             </React.Fragment>
           ))}
 
@@ -187,10 +185,7 @@ export const ParticipantScoring = ({
             </td>
             <td className="pl-4">
               {Object.keys(scores).reduce((acc, current) => {
-                if (sectionCriterias.includes(current)) {
-                  return acc + (scores[current]?.score || 0);
-                }
-                return acc;
+                return acc + (scores[current]?.score || 0);
               }, 0)}
             </td>
           </tr>

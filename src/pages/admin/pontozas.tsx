@@ -231,9 +231,6 @@ const AdminPontozoFelulet = ({
                     participant={participant}
                     closed={selectedSectionClosed}
                     mutate={mutate}
-                    sectionCriterias={(sections[tabValue]?.criteria || []).map(
-                      (c) => c._id
-                    )}
                   />
                 )}
               </AccordionDetails>
