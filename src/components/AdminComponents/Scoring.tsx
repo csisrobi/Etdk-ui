@@ -31,11 +31,13 @@ export const ParticipantScoring = ({
   participant,
   closed,
   mutate,
+  sectionCriterias,
 }: {
   criteria?: Criteria[];
   participant: SanityParticipantScoring;
   closed: boolean;
   mutate: KeyedMutator<SanityParticipantScoring[]>;
+  sectionCriterias: string[];
 }) => {
   const session = useSession();
   const notScorer = session.data?.user.role !== UserRoles.Scorer;
@@ -85,54 +87,56 @@ export const ParticipantScoring = ({
           {(criteria || []).map((c) => (
             <React.Fragment key={c._id}>
               {/* TODO WRITTEN AND ORAL */}
-              {(isAfter(new Date(), parseISO("2024-05-15T23:59:59")) ||
-                c.written) && (
-                <tr key={c._id}>
-                  <td className="w-full">
-                    <p>{c.name}</p>
-                  </td>
-                  <td>
-                    <TextField
-                      size="small"
-                      value={scores[c._id]?.score || ""}
-                      disabled={closed || notScorer}
-                      onChange={(e) => {
-                        if (parseInt(e.target.value) > c.maxScore) {
-                          setErrors({
-                            ...errors,
-                            [c._id]: `A maximum pontszám ${c.maxScore}`,
-                          });
-                        } else {
-                          const errorsHolder = errors;
-                          delete errorsHolder[c._id];
-                          setErrors(errorsHolder);
-                        }
-                        setScores({
-                          ...scores,
-                          [c._id]: {
-                            name: c.name,
-                            score: parseInt(e.target.value) || 0,
-                          },
-                        });
-                      }}
-                      InputProps={
-                        !notScorer
-                          ? {
-                              endAdornment: (
-                                <InputAdornment position="end">
-                                  /{c.maxScore}
-                                </InputAdornment>
-                              ),
+              {sectionCriterias.includes(c._id)
+                ? (isAfter(new Date(), parseISO("2024-05-15T23:59:59")) ||
+                    c.written) && (
+                    <tr key={c._id}>
+                      <td className="w-full">
+                        <p>{c.name}</p>
+                      </td>
+                      <td>
+                        <TextField
+                          size="small"
+                          value={scores[c._id]?.score || ""}
+                          disabled={closed || notScorer}
+                          onChange={(e) => {
+                            if (parseInt(e.target.value) > c.maxScore) {
+                              setErrors({
+                                ...errors,
+                                [c._id]: `A maximum pontszám ${c.maxScore}`,
+                              });
+                            } else {
+                              const errorsHolder = errors;
+                              delete errorsHolder[c._id];
+                              setErrors(errorsHolder);
                             }
-                          : {}
-                      }
-                      error={!!errors[c._id]}
-                      helperText={errors[c._id]}
-                      className="w-32"
-                    />
-                  </td>
-                </tr>
-              )}
+                            setScores({
+                              ...scores,
+                              [c._id]: {
+                                name: c.name,
+                                score: parseInt(e.target.value) || 0,
+                              },
+                            });
+                          }}
+                          InputProps={
+                            !notScorer
+                              ? {
+                                  endAdornment: (
+                                    <InputAdornment position="end">
+                                      /{c.maxScore}
+                                    </InputAdornment>
+                                  ),
+                                }
+                              : {}
+                          }
+                          error={!!errors[c._id]}
+                          helperText={errors[c._id]}
+                          className="w-32"
+                        />
+                      </td>
+                    </tr>
+                  )
+                : null}
             </React.Fragment>
           ))}
 
@@ -182,10 +186,12 @@ export const ParticipantScoring = ({
               )}
             </td>
             <td className="pl-4">
-              {Object.keys(scores).reduce(
-                (acc, current) => acc + (scores[current]?.score || 0),
-                0
-              )}
+              {Object.keys(scores).reduce((acc, current) => {
+                if (sectionCriterias.includes(current)) {
+                  return acc + (scores[current]?.score || 0);
+                }
+                return acc;
+              }, 0)}
             </td>
           </tr>
         </tbody>
