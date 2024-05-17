@@ -224,19 +224,13 @@ const AdminPontozoFelulet = ({
                 {sections && sections[tabValue] && (
                   <ParticipantScoring
                     criteria={
-                      sectionsDefault.find((s) => {
-                        if (participant.merged_section) {
-                          return s._id === participant.merged_section._id;
-                        }
-                        return s._id === participant.section._id;
-                      })?.criteria || []
+                      sectionsDefault.find(
+                        (s) => s._id === participant.section._id
+                      )?.criteria || []
                     }
                     participant={participant}
                     closed={selectedSectionClosed}
                     mutate={mutate}
-                    sectionCriterias={(sections[tabValue]?.criteria || []).map(
-                      (c) => c._id
-                    )}
                   />
                 )}
               </AccordionDetails>
