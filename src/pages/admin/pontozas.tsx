@@ -38,7 +38,7 @@ export type Criteria = {
   written: boolean;
 };
 
-type Section = {
+export type Section = {
   _id: string;
   criteria: Criteria[];
   name: string;
@@ -82,10 +82,11 @@ const AdminPontozoFelulet = ({
           _id: s._id,
           value: i,
           closed: s.closed,
+          criteria: s.criteria,
+          active: s.active,
         })),
     [responsibleSections]
   );
-
   const closeSection = async () =>
     await fetcher(
       `/sections/close`,
@@ -230,6 +231,9 @@ const AdminPontozoFelulet = ({
                     participant={participant}
                     closed={selectedSectionClosed}
                     mutate={mutate}
+                    sectionCriterias={(sections[tabValue]?.criteria || []).map(
+                      (c) => c._id
+                    )}
                   />
                 )}
               </AccordionDetails>
@@ -287,12 +291,12 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   return {
     props: {
       sectionsDefault: sectionsDefault
-        .filter((s) => s.name)
+        .filter((s) => s.name && !s._id.includes("drafts"))
         .sort((a, b) =>
           a.name.toLowerCase().localeCompare(b.name.toLowerCase())
         ),
       responsibleSections: sections
-        .filter((s) => s.name)
+        .filter((s) => s.name && !s._id.includes("drafts"))
         .sort((a, b) =>
           a.name.toLowerCase().localeCompare(b.name.toLowerCase())
         ),
