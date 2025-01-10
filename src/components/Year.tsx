@@ -1,4 +1,3 @@
-import Image from "next/image";
 import LinkWrapper from "./UtilityComponents/LinkWrapper";
 
 const yearElements = [
@@ -28,12 +27,6 @@ const Year = () => {
             </div>
           </LinkWrapper>
         ))}
-      </div>
-      <div className="absolute right-0 top-10 hidden h-[300px] w-[400px] md:block">
-        <Image src="/zoldhullamjobb.png" alt="zoldhullam" fill />
-      </div>
-      <div className="absolute left-0 bottom-10 hidden h-[300px] w-[400px] md:block">
-        <Image src="/zoldhullambal.png" alt="zoldhullam" fill />
       </div>
     </div>
   );
