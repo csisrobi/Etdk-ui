@@ -2,6 +2,8 @@ import Image from "next/image";
 import type { SanityApplicate } from "types";
 import RichText from "@utils/RichText";
 import GetImage from "./../../utils/getImage";
+import Hullam2 from "../../public/hullam2.png";
+import Illusztracio1 from "../../public/illusztracio1.png";
 
 const WhyApplicate = ({
   small_benefit,
@@ -14,7 +16,7 @@ const WhyApplicate = ({
       <div className="relative flex min-h-[calc(100vh-71px)] flex-col lg:flex-row lg:items-center lg:justify-center">
         <div className="flex min-h-[800px] w-full flex-col items-center lg:relative lg:w-[1100px]">
           <div className="relative h-[60vw] w-full md:h-[50vh] lg:hidden">
-            <Image src="/illusztracio1.png" alt="illusztracio" fill />
+            <Image src={Illusztracio1} alt="illusztracio" fill />
           </div>
           <div className="left-0 bottom-14 flex w-full flex-col space-y-14 bg-lightGray p-4 text-center lg:absolute lg:h-[600px] lg:w-[600px] lg:text-start">
             <div className="mt-2">
@@ -41,11 +43,11 @@ const WhyApplicate = ({
           <div className="top-28 right-0 hidden h-[80%] w-[600px] flex-col lg:absolute lg:flex">
             <div className="hidden h-full w-full items-end justify-end pr-8 lg:flex">
               <div className="relative h-full w-[75%]">
-                <Image src="/hullam2.png" alt="hullam" fill />
+                <Image src={Hullam2} alt="hullam" fill />
               </div>
             </div>
             <div className="relative h-5/6 w-full">
-              <Image src="/illusztracio1.png" alt="illusztracio" fill />
+              <Image src={Illusztracio1} alt="illusztracio" fill />
             </div>
           </div>
         </div>

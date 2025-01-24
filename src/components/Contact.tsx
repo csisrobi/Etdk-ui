@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { SanityContact } from "types";
-
+import ETDK from "../../public/ETDK.png";
 type Props = SanityContact & {
   date: string;
   romanEdition: string;
@@ -23,7 +23,7 @@ const Contact = ({
       <div className="hidden w-full flex-col items-end md:flex md:w-1/2">
         <div className="justify-center md:justify-start">
           <div className="relative flex h-[150px] w-[150px] justify-center md:justify-start">
-            <Image src="/ETDK.png" fill alt="ETDK" />
+            <Image src={ETDK} fill alt="ETDK" />
           </div>
           <div className="flex text-center md:text-start">
             <p className="w-full  text-2xl tracking-wide ">
@@ -70,7 +70,7 @@ const Contact = ({
       <div className="flex w-full flex-col md:hidden md:w-1/2">
         <div className="justify-center md:justify-start">
           <div className="flex justify-center md:justify-start">
-            <Image src="/ETDK.png" width={150} height={150} alt="ETDK" />
+            <Image src={ETDK} width={150} height={150} alt="ETDK" />
           </div>
           <div className="flex text-center md:text-start">
             <span className="w-full  text-2xl tracking-wide ">

@@ -19,14 +19,13 @@ const PontozasiKriteriumok = ({ scoringcriteria }: Props) => {
   );
 };
 
-export async function getStaticProps({ preview = false }) {
+export async function getServerSideProps({ preview = false }) {
   const general = await getClient(preview).fetch(queryScoringCriteria);
   return {
     props: {
       scoringcriteria: general[0].scoringcriteria,
       preview,
     },
-    revalidate: 300,
   };
 }
 

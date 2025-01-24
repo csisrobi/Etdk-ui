@@ -9,6 +9,8 @@ import { queryAllDeadline } from "@lib/queries";
 import { getClient } from "@lib/sanity";
 import useSWR from "swr";
 import Link from "next/link";
+import ETDK from "../../public/ETDK.png";
+import ETDKFeher from "../../public/ETDKfeher.png";
 
 const getDeadlines = async () => {
   const deadlines = await getClient().fetch(queryAllDeadline);
@@ -78,7 +80,7 @@ const Header = () => {
       <div className="flex w-full items-center p-2">
         <LinkWrapper href="#general">
           <Image
-            src="/ETDKfeher.png"
+            src={ETDKFeher}
             alt={"logo"}
             width={50}
             height={50}
@@ -156,7 +158,7 @@ const Header = () => {
                           <div className="flex w-full items-center">
                             <span className="flex-1">
                               <Image
-                                src="/ETDK.png"
+                                src={ETDK}
                                 alt={"logo"}
                                 width={40}
                                 height={40}
