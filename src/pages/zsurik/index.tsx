@@ -51,7 +51,7 @@ const Zsurik = ({ sections }: Props) => {
   );
 };
 
-export async function getStaticProps({ preview = false }) {
+export async function getServerSideProps({ preview = false }) {
   const sections: Section[] = await getClient(preview).fetch(
     querySectionScorers
   );
@@ -64,7 +64,6 @@ export async function getStaticProps({ preview = false }) {
         ),
       preview,
     },
-    revalidate: 300,
   };
 }
 

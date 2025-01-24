@@ -1,5 +1,6 @@
 import Image from "next/image";
-
+import MainPageLogoCrop from "../../public/mainpagelogocrop.png";
+import MainPageLogo from "../../public/mainpagelogo.png";
 type Props = {
   date: string;
   edition: string;
@@ -14,7 +15,7 @@ const MainPage = ({ date, edition, romanEdition }: Props) => {
         <div className=" lg:mr-1/2 relative aspect-square w-full md:h-[600px] md:w-[600px] lg:-ml-32 lg:mr-4 lg:w-1/2 xl:mr-auto xl:-ml-4 xl:h-[500px] xl:w-[500px]">
           <div className="hidden lg:block">
             <Image
-              src="/mainpagelogocrop.png"
+              src={MainPageLogoCrop}
               alt="fo oldal logo"
               fill
               loading="eager"
@@ -22,7 +23,7 @@ const MainPage = ({ date, edition, romanEdition }: Props) => {
           </div>
           <div className="block lg:hidden">
             <Image
-              src="/mainpagelogo.png"
+              src={MainPageLogo}
               alt="fo oldal logo"
               fill
               loading="eager"

@@ -19,7 +19,7 @@ const Hataridok = ({ deadline }: Props) => {
   );
 };
 
-export async function getStaticProps({ preview = false }) {
+export async function getServerSideProps({ preview = false }) {
   const deadline = await getClient(preview).fetch(queryDeadline);
 
   return {
@@ -27,7 +27,6 @@ export async function getStaticProps({ preview = false }) {
       deadline: deadline[0].deadline,
       preview,
     },
-    revalidate: 600,
   };
 }
 

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import Loader from "../../public/loader.png";
 
 export default function Custom404() {
   const router = useRouter();
@@ -12,7 +13,7 @@ export default function Custom404() {
       <Image
         width={800}
         height={800}
-        src="/loader.png"
+        src={Loader}
         alt={"profilkep"}
         loading="eager"
       />

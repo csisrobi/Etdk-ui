@@ -19,14 +19,13 @@ const Program = ({ schedule }: Props) => {
   );
 };
 
-export async function getStaticProps({ preview = false }) {
+export async function getServerSideProps({ preview = false }) {
   const general = await getClient(preview).fetch(querySchedule);
   return {
     props: {
       schedule: general[0].schedule,
       preview,
     },
-    revalidate: 600,
   };
 }
 

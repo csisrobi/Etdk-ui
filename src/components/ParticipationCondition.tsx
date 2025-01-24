@@ -2,6 +2,7 @@ import RichText from "@utils/RichText";
 import Image from "next/image";
 import type { SanityRichText } from "types";
 import LinkWrapper from "./UtilityComponents/LinkWrapper";
+import Illusztracio2 from "../../public/illusztracio2.png";
 
 const ParticipationCondition = ({
   generalApplicationRules,
@@ -44,7 +45,7 @@ const ParticipationCondition = ({
             ))}
           </div>
           <div className="relative mt-10 h-[60vw] w-[82vw] sm:h-[25vw] sm:w-[40vw] lg:aspect-auto lg:max-h-[380px] lg:w-[35vw] lg:max-w-[530px]">
-            <Image src="/illusztracio2.png" alt="illusztracio" fill />
+            <Image src={Illusztracio2} alt="illusztracio" fill />
           </div>
         </div>
       </div>

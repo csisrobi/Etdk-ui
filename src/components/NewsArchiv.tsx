@@ -7,6 +7,7 @@ import { Fragment, useState } from "react";
 import RichText from "@utils/RichText";
 import { isAfter, parseISO } from "date-fns";
 import { XMarkIcon } from "@heroicons/react/20/solid";
+import Hullam1 from "../../public/hullam1.png";
 
 const NewsArchiv = ({
   news,
@@ -90,10 +91,10 @@ const NewsArchiv = ({
         </div>
       </div>
       <div className="absolute top-0 right-0 hidden h-28 w-96 lg:block">
-        <Image src="/hullam1.png" alt="hullam" fill />
+        <Image src={Hullam1} alt="hullam" fill />
       </div>
       <div className="absolute bottom-0 left-0 hidden h-28 w-96 lg:block">
-        <Image src="/hullam1.png" alt="hullam" fill />
+        <Image src={Hullam1} alt="hullam" fill />
       </div>
       <Transition.Root show={openNewsDialog} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={setOpenNewsDialog}>

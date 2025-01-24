@@ -19,14 +19,13 @@ const Szabalyzat = ({ general }: Props) => {
   );
 };
 
-export async function getStaticProps({ preview = false }) {
+export async function getServerSideProps({ preview = false }) {
   const generals = await getClient(preview).fetch(queryGeneralRules);
   return {
     props: {
       general: generals[0],
       preview,
     },
-    revalidate: 600,
   };
 }
 

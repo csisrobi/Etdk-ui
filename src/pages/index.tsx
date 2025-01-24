@@ -86,7 +86,7 @@ const Home: NextPage<Props> = ({
   );
 };
 
-export async function getStaticProps({ preview = false }) {
+export async function getServerSideProps({ preview = false }) {
   const sponsors = await getClient(preview).fetch(querySponsor);
   const organizers = await getClient(preview).fetch(queryOrg);
   const contacts = await getClient(preview).fetch(queryContact);
@@ -106,7 +106,6 @@ export async function getStaticProps({ preview = false }) {
       organizers,
       preview,
     },
-    revalidate: 600,
   };
 }
 
