@@ -1,5 +1,6 @@
 import client from "part:@sanity/base/client";
 
+// for this to work, first run the bulkEditDocuments.js file
 const queryAdminsNotSuperAdmin = `*[_type == "admins" && role != "superadmin"][0...999]{
   _id,
 }._id`;
