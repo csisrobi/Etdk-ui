@@ -999,7 +999,7 @@ const ApplicationForm = ({
                         disabled={closed}
                       />
                     </label>
-                    <LinkWrapper href="https://jegy.link/etdk">
+                    <LinkWrapper href="https://in-time.hu/e/erdelyi-tudomanyos-diakkori-konferencia-250515?sh=dGs9VmtjZUNWM1ZoMFVVMEVlcmEwYVY7dGthcz0xO3RrZXg9MQ==">
                       <p className="pl-3 text-sm text-blue-400 underline hover:text-purple-400">
                         Befizetés
                       </p>
