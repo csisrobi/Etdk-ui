@@ -62,5 +62,21 @@ export default {
       type: "array",
       of: [{ type: "block" }],
     },
+    {
+      title: "Elsődleges világos szín (Primary Light)",
+      name: "primaryLight",
+      type: "color",
+      options: {
+        disableAlpha: true,
+      },
+    },
+    {
+      title: "Elsődleges sötét szín (Primary Dark)",
+      name: "primaryDark",
+      type: "color",
+      options: {
+        disableAlpha: true,
+      },
+    },
   ],
 };

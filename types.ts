@@ -38,6 +38,8 @@ export type SanityGeneral = {
   requirement: SanityRichText[];
   scoringcriteria: SanityRichText[];
   certificateURL: string;
+  primaryLight?: string;
+  primaryDark?: string;
 };
 
 export type SanityApplicate = {

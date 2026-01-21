@@ -26,6 +26,7 @@ import ParticipationCondition from "../components/ParticipationCondition";
 import SponsorsOrg from "../components/SponsorsOrg";
 import WhyApplicate from "../components/WhyApplicate";
 import Year from "../components/Year";
+import { getThemeColors } from "../../utils/getThemeColors";
 
 type Props = {
   sponsors: SanitySponsor[];
@@ -94,6 +95,7 @@ export async function getServerSideProps({ preview = false }) {
   const applicate = await getClient(preview).fetch(queryApplicate);
   const news = await getClient(preview).fetch(queryNews);
   const archivs = await getClient(preview).fetch(queryArchivsBasic);
+  const themeColors = await getThemeColors(preview);
 
   return {
     props: {
@@ -105,6 +107,7 @@ export async function getServerSideProps({ preview = false }) {
       sponsors,
       organizers,
       preview,
+      themeColors,
     },
   };
 }
