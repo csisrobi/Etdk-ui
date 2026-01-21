@@ -34,7 +34,9 @@ export const queryGeneral = groq`
   requirement,
   scoringcriteria,
   generalApplicationRules,
-  "certificateURL": certificate.asset->url
+  "certificateURL": certificate.asset->url,
+  "primaryLight": primaryLight.hex,
+  "primaryDark": primaryDark.hex
 }`;
 
 export const queryFiles = groq`
