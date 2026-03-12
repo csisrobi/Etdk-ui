@@ -15,25 +15,38 @@ const query = `
   ._id
 `;
 
-client
-  .fetch(query)
-  .then((ids) => {
-    if (!ids.length) {
-      console.log("No assets to delete");
-      return true;
-    }
+const BATCH_SIZE = 100;
 
-    console.log(`Deleting ${ids.length} assets`);
-    return ids
-      .reduce((trx, id) => trx.delete(id), client.transaction())
-      .commit()
-      .then(() => console.log("Done!"));
-  })
-  .catch((err) => {
-    if (err.message.includes("Insufficient permissions")) {
-      console.error(err.message);
-      console.error("Did you forget to pass `--with-user-token`?");
-    } else {
-      console.error(err.stack);
-    }
-  });
+async function deleteUnusedAssets() {
+  const ids = await client.fetch(query);
+
+  if (!ids.length) {
+    console.log("No assets to delete");
+    return;
+  }
+
+  console.log(
+    `Found ${ids.length} unused assets. Deleting in batches of ${BATCH_SIZE}...`
+  );
+
+  for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+    const batch = ids.slice(i, i + BATCH_SIZE);
+    const trx = client.transaction();
+    batch.forEach((id) => trx.delete(id));
+    await trx.commit();
+    console.log(
+      `Deleted batch ${Math.floor(i / BATCH_SIZE) + 1} (${batch.length} assets)`
+    );
+  }
+
+  console.log(`Done! Deleted ${ids.length} assets total.`);
+}
+
+deleteUnusedAssets().catch((err) => {
+  if (err.message.includes("Insufficient permissions")) {
+    console.error(err.message);
+    console.error("Did you forget to pass `--with-user-token`?");
+  } else {
+    console.error("ERROR", err.stack);
+  }
+});

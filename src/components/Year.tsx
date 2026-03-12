@@ -6,7 +6,7 @@ const yearElements = [
   { text: "Program", link: "/program" },
   { text: "Díjazottak", link: "/dijazottak" },
   { text: "Előadások és workshopok" },
-  { text: "Meghirdetett szekciók", link: "/meghirdetett-szekciok" },
+  { text: "Meghírdetett szekciók", link: "/meghirdetett-szekciok" },
   { text: "Befizetés", link: "https://jegy.link/etdk" },
 ];
 
