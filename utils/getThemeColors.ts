@@ -15,5 +15,6 @@ export async function getThemeColors(preview = false) {
   return {
     primaryLight: general?.primaryLight || "#432559",
     primaryDark: general?.primaryDark || "#2a2143",
+    secondaryColor: general?.secondaryColor || "#c7237a",
   };
 }

@@ -40,6 +40,8 @@ export type SanityGeneral = {
   certificateURL: string;
   primaryLight?: string;
   primaryDark?: string;
+  secondaryColor?: string;
+  paymentLink?: string;
 };
 
 export type SanityApplicate = {

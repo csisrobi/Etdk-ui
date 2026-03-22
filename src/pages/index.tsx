@@ -71,7 +71,7 @@ const Home: NextPage<Props> = ({
       <ParticipationCondition
         generalApplicationRules={general.generalApplicationRules}
       />
-      <Year />
+      <Year paymentLink={general.paymentLink} />
       <NewsArchiv news={news} archivs={archivs} />
       <SponsorsOrg sponsors={sponsors} organizers={organizers} />
       <Contact

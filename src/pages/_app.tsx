@@ -14,10 +14,11 @@ const MyApp: AppType = ({
 }: AppProps) => {
   // Get theme colors from pageProps (passed from getServerSideProps)
   const themeColors = pageProps.themeColors as
-    | { primaryLight: string; primaryDark: string }
+    | { primaryLight: string; primaryDark: string; secondaryColor: string }
     | undefined;
   const primaryLight = themeColors?.primaryLight || "#432559";
   const primaryDark = themeColors?.primaryDark || "#2a2143";
+  const secondaryColor = themeColors?.secondaryColor || "#c7237a";
 
   return (
     <>
@@ -26,6 +27,7 @@ const MyApp: AppType = ({
           {`:root {
             --color-primary-light: ${primaryLight};
             --color-primary-dark: ${primaryDark};
+            --color-secondary: ${secondaryColor};
           }`}
         </style>
       </Head>
