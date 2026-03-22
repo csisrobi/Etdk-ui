@@ -14,6 +14,7 @@ module.exports = {
         grayCustom: "#666766",
         primaryLight: "var(--color-primary-light, #432559)",
         primaryDark: "var(--color-primary-dark, #2a2143)",
+        secondary: "var(--color-secondary, #c7237a)",
         lightGray: "#E4E4E4",
         lightBrown: "#3C4247",
         beige: "#EBCE8F",

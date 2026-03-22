@@ -63,6 +63,12 @@ export default {
       of: [{ type: "block" }],
     },
     {
+      title: "Befizetés link",
+      name: "paymentLink",
+      type: "url",
+      description: "A befizetés/fizetés oldal linkje (pld: https://in-time.hu/...)",
+    },
+    {
       title: "Elsődleges világos szín (Primary Light)",
       name: "primaryLight",
       type: "color",
@@ -74,6 +80,16 @@ export default {
       title: "Elsődleges sötét szín (Primary Dark)",
       name: "primaryDark",
       type: "color",
+      options: {
+        disableAlpha: true,
+      },
+    },
+    {
+      title: "Másodlagos szín (Secondary)",
+      name: "secondaryColor",
+      type: "color",
+      description:
+        "Ez a szín jelenik meg a római számozáson (felső rész) és a 'reál és humántudományok' szövegen",
       options: {
         disableAlpha: true,
       },

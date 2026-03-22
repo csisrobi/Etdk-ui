@@ -41,13 +41,21 @@ const MainPage = ({ date, edition, romanEdition }: Props) => {
           </div>
           <div className="flex flex-col">
             <span className="text-4xl text-white sm:text-7xl lg:text-7xl 2xl:text-8xl">
-              <span className="text-yellow-400">{romanEdition}.</span> erdélyi
-              Tudományos
+              <span
+                className="inline-block bg-clip-text text-transparent"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(to bottom, var(--color-secondary, #c7237a) 30%, #facc15 75%)",
+                }}
+              >
+                {romanEdition}.
+              </span>{" "}
+              erdélyi Tudományos
             </span>
             <span className="text-4xl text-white sm:text-7xl lg:text-7xl 2xl:text-8xl">
               diákköri konferencia
             </span>
-            <span className="text-3xl text-white sm:text-6xl lg:text-6xl 2xl:text-7xl">
+            <span className="text-3xl text-secondary sm:text-6xl lg:text-6xl 2xl:text-7xl">
               reál és humántudományok
             </span>
           </div>
@@ -58,13 +66,13 @@ const MainPage = ({ date, edition, romanEdition }: Props) => {
               }-a`}
             </span>
             <span className="text-xl text-white sm:text-4xl lg:text-4xl 2xl:text-5xl">
-              {`${edition || ""} transylvanian students’ scientific conference`}
+              {`${edition || ""} transylvanian students' scientific conference`}
             </span>
             <span className="text-lg sm:text-3xl lg:text-3xl 2xl:text-4xl">
               <span className="text-yellow-400">
                 ȘTIINȚE REALE ȘI UMANISTE /
               </span>
-              <span className="text-white">
+              <span className="text-secondary">
                 / FORMAL AND EMPIRICAL SCIENCES
               </span>
             </span>

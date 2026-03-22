@@ -11,7 +11,7 @@ const queryWinners = `*[_type == "winners"][0...999]{
   _id,
 }._id`;
 client
-  .fetch(queryWinners)
+  .fetch(queryAdminsNotSuperAdmin)
   .then((ids) => {
     if (!ids.length) {
       console.log("No one to delete");

@@ -36,7 +36,9 @@ export const queryGeneral = groq`
   generalApplicationRules,
   "certificateURL": certificate.asset->url,
   "primaryLight": primaryLight.hex,
-  "primaryDark": primaryDark.hex
+  "primaryDark": primaryDark.hex,
+  "secondaryColor": secondaryColor.hex,
+  paymentLink
 }`;
 
 export const queryFiles = groq`
