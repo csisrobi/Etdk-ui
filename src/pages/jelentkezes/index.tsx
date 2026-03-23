@@ -2,6 +2,7 @@ import {
   queryActiveSections,
   queryAllDeadline,
   queryFaculties,
+  queryGeneral,
   queryGeneralGDPR,
   queryUniversities,
 } from "@lib/queries";
@@ -23,12 +24,14 @@ const Jelentkezes = ({
   sections,
   gdpr,
   deadlines,
+  paymentLink,
 }: {
   universities: UniversitiesSanity[];
   faculties: FacultySanity[];
   sections: SectionsSanity[];
   gdpr: SanityRichText[];
   deadlines: SanityDeadlines;
+  paymentLink?: string;
 }) => {
   const afterUploadStart = isAfter(
     new Date(),
@@ -72,6 +75,7 @@ const Jelentkezes = ({
         faculties={faculties}
         sections={sections}
         gdpr={gdpr}
+        paymentLink={paymentLink}
       />
     );
   }
@@ -85,6 +89,7 @@ export async function getServerSideProps({ preview = false }) {
   const sections = await getClient(preview).fetch(queryActiveSections);
   const gdpr = await getClient(preview).fetch(queryGeneralGDPR);
   const deadlines = await getClient(preview).fetch(queryAllDeadline);
+  const generals = await getClient(preview).fetch(queryGeneral);
 
   return {
     props: {
@@ -94,6 +99,7 @@ export async function getServerSideProps({ preview = false }) {
       preview,
       deadlines: deadlines[0],
       gdpr: gdpr[0].gdpr,
+      paymentLink: generals[0]?.paymentLink || null,
     },
   };
 }

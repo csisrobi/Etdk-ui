@@ -45,6 +45,7 @@ const ApplicationForm = ({
   defaultValues,
   gdpr,
   closed = false,
+  paymentLink,
 }: {
   universities: UniversitiesSanity[];
   faculties: FacultySanity[];
@@ -55,6 +56,7 @@ const ApplicationForm = ({
   };
   gdpr?: SanityRichText[];
   closed?: boolean;
+  paymentLink?: string;
 }) => {
   const router = useRouter();
   const [confirmationMessage, setConfirmationMessage] = useState("");
@@ -999,11 +1001,13 @@ const ApplicationForm = ({
                         disabled={closed}
                       />
                     </label>
-                    <LinkWrapper href="https://in-time.hu/e/erdelyi-tudomanyos-diakkori-konferencia-250515?sh=dGs9VmtjZUNWM1ZoMFVVMEVlcmEwYVY7dGthcz0xO3RrZXg9MQ==">
-                      <p className="pl-3 text-sm text-blue-400 underline hover:text-purple-400">
-                        Befizetés
-                      </p>
-                    </LinkWrapper>
+                    {paymentLink && (
+                      <LinkWrapper href={paymentLink}>
+                        <p className="pl-3 text-sm text-blue-400 underline hover:text-purple-400">
+                          Befizetés
+                        </p>
+                      </LinkWrapper>
+                    )}
                   </div>
                 );
               }}
