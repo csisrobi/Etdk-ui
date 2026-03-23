@@ -4,6 +4,7 @@ import {
   queryActiveSections,
   queryAllDeadline,
   queryFaculties,
+  queryGeneral,
   querySubjects,
   queryUniversities,
 } from "@lib/queries";
@@ -30,6 +31,7 @@ const AdminJelentkezes = ({
   sections,
   participantData,
   deadlines,
+  paymentLink,
 }: {
   universities: UniversitiesSanity[];
   faculties: FacultySanity[];
@@ -39,6 +41,7 @@ const AdminJelentkezes = ({
     projectsData: ProjectInputs[];
   };
   deadlines: SanityDeadlines;
+  paymentLink?: string;
 }) => {
   if (!Object.keys(participantData).length) {
     return (
@@ -53,6 +56,7 @@ const AdminJelentkezes = ({
       faculties={faculties}
       sections={sections}
       defaultValues={participantData}
+      paymentLink={paymentLink}
       closed={isAfter(
         new Date(),
         parseISO(`${deadlines.documentUploadEnd}T23:59:59`)
@@ -70,6 +74,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const subjects = await getClient(preview || false).fetch(querySubjects);
   const sections = await getClient(preview).fetch(queryActiveSections);
   const deadlines = await getClient(preview).fetch(queryAllDeadline);
+  const generals = await getClient(preview || false).fetch(queryGeneral);
 
   const session = await getSession(ctx);
 
@@ -153,6 +158,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
             }
           : {},
       preview: preview || false,
+      paymentLink: generals[0]?.paymentLink || null,
     },
   };
 }
