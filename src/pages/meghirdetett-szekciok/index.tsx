@@ -1,6 +1,7 @@
 import { queryActiveSections } from "@lib/queries";
 import { getClient } from "@lib/sanity";
 import GetImage from "@utils/getImage";
+import { sortByHungarianName } from "@utils/sortByHungarianName";
 import type { GetServerSideProps } from "next";
 import Image from "next/image";
 import { SanityImage } from "types";
@@ -59,11 +60,9 @@ export const getServerSideProps: GetServerSideProps = async ({
   );
   return {
     props: {
-      sections: sections
-        .filter((section) => !section._id.includes("drafts"))
-        .sort((a, b) =>
-          a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-        ),
+      sections: sortByHungarianName(
+        sections.filter((section) => !section._id.includes("drafts"))
+      ),
       preview,
     },
   };

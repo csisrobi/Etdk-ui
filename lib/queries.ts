@@ -1,22 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { groq } from "next-sanity";
+
+const publishedDocumentFilter = ` && !(_id in path("drafts.**"))`;
+
 //TODO: CREATE A GENERAL QUERY
 export const querySponsor = groq`
-*[_type == "sponsor"]{
+*[_type == "sponsor"${publishedDocumentFilter}]{
   name,
   image
 }
 `;
 
 export const queryOrg = groq`
-*[_type == "organizer"]{
+*[_type == "organizer"${publishedDocumentFilter}]{
   name,
   image
 }
 `;
 
 export const queryContact = groq`
-*[_type == "contact"]{
+*[_type == "contact"${publishedDocumentFilter}]{
   address,
   phone,
   email,
@@ -25,7 +28,7 @@ export const queryContact = groq`
 }`;
 
 export const queryGeneral = groq`
-*[_type == "general"]{
+*[_type == "general"${publishedDocumentFilter}]{
   year,
   edition,
   editionRoman,
@@ -42,7 +45,7 @@ export const queryGeneral = groq`
 }`;
 
 export const queryFiles = groq`
-*[_type == "files"]{
+*[_type == "files"${publishedDocumentFilter}]{
   files[] {
     name,
     "url": file.asset->url,
@@ -50,7 +53,7 @@ export const queryFiles = groq`
 }`;
 
 export const queryApplicate = groq`
-*[_type == "applicate"]{
+*[_type == "applicate"${publishedDocumentFilter}]{
   title,
   description,
   small_benefit,
@@ -58,17 +61,17 @@ export const queryApplicate = groq`
 }`;
 
 export const queryGeneralRules = groq`
-*[_type == "general"]{
+*[_type == "general"${publishedDocumentFilter}]{
   rules,
 }`;
 
 export const queryGeneralGDPR = groq`
-*[_type == "general"]{
+*[_type == "general"${publishedDocumentFilter}]{
   gdpr,
 }`;
 
 export const queryNews = groq`
-*[_type == "news"]{
+*[_type == "news"${publishedDocumentFilter}]{
   name,
   summary,
   date,
@@ -77,32 +80,32 @@ export const queryNews = groq`
 }`;
 
 export const queryDeadline = groq`
-*[_type == "general"]{
+*[_type == "general"${publishedDocumentFilter}]{
   deadline
 }`;
 
 export const queryRequirement = groq`
-*[_type == "general"]{
+*[_type == "general"${publishedDocumentFilter}]{
   requirement
 }`;
 
 export const queryScoringCriteria = groq`
-*[_type == "general"]{
+*[_type == "general"${publishedDocumentFilter}]{
   scoringcriteria
 }`;
 
 export const querySchedule = groq`
-*[_type == "general"]{
+*[_type == "general"${publishedDocumentFilter}]{
   schedule
 }`;
 
 export const queryArchivsBasic = groq`
-*[_type == "archiv"] | order(year){
+*[_type == "archiv"${publishedDocumentFilter}] | order(year){
   year,
 }`;
 
 export const queryArhivDetails = (year: string) => groq`
-*[_type == "archiv" && year == "${year}"]{
+*[_type == "archiv" && year == "${year}"${publishedDocumentFilter}]{
   book,
   book_image,
   winners[] {
@@ -112,13 +115,13 @@ export const queryArhivDetails = (year: string) => groq`
 }`;
 
 export const queryWinners = groq`
-*[_type == "winners"]{
+*[_type == "winners"${publishedDocumentFilter}]{
   winnerPersons,
   section->{name}
 }`;
 
 export const queryActiveSections = groq`
-  *[_type == "sections" && active == true ] | order(name){
+  *[_type == "sections" && active == true ${publishedDocumentFilter}] | order(name){
     name,
     image,
     contributionNeeded,
@@ -126,7 +129,7 @@ export const queryActiveSections = groq`
 }`;
 
 export const queryUniversities = groq`
-*[_type == "universities"]{
+*[_type == "universities"${publishedDocumentFilter}]{
   name,
   _id,
   faculties[]->{
@@ -137,7 +140,7 @@ export const queryUniversities = groq`
 }`;
 
 export const queryFaculties = groq`
-*[_type == "faculties"]{
+*[_type == "faculties"${publishedDocumentFilter}]{
   name,
   _id,
   subjects[]->{
@@ -147,30 +150,30 @@ export const queryFaculties = groq`
 }`;
 
 export const querySubjects = groq`
-*[_type == "subjects"]{
+*[_type == "subjects"${publishedDocumentFilter}]{
   name,
   _id,
 }`;
 
 export const checkIfUniqueEmail = (email: string) => groq`
-*[_type == "participants" && email == "${email}"]{
+*[_type == "participants" && email == "${email}"${publishedDocumentFilter}]{
   email
 }`;
 
 export const checkIfCredentialsOk = (email: string, password: string) => groq`
-*[_type in ["participants", "admins"] && email == "${email}" && password == "${password}"]{
+*[_type in ["participants", "admins"] && email == "${email}" && password == "${password}"${publishedDocumentFilter}]{
   email
 }`;
 
 export const checkIfAdmin = (email: string) => groq`
-*[_type == "admins" && email == "${email}"]{
+*[_type == "admins" && email == "${email}"${publishedDocumentFilter}]{
   email,
   role,
   _id
 }`;
 
 export const getProjectsDataForParticipant = (email: string) => groq`
-*[_type == "participants" && email == "${email}"]{
+*[_type == "participants" && email == "${email}"${publishedDocumentFilter}]{
   _id,
   title,
   "section":section -> _id,
@@ -214,7 +217,7 @@ export const getProjectsDataForParticipant = (email: string) => groq`
 }`;
 
 export const getPersonDataForParticipant = (email: string) => groq`
-*[_type == "participants" && email == "${email}"]{
+*[_type == "participants" && email == "${email}"${publishedDocumentFilter}]{
   name,
   idNumber,
   "university": university -> _id,
@@ -233,7 +236,7 @@ export const getPersonDataForParticipant = (email: string) => groq`
 }`;
 
 export const getAllParticipants = groq`
-*[_type == "participants"] {
+*[_type == "participants"${publishedDocumentFilter}] {
   _id, 
   "registrationDate": _createdAt,
   name,
@@ -302,7 +305,7 @@ export const getAllParticipants = groq`
 }`;
 
 export const querySectionsForScoring = groq`
-*[_type == "sections" ]{
+*[_type == "sections" ${publishedDocumentFilter}]{
   name,
   _id,
   active,
@@ -316,7 +319,7 @@ export const querySectionsForScoring = groq`
 }`;
 
 export const sectionParticipants = (section: string) => groq`
-*[_type == "participants" && "${section}" in [section._ref, merged_section._ref] && accepted == true ] {
+*[_type == "participants" && "${section}" in [section._ref, merged_section._ref] && accepted == true ${publishedDocumentFilter}] {
   _id, 
   name,
 
@@ -340,12 +343,12 @@ export const sectionParticipants = (section: string) => groq`
 }`;
 
 export const adminSections = (email: string) => groq`
-*[_type == "admins" && email == "${email}" ] {
+*[_type == "admins" && email == "${email}" ${publishedDocumentFilter}] {
   sections
 }`;
 
 export const getParticipantScore = (id: string) => groq`
-*[_type == "participants" && _id == "${id}" ] {
+*[_type == "participants" && _id == "${id}" ${publishedDocumentFilter}] {
   score[] {
     scorer -> {email, _id},
     score[] {
@@ -357,19 +360,19 @@ export const getParticipantScore = (id: string) => groq`
 }`;
 
 export const querySectionScorers = groq`
-*[_type == "sections" && active == true ] {
+*[_type == "sections" && active == true ${publishedDocumentFilter}] {
   name,
   scorers[] -> {name}
 }`;
 
 export const queryAllCriteria = groq`
-*[_type == "criteria" ] {
+*[_type == "criteria" ${publishedDocumentFilter}] {
   name,
   _id
 }`;
 
 export const queryAllDeadline = groq`
-*[_type == "deadlines" ] {
+*[_type == "deadlines" ${publishedDocumentFilter}] {
   applicationStart,
   applicationEnd,
   documentUploadStart,

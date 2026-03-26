@@ -66,6 +66,7 @@ export default function Select({
               <Combobox.Input
                 autoComplete="off"
                 onChange={(event) => setQuery(event.target.value)}
+                title={query || value?.name || placeholder || ""}
                 className={`${text} ${bg} sm:text-md block truncate text-lg font-semibold tracking-tight focus:outline-none placeholder:${text} placeholder:opacity-80`}
                 placeholder={placeholder || ""}
                 displayValue={(option: SelectOption | undefined) =>
@@ -105,7 +106,10 @@ export default function Select({
                       {({ selected }) => (
                         <>
                           <div className="flex items-center">
-                            <div className="sm:text-md ml-1 block truncate text-lg font-normal tracking-tight ui-selected:font-semibold">
+                            <div
+                              title={option.name}
+                              className="sm:text-md ml-1 block truncate text-lg font-normal tracking-tight ui-selected:font-semibold"
+                            >
                               {option.name}
                             </div>
                           </div>
