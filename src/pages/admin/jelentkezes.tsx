@@ -9,6 +9,7 @@ import {
   queryUniversities,
 } from "@lib/queries";
 import { getClient } from "@lib/sanity";
+import { sortByHungarianName } from "@utils/sortByHungarianName";
 import { isAfter, parseISO } from "date-fns";
 import type { GetServerSidePropsContext } from "next";
 import { getSession } from "next-auth/react";
@@ -147,7 +148,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       universities,
       faculties,
       subjects,
-      sections,
+      sections: sortByHungarianName(sections),
       deadlines: deadlines[0],
       participantData:
         !!defaultParticipantPersonData.length &&

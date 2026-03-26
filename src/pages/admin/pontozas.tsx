@@ -27,6 +27,7 @@ import {
   querySectionsForScoring,
 } from "@lib/queries";
 import { getClient } from "@lib/sanity";
+import { sortByHungarianName } from "@utils/sortByHungarianName";
 import JSZip from "jszip";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -287,16 +288,12 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 
   return {
     props: {
-      sectionsDefault: sectionsDefault
-        .filter((s) => s.name && !s._id.includes("drafts"))
-        .sort((a, b) =>
-          a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-        ),
-      responsibleSections: sections
-        .filter((s) => s.name && !s._id.includes("drafts"))
-        .sort((a, b) =>
-          a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-        ),
+      sectionsDefault: sortByHungarianName(
+        sectionsDefault.filter((s) => s.name && !s._id.includes("drafts"))
+      ),
+      responsibleSections: sortByHungarianName(
+        sections.filter((s) => s.name && !s._id.includes("drafts"))
+      ),
       deadlines: deadlines[0],
       preview: preview || false,
     },

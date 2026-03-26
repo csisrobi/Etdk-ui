@@ -7,6 +7,7 @@ import {
   queryUniversities,
 } from "@lib/queries";
 import { getClient } from "@lib/sanity";
+import { sortByHungarianName } from "@utils/sortByHungarianName";
 import { isAfter, parseISO } from "date-fns";
 import Link from "next/link";
 import ApplicationForm from "src/components/ApplicationForm";
@@ -95,7 +96,7 @@ export async function getServerSideProps({ preview = false }) {
     props: {
       universities,
       faculties,
-      sections,
+      sections: sortByHungarianName(sections),
       preview,
       deadlines: deadlines[0],
       gdpr: gdpr[0].gdpr,

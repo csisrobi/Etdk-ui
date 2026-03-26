@@ -1,5 +1,6 @@
 import { querySectionScorers } from "@lib/queries";
 import { getClient } from "@lib/sanity";
+import { sortByHungarianName } from "@utils/sortByHungarianName";
 
 type Section = {
   name: string;
@@ -57,11 +58,7 @@ export async function getServerSideProps({ preview = false }) {
   );
   return {
     props: {
-      sections: sections
-        .filter((s) => s.name)
-        .sort((a, b) =>
-          a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-        ),
+      sections: sortByHungarianName(sections.filter((s) => s.name)),
       preview,
     },
   };
